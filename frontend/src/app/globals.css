@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #070709;
+  --foreground: #F8F6F0;
+}
+
+body {
+  background: radial-gradient(circle at 50% 0%, #161622 0%, #0D0D14 55%, #070709 100%);
+  color: #F8F6F0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Subtle Dark Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070709;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(212, 175, 55, 0.45);
+}
+
+/* Luxury Glass & Surface Utilities */
+@layer components {
+  .luxury-card {
+    background: linear-gradient(145deg, rgba(22, 22, 31, 0.88) 0%, rgba(13, 13, 18, 0.96) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    backdrop-filter: blur(16px);
+    border-radius: 1rem;
+    box-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.85);
+  }
+
+  .luxury-card-interactive {
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .luxury-card-interactive:hover {
+    transform: translateY(-2px);
+    border-color: rgba(212, 175, 55, 0.35);
+    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(212, 175, 55, 0.15);
+  }
+
+  .luxury-card-selected {
+    border-color: rgba(212, 175, 55, 0.6) !important;
+    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.95), 0 0 25px rgba(212, 175, 55, 0.25) !important;
+  }
+
+  .glass-panel {
+    background: rgba(13, 13, 18, 0.75);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 0.875rem;
+  }
+
+  .gold-shimmer-btn {
+    background: linear-gradient(135deg, #D4AF37 0%, #AA8A22 100%);
+    color: #070709;
+    font-weight: 600;
+    transition: all 0.2s ease-out;
+  }
+
+  .gold-shimmer-btn:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+  }
+}
