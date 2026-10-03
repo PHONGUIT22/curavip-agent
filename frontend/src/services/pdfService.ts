@@ -1,0 +1,203 @@
+import { jsPDF } from 'jspdf';
+import type { ExecutiveDossier } from '../types';
+
+export const pdfService = {
+  /**
+   * Generates and downloads a formal 1-Page Executive Luxury Presentation for CEO / Dealmaker review.
+   */
+  exportExecutiveDossierPdf(dossier: ExecutiveDossier): void {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const vip = dossier.vipProfile;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 16;
+    const contentWidth = pageWidth - margin * 2;
+
+    // Background Canvas - Dark Luxury Obsidian Slate
+    doc.setFillColor(13, 13, 18);
+    doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), 'F');
+
+    // Top Gold Header Accent Bar
+    doc.setFillColor(212, 175, 55); // Champagne Gold #D4AF37
+    doc.rect(0, 0, pageWidth, 4, 'F');
+
+    let y = 14;
+
+    // Header Monogram & Confidential Banner
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(212, 175, 55);
+    doc.text('CURAVIP · AUTONOMOUS CULTURAL INTELLIGENCE & VIP CONCIERGE', margin, y);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184); // text-muted
+    doc.text(`CONFIDENTIAL · GENERATED ${dossier.generatedAt.slice(0, 10)}`, pageWidth - margin, y, { align: 'right' });
+
+    y += 8;
+
+    // Principal Hero Box
+    doc.setFillColor(22, 22, 31);
+    doc.roundedRect(margin, y, contentWidth, 26, 3, 3, 'F');
+
+    // Gold hairline border on hero
+    doc.setDrawColor(212, 175, 55);
+    doc.setLineWidth(0.4);
+    doc.roundedRect(margin, y, contentWidth, 26, 3, 3, 'S');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(248, 246, 240); // Ivory
+    doc.text(vip.fullName, margin + 6, y + 9);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(212, 175, 55);
+    doc.text(`${vip.role} · ${vip.organization} (${vip.city})`, margin + 6, y + 16);
+
+    // Budget Cap & Mode Badge
+    doc.setFontSize(8);
+    doc.setTextColor(16, 185, 129); // Emerald
+    doc.text(`BUDGET CEILING: $${vip.budgetLimitUsd || 500} USD · 100% FCPA COMPLIANT`, margin + 6, y + 22);
+
+    doc.setTextColor(212, 175, 55);
+    doc.text(`QLOO PROVENANCE: GROUNDED`, pageWidth - margin - 6, y + 9, { align: 'right' });
+
+    y += 32;
+
+    // Section 1: Cultural Taste Graph Anchors
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(212, 175, 55);
+    doc.text('I. CULTURAL TASTE GRAPH & CROSS-DOMAIN AFFINITIES', margin, y);
+
+    y += 4;
+    doc.setFillColor(22, 22, 31);
+    doc.roundedRect(margin, y, contentWidth, 22, 2, 2, 'F');
+
+    const themesText = (dossier.tasteGraph.crossDomainThemes || []).slice(0, 3).join('   |   ');
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8.5);
+    doc.setTextColor(226, 232, 240);
+    doc.text(`Aesthetic Theme: ${themesText || 'Monumental craft & quiet structural discipline'}`, margin + 5, y + 7, { maxWidth: contentWidth - 10 });
+
+    const topEntities = (dossier.tasteGraph.expandedEntities || [])
+      .slice(0, 6)
+      .map((e) => `${e.name} [${e.category.toUpperCase()}]`)
+      .join('  ·  ');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Correlated Nodes: ${topEntities}`, margin + 5, y + 15, { maxWidth: contentWidth - 10 });
+
+    y += 28;
+
+    // Section 2: Strategic Ice-Breakers
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(212, 175, 55);
+    doc.text('II. STRATEGIC CONVERSATIONAL ICE-BREAKERS', margin, y);
+
+    y += 4;
+    doc.setFillColor(22, 22, 31);
+    doc.roundedRect(margin, y, contentWidth, 24, 2, 2, 'F');
+
+    const ice1 = dossier.iceBreakerScripts[0] || 'Discussing the tension between scale and craftsmanship.';
+    const ice2 = dossier.iceBreakerScripts[1] || 'Inquiring about material honesty in complex modern designs.';
+
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    doc.setTextColor(248, 246, 240);
+    doc.text(`1. ${ice1}`, margin + 5, y + 7, { maxWidth: contentWidth - 10 });
+    doc.text(`2. ${ice2}`, margin + 5, y + 17, { maxWidth: contentWidth - 10 });
+
+    y += 30;
+
+    // Section 3: Curated Gift Proposals
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(212, 175, 55);
+    doc.text('III. CURATED GIFT PROPOSALS (QLOO GROUNDED)', margin, y);
+
+    y += 5;
+    const gifts = dossier.curatedGifts.slice(0, 3);
+    for (let i = 0; i < gifts.length; i++) {
+      const g = gifts[i];
+      const tierLabel = i === 0 ? 'SIGNATURE TIER' : i === 1 ? 'ALTERNATIVE TIER' : 'DISCREET TIER';
+
+      doc.setFillColor(22, 22, 31);
+      doc.roundedRect(margin, y, contentWidth, 23, 2, 2, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(212, 175, 55);
+      doc.text(tierLabel, margin + 5, y + 6);
+
+      doc.setFontSize(9);
+      doc.setTextColor(248, 246, 240);
+      doc.text(g.title, margin + 40, y + 6, { maxWidth: contentWidth - 85 });
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(212, 175, 55);
+      doc.text(`$${g.estimatedPriceUsd}`, pageWidth - margin - 5, y + 6, { align: 'right' });
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(148, 163, 184);
+      doc.text(`Artisan: ${g.brandOrArtisan}  |  Anchor: ${g.qlooCorrelationAnchor}`, margin + 5, y + 12);
+
+      doc.setTextColor(226, 232, 240);
+      doc.text(g.culturalRationale, margin + 5, y + 18, { maxWidth: contentWidth - 10 });
+
+      y += 26;
+    }
+
+    y += 2;
+
+    // Section 4: Executive Dining
+    if (dossier.diningOptions && dossier.diningOptions.length > 0) {
+      const d = dossier.diningOptions[0];
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(212, 175, 55);
+      doc.text('IV. PRIVATE EXECUTIVE DINING', margin, y);
+
+      y += 5;
+      doc.setFillColor(22, 22, 31);
+      doc.roundedRect(margin, y, contentWidth, 20, 2, 2, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(248, 246, 240);
+      doc.text(`${d.venueName} · ${d.neighborhood}`, margin + 5, y + 6);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(212, 175, 55);
+      doc.text(`Vibe: ${d.vibeAnchor}`, margin + 5, y + 12);
+
+      doc.setTextColor(148, 163, 184);
+      doc.text(`Pairing Protocol: ${d.pairingNotes}`, margin + 5, y + 17, { maxWidth: contentWidth - 10 });
+
+      y += 24;
+    }
+
+    // Footer Sign-Off
+    doc.setDrawColor(255, 255, 255, 0.1);
+    doc.line(margin, 280, pageWidth - margin, 280);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text('CURAVIP CHIEF OF STAFF INTELLIGENCE · POWERED BY QLOO TASTE GRAPH & MODEL CONTEXT PROTOCOL', margin, 286);
+    doc.text('STRICTLY PRIVATE & CONFIDENTIAL', pageWidth - margin, 286, { align: 'right' });
+
+    const safeName = vip.fullName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    doc.save(`CuraVIP_Executive_Dossier_${safeName}.pdf`);
+  },
+};
