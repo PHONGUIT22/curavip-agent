@@ -145,3 +145,220 @@ export async function getPromptHandler(
       throw new Error(`MCP Prompt '${name}' is not recognized.`);
   }
 }
+
+export function buildGroundedDossierPrompt(params: {
+  profile: {
+    fullName: string;
+    role: string;
+    organization: string;
+    city: string;
+    rawBio: string;
+    explicitInterests: string[];
+    taboos: { alcohol: boolean; dietary: string[]; religiousCultural: string[] };
+  };
+  tasteGraph: {
+    seedInterests: string[];
+    resolvedSeeds: Array<{ id: string; name: string; category: string; affinityScore: number }>;
+    expandedEntities: Array<{ id: string; name: string; category: string; affinityScore: number; metadata?: any }>;
+    crossDomainThemes: string[];
+    source: string;
+  };
+  meetingBrief?: string;
+  budgetTier: string;
+  budgetCap: number;
+}): string {
+  const { profile, tasteGraph, meetingBrief, budgetTier, budgetCap } = params;
+
+  const entitySummary = tasteGraph.expandedEntities.slice(0, 15).map((e) =>
+    `- [${e.category.toUpperCase()}] ${e.name} (URN: ${e.id}, Affinity: ${(e.affinityScore * 100).toFixed(0)}%)`
+  ).join('\n');
+
+  return `You are CuraVIP Executive Concierge & Chief of Staff Intelligence.
+Generate a bespoke, culturally grounded executive dossier for a high-stakes diplomatic or business encounter.
+
+PRINCIPAL PROFILE:
+- Name: ${profile.fullName}
+- Role & Organization: ${profile.role} at ${profile.organization}
+- Location: ${profile.city}
+- Bio & Sensibility: ${profile.rawBio}
+- Explicit Cultural Seeds: ${profile.explicitInterests.join(', ')}
+- Hard Ethical & Dietary Taboos:
+  * Strict Alcohol Prohibition: ${profile.taboos.alcohol ? 'YES (ABSOLUTELY NO ALCOHOL / BARWARE)' : 'NO'}
+  * Dietary Restrictions: ${profile.taboos.dietary.length ? profile.taboos.dietary.join(', ') : 'None'}
+  * Cultural / Material Taboos: ${profile.taboos.religiousCultural.length ? profile.taboos.religiousCultural.join(', ') : 'None'}
+
+MEETING BRIEF & CONTEXT:
+"${meetingBrief || 'Executive strategic relationship building and preliminary partnership alignment.'}"
+
+FINANCIAL CONSTRAINT:
+- Tier: ${budgetTier}
+- Absolute Maximum Gifting Ceiling: $${budgetCap} USD (Every gift proposal must stay <= $${budgetCap}).
+
+QLOO CULTURAL TASTE GRAPH (LIVE ENTITIES & CORRELATIONS):
+${entitySummary || 'No entities available. Use seed interests.'}
+Derived Cross-Domain Themes: ${tasteGraph.crossDomainThemes.join(' | ')}
+
+OUTPUT REQUIREMENTS:
+Respond ONLY with a valid JSON object matching this schema (no markdown fences, no explanatory text outside JSON):
+{
+  "curatedGifts": [
+    {
+      "id": "gift_1",
+      "title": "string (specific artisan piece or archival edition)",
+      "brandOrArtisan": "string (master artisan, independent studio, or archive)",
+      "estimatedPriceUsd": number (<= ${budgetCap}),
+      "category": "curated_artifact" | "rare_vintage" | "bespoke_craft" | "literature_edition",
+      "tier": "signature",
+      "culturalRationale": "string (deep explanation linking seed taste, meeting context, and aesthetic sensibility)",
+      "qlooCorrelationAnchor": "string (must specify the exact Qloo entity name and URN anchor)",
+      "materials": ["string"]
+    },
+    {
+      "id": "gift_2",
+      "title": "string",
+      "brandOrArtisan": "string",
+      "estimatedPriceUsd": number (<= ${budgetCap}),
+      "category": "curated_artifact" | "rare_vintage" | "bespoke_craft" | "literature_edition",
+      "tier": "alternative",
+      "culturalRationale": "string",
+      "qlooCorrelationAnchor": "string",
+      "materials": ["string"]
+    },
+    {
+      "id": "gift_3",
+      "title": "string",
+      "brandOrArtisan": "string",
+      "estimatedPriceUsd": number (<= ${budgetCap}),
+      "category": "curated_artifact" | "rare_vintage" | "bespoke_craft" | "literature_edition",
+      "tier": "discreet",
+      "culturalRationale": "string",
+      "qlooCorrelationAnchor": "string",
+      "materials": ["string"]
+    }
+  ],
+  "diningOptions": [
+    {
+      "id": "dining_1",
+      "venueName": "string",
+      "cuisineType": "string",
+      "neighborhood": "string (in ${profile.city} or diplomatic travel hub)",
+      "vibeAnchor": "string",
+      "pairingNotes": "string (MUST respect alcohol and dietary taboos; e.g. rare tea/mocktail infusions if alcohol prohibited)",
+      "culturalRationale": "string",
+      "priceBand": "$$$" | "$$$$",
+      "serviceElements": ["string"]
+    },
+    {
+      "id": "dining_2",
+      "venueName": "string",
+      "cuisineType": "string",
+      "neighborhood": "string",
+      "vibeAnchor": "string",
+      "pairingNotes": "string",
+      "culturalRationale": "string",
+      "priceBand": "$$$" | "$$$$",
+      "serviceElements": ["string"]
+    }
+  ],
+  "iceBreakerScripts": [
+    "string (question 1 bridging aesthetic intersection and meeting brief)",
+    "string (question 2 bridging aesthetic intersection and meeting brief)"
+  ],
+  "strategicSummary": "string (executive strategic summary of cultural alignment)"
+}`;
+}
+
+export function buildGenericDossierPrompt(params: {
+  profile: {
+    fullName: string;
+    role: string;
+    organization: string;
+    city: string;
+    budgetLimitUsd: number;
+  };
+  meetingBrief?: string;
+  budgetTier: string;
+  budgetCap: number;
+}): string {
+  const { profile, meetingBrief, budgetTier, budgetCap } = params;
+
+  return `You are a standard corporate gift and hospitality concierge WITHOUT access to cultural intelligence or taste graphs.
+Generate conventional, standard corporate executive gifting and dining recommendations.
+
+EXECUTIVE PRINCIPAL:
+- Name: ${profile.fullName}
+- Role & Organization: ${profile.role} at ${profile.organization}
+- Location: ${profile.city}
+- Context: "${meetingBrief || 'Corporate executive business meeting.'}"
+- Budget Cap: $${budgetCap} USD
+
+INSTRUCTIONS:
+Generate 3 standard cliché corporate gifts (e.g. expensive California Cabernet or Scotch gift hamper, luxury corporate leather folio, engraved high-end ballpoint pen) and 2 generic corporate steakhouses or high-end hotel dining rooms with wine pairings.
+DO NOT use cultural or taste correlation. Provide standard corporate prestige defaults.
+
+Respond ONLY with a valid JSON object matching this schema:
+{
+  "curatedGifts": [
+    {
+      "id": "generic_gift_1",
+      "title": "string",
+      "brandOrArtisan": "string",
+      "estimatedPriceUsd": number (<= ${budgetCap}),
+      "category": "curated_artifact" | "rare_vintage" | "bespoke_craft",
+      "tier": "signature",
+      "culturalRationale": "string",
+      "qlooCorrelationAnchor": "Generic Corporate Prestige Baseline",
+      "materials": ["leather", "alcohol", "wine", etc.]
+    },
+    {
+      "id": "generic_gift_2",
+      "title": "string",
+      "brandOrArtisan": "string",
+      "estimatedPriceUsd": number (<= ${budgetCap}),
+      "category": "rare_vintage",
+      "tier": "alternative",
+      "culturalRationale": "string",
+      "qlooCorrelationAnchor": "Standard Executive Hamper",
+      "materials": ["alcohol", "cheese"]
+    },
+    {
+      "id": "generic_gift_3",
+      "title": "string",
+      "brandOrArtisan": "string",
+      "estimatedPriceUsd": number (<= ${budgetCap}),
+      "category": "bespoke_craft",
+      "tier": "discreet",
+      "culturalRationale": "string",
+      "qlooCorrelationAnchor": "Corporate Desk Accessory",
+      "materials": ["leather"]
+    }
+  ],
+  "diningOptions": [
+    {
+      "id": "generic_dining_1",
+      "venueName": "string",
+      "cuisineType": "string",
+      "neighborhood": "string",
+      "vibeAnchor": "string",
+      "pairingNotes": "string (mention Napa wine or Scotch pairing)",
+      "culturalRationale": "string",
+      "serviceElements": ["alcohol", "steak", "shellfish"]
+    },
+    {
+      "id": "generic_dining_2",
+      "venueName": "string",
+      "cuisineType": "string",
+      "neighborhood": "string",
+      "vibeAnchor": "string",
+      "pairingNotes": "string",
+      "culturalRationale": "string",
+      "serviceElements": ["alcohol", "pork"]
+    }
+  ],
+  "iceBreakerScripts": [
+    "Did you catch the game this past weekend?",
+    "How was your flight into the city?"
+  ],
+  "strategicSummary": "string"
+}`;
+}
