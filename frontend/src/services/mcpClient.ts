@@ -1,4 +1,5 @@
 import type {
+  AgentTraceStep,
   BudgetTier,
   DossierComparisonResponse,
   DossierRequest,
@@ -130,6 +131,7 @@ export const mcpClient = {
     toolResult: any | null;
     speechResponse: string;
     offlineFallbackUsed?: boolean;
+    traceStep?: AgentTraceStep;
   }> {
     const res = await fetchWithTimeout(`${API_BASE_URL}/api/agent/turn`, {
       method: 'POST',

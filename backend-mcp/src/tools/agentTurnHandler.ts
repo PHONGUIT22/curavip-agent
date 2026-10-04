@@ -39,8 +39,18 @@ function resolveOfflineIntent(
   toolArgs: Record<string, any>;
 } {
   const lower = query.toLowerCase();
+  const profile = vipDossierRepo.getProfile(vipId);
+  const explicit = profile?.explicitInterests?.length
+    ? profile.explicitInterests
+    : ['Artisanal Craft', 'Minimalist Architecture', 'Contemporary Design'];
 
-  // 1. Taste Negotiation / Conflict Intent
+  // Parse target budget mentioned in query (e.g. "$300" or "down to 350")
+  const budgetMatch = query.match(/\$?(\d{2,4})\b/);
+  const parsedBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : undefined;
+  const defaultBudget = tier === 'standard_200' ? 200 : tier === 'executive_500' ? 500 : 1500;
+  const targetBudgetUsd = parsedBudget && parsedBudget >= 50 ? parsedBudget : defaultBudget;
+
+  // 1. Taste Negotiation / Conflict / Budget Intent
   if (
     lower.includes('conflict') ||
     lower.includes('tension') ||
@@ -48,14 +58,28 @@ function resolveOfflineIntent(
     lower.includes('reconcile') ||
     lower.includes('balance') ||
     lower.includes('bridge') ||
-    (lower.includes('budget') && lower.includes('over'))
+    lower.includes('negotiate') ||
+    lower.includes('down to') ||
+    (lower.includes('budget') && (lower.includes('over') || lower.includes('adjust') || lower.includes('cut') || lower.includes('reduce')))
   ) {
+    let conflictingTastes: string[] = [];
+
+    // Parse specific tastes from query e.g. "between X and Y"
+    const betweenMatch = query.match(/between\s+([^,]+?)\s+and\s+([^,.]+)/i);
+    if (betweenMatch) {
+      conflictingTastes = [betweenMatch[1].trim(), betweenMatch[2].trim()];
+    } else if (explicit.length >= 2) {
+      conflictingTastes = [explicit[0], explicit[1]];
+    } else {
+      conflictingTastes = [explicit[0] || 'Architectural Form', 'Tactile Materiality'];
+    }
+
     return {
       toolName: 'negotiate_taste_conflict',
       toolArgs: {
         vipId,
-        conflictingTastes: ['Brutalist Architecture', 'Bespoke Mechanical Horology'],
-        targetBudgetUsd: tier === 'standard_200' ? 200 : tier === 'executive_500' ? 500 : 1500,
+        conflictingTastes,
+        targetBudgetUsd,
       },
     };
   }
@@ -69,19 +93,20 @@ function resolveOfflineIntent(
     lower.includes('procure') ||
     lower.includes('buy')
   ) {
+    const primaryInterest = explicit[0] || 'Artisan Design';
     return {
       toolName: 'commit_curated_reservation',
       toolArgs: {
         vipId,
         gift: {
-          id: 'gift_curated_primary',
-          title: 'Hand-Turned Japanese Bizen Ware Ceramic Vessel',
-          brandOrArtisan: 'Kakurezaki Ryuichi Studio',
-          estimatedPriceUsd: tier === 'standard_200' ? 195 : 450,
+          id: `gift_curated_${vipId}`,
+          title: `Bespoke Handcrafted Artifact — ${primaryInterest}`,
+          brandOrArtisan: `${primaryInterest} Independent Studio`,
+          estimatedPriceUsd: Math.min(targetBudgetUsd, Math.round(targetBudgetUsd * 0.85)),
           category: 'curated_artifact',
         },
         dining: {
-          venueName: 'Kappo Masa Private Salon',
+          venueName: `${profile?.city || 'Diplomatic'} Private Dining Salon`,
           partySize: 2,
           requestedDate: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10),
           privateRoom: true,
@@ -92,15 +117,23 @@ function resolveOfflineIntent(
   }
 
   // 3. Default: Qloo Cultural Taste Exploration
-  const profile = vipDossierRepo.getProfile(vipId);
-  const seedInterests = profile?.explicitInterests?.length
-    ? profile.explicitInterests
-    : ['Christopher Nolan', 'Brutalist architecture', 'Hans Zimmer', 'Minimalist design'];
+  let queryInterests: string[] = [];
+  if (lower.includes('regarding') || lower.includes('about')) {
+    const topicPart = query.split(/regarding|about/i)[1];
+    if (topicPart) {
+      const splitKeywords = topicPart.split(/\band\b|,/).map((s) => s.trim()).filter(Boolean);
+      if (splitKeywords.length > 0) {
+        queryInterests = splitKeywords;
+      }
+    }
+  }
+
+  const finalInterests = queryInterests.length > 0 ? queryInterests : explicit;
 
   return {
     toolName: 'explore_cultural_taste',
     toolArgs: {
-      interests: seedInterests,
+      interests: finalInterests,
       categories: ['music', 'film', 'dining', 'fashion', 'literature', 'architecture'],
     },
   };
@@ -192,13 +225,18 @@ export async function handleAgentTurn(request: AgentTurnRequest): Promise<AgentT
     offlineFallbackUsed: true,
     traceStep: {
       id: `step_${Date.now()}`,
-      phase: offlineIntent.toolName === 'explore_cultural_taste' ? 'query_graph' : 'curate',
+      phase: offlineIntent.toolName === 'explore_cultural_taste' ? 'query_graph' : offlineIntent.toolName === 'commit_curated_reservation' ? 'commit' : 'negotiate',
       tool: offlineIntent.toolName,
-      title: `Executed ${offlineIntent.toolName} (Autonomous Offline Mode)`,
+      title: `Executed ${offlineIntent.toolName}`,
       detail: offlineSpeech,
       durationMs: duration,
       status: 'ok',
-      source: 'local',
+      source:
+        offlineIntent.toolName === 'explore_cultural_taste' && offlineResult?.source === 'qloo_live'
+          ? 'qloo_live'
+          : offlineIntent.toolName === 'explore_cultural_taste'
+            ? 'curated_fallback'
+            : 'local',
     },
   };
 }
