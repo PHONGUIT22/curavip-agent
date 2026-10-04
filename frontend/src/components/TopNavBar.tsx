@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, SplitSquareVertical, ShieldCheck, Zap, Download } from 'lucide-react';
+import { Sparkles, SplitSquareVertical, Download, Zap } from 'lucide-react';
 import type { ExecutionMode, ExecutiveDossier } from '../types';
 
 interface TopNavBarProps {
@@ -24,58 +24,50 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   const isGrounded = executionMode === 'qloo_grounded';
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-obsidian-900/90 backdrop-blur-md border-b border-white/[0.07] px-4 md:px-8 py-3.5">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        {/* Brand Crest & Monogram */}
+    <header className="sticky top-0 z-30 w-full h-14 bg-[#070709] border-b border-stone-800 px-4 md:px-6 flex items-center">
+      <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
+        {/* Brand Header */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-champagne-500/20 via-obsidian-700 to-obsidian-800 border border-champagne-500/30 flex items-center justify-center shadow-luxury-glow">
-            <span className="font-serif font-bold text-lg text-champagne-400 tracking-wider">CV</span>
+          <div className="w-8 h-8 rounded-none border border-champagne-500/40 bg-[#0B0B10] flex items-center justify-center">
+            <span className="font-serif font-bold text-sm text-champagne-400">CV</span>
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="font-serif text-lg md:text-xl font-bold tracking-wide text-stone-100">
-                CURAVIP
-              </h1>
-              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-champagne-500/10 text-champagne-400 border border-champagne-500/25">
-                Executive
-              </span>
-            </div>
-            <p className="text-[11px] text-stone-400 tracking-wider uppercase font-medium">
-              Cultural Intelligence & Relationship Concierge
-            </p>
+          <div className="flex items-baseline gap-2">
+            <h1 className="font-serif text-base font-bold tracking-widest text-stone-100">
+              CURAVIP
+            </h1>
+            <span className="hidden sm:inline-block text-[10px] font-mono text-stone-500 tracking-wider uppercase">
+              / Family Office Concierge
+            </span>
           </div>
         </div>
 
-        {/* Center / Right Controls */}
-        <div className="flex items-center gap-3">
-          {/* THE GROUNDING TOGGLE - JUDGE WINNING SWITCH */}
-          <div className="flex items-center gap-2 bg-obsidian-800 p-1 rounded-xl border border-white/[0.08] shadow-inner">
+        {/* Center / Right Action Controls */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Grounding Toggle */}
+          <div className="flex items-center border border-stone-800 bg-[#0B0B10]">
             <button
               onClick={() => onToggleMode('qloo_grounded')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
                 isGrounded
-                  ? 'bg-gradient-to-r from-champagne-500 to-champagne-600 text-obsidian-900 shadow-md font-semibold'
+                  ? 'bg-champagne-500 text-[#070709] font-bold'
                   : 'text-stone-400 hover:text-stone-200'
               }`}
-              title="Ground recommendations in Qloo's 250M+ cross-domain taste graph"
+              title="Ground curation in Qloo Cultural Taste Graph"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Qloo Grounding</span>
-              <span className="text-[9px] px-1 py-0.2 rounded bg-obsidian-900/40 text-stone-900 font-bold ml-0.5">
-                ON
-              </span>
+              <Sparkles className="w-3 h-3" />
+              <span>Qloo Grounded</span>
             </button>
 
             <button
               onClick={() => onToggleMode('generic_llm')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors border-l border-stone-800 ${
                 !isGrounded
-                  ? 'bg-crimsonAlert/20 text-crimsonAlert border border-crimsonAlert/40 shadow-sm font-semibold'
+                  ? 'bg-crimsonAlert/20 text-crimsonAlert font-bold'
                   : 'text-stone-400 hover:text-stone-200'
               }`}
-              title="Show generic, culturally blind baseline LLM recommendations"
+              title="Switch to ungrounded generic baseline LLM"
             >
-              <Zap className="w-3.5 h-3.5" />
+              <Zap className="w-3 h-3" />
               <span>Generic LLM</span>
             </button>
           </div>
@@ -83,27 +75,27 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           {/* Side-by-Side Comparison Trigger */}
           <button
             onClick={onOpenSideBySide}
-            className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-obsidian-800 hover:bg-obsidian-700 text-champagne-400 border border-champagne-500/25 text-xs font-medium transition-all shadow-sm hover:border-champagne-500/40"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
           >
-            <SplitSquareVertical className="w-3.5 h-3.5" />
-            <span>Side-by-Side</span>
+            <SplitSquareVertical className="w-3 h-3 text-champagne-400" />
+            <span className="hidden sm:inline">Benchmark</span>
           </button>
 
-          {/* Export PDF Button if Dossier Loaded */}
+          {/* Export PDF Button if Active Dossier Exists */}
           {activeDossier && (
             <button
               onClick={onExportPdf}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-obsidian-800 hover:bg-obsidian-700 text-stone-200 border border-white/[0.1] text-xs font-medium transition-all hover:text-champagne-400"
-              title="Export 1-Page Executive PDF Presentation"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
+              title="Export 1-Page Archival PDF Summary"
             >
-              <Download className="w-3.5 h-3.5 text-champagne-400" />
-              <span className="hidden md:inline">Export PDF</span>
+              <Download className="w-3 h-3 text-champagne-400" />
+              <span className="hidden md:inline">PDF</span>
             </button>
           )}
 
-          {/* System Provenance Badge */}
-          <div className="hidden lg:flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full bg-emeraldStatus/10 text-emeraldStatus border border-emeraldStatus/20">
-            <div className="w-1.5 h-1.5 rounded-full bg-emeraldStatus animate-ping" />
+          {/* System Provenance Stamp */}
+          <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-mono px-2 py-1 border border-stone-800 bg-[#0B0B10] text-stone-400">
+            <span className="w-1.5 h-1.5 rounded-none bg-emeraldStatus" />
             <span>{qlooLiveStatus ? 'QLOO LIVE API' : 'QLOO TASTE GRAPH'}</span>
           </div>
         </div>

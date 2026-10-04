@@ -8,75 +8,103 @@
 }
 
 body {
-  background: radial-gradient(circle at 50% 0%, #161622 0%, #0D0D14 55%, #070709 100%);
+  background: #070709;
   color: #F8F6F0;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
-/* Subtle Dark Luxury Scrollbar */
+/* Crisp Terminal Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
   background: #070709;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.25);
-  border-radius: 9999px;
+  background: rgba(212, 175, 55, 0.3);
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.45);
+  background: rgba(212, 175, 55, 0.55);
 }
 
-/* Luxury Glass & Surface Utilities */
+/* Archival Curation Ledger & Terminal Utilities (Shape Consistency Lock: rounded-none / rounded-[2px]) */
 @layer components {
   .luxury-card {
-    background: linear-gradient(145deg, rgba(22, 22, 31, 0.88) 0%, rgba(13, 13, 18, 0.96) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
-    backdrop-filter: blur(16px);
-    border-radius: 1rem;
-    box-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.85);
+    background: #0B0B10;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 0px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
   }
 
   .luxury-card-interactive {
-    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
   }
 
   .luxury-card-interactive:hover {
-    transform: translateY(-2px);
-    border-color: rgba(212, 175, 55, 0.35);
-    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.45);
+    background-color: #0E0E16;
   }
 
   .luxury-card-selected {
+    border-left: 2px solid #D4AF37 !important;
     border-color: rgba(212, 175, 55, 0.6) !important;
-    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.95), 0 0 25px rgba(212, 175, 55, 0.25) !important;
+    background-color: #11111A !important;
   }
 
   .glass-panel {
-    background: rgba(13, 13, 18, 0.75);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 0.875rem;
+    background: #0B0B10;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0px;
+  }
+
+  .ledger-stamp {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(212, 175, 55, 0.06);
+    color: #D4AF37;
+    padding: 2px 6px;
+    border-radius: 0px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .gold-shimmer-btn {
-    background: linear-gradient(135deg, #D4AF37 0%, #AA8A22 100%);
+    background: #D4AF37;
     color: #070709;
     font-weight: 600;
-    transition: all 0.2s ease-out;
+    border-radius: 0px;
+    border: 1px solid #D4AF37;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   .gold-shimmer-btn:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+    background: #E5C478;
+    color: #070709;
+  }
+
+  .terminal-input {
+    background: #070709;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #F8F6F0;
+    border-radius: 0px;
+    font-family: inherit;
+  }
+
+  .terminal-input:focus {
+    border-color: #D4AF37;
+    outline: none;
   }
 }

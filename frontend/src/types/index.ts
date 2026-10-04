@@ -1,6 +1,6 @@
 /**
  * CuraVIP domain schema.
- * This file is mirrored verbatim in frontend/src/types/index.ts — keep both in sync.
+ * This file is mirrored verbatim in frontend/src/types/index.ts - keep both in sync.
  */
 
 // ---------------------------------------------------------------------------

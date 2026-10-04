@@ -135,7 +135,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian-900 text-stone-100 flex flex-col relative pb-20">
+    <div className="min-h-[100dvh] bg-[#070709] text-stone-100 flex flex-col relative pb-16">
       {/* Top Navigation Bar with Grounding Toggle */}
       <TopNavBar
         executionMode={executionMode}

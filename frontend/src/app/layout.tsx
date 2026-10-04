@@ -22,7 +22,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'CuraVIP — Autonomous Cultural Intelligence & VIP Concierge',
+  title: 'CuraVIP - Autonomous Cultural Intelligence & VIP Concierge',
   description:
     'Eradicating Cultural Blindness in Executive Gifting and Relationship Management via Qloo Taste Graph and Model Context Protocol',
 };
@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${geist.variable} ${cormorant.variable} dark`}>
-      <body className="font-sans antialiased text-stone-100 min-h-screen bg-obsidian-900 selection:bg-champagne-500/20 selection:text-champagne-400">
+      <body className="font-sans antialiased text-stone-100 min-h-[100dvh] bg-[#070709] selection:bg-champagne-500/20 selection:text-champagne-400">
         {children}
       </body>
     </html>
