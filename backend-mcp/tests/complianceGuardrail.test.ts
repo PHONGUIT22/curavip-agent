@@ -157,4 +157,31 @@ describe('Compliance & Guardrail Service', () => {
     expect(precedentCheck?.status).toBe('fail');
     expect(result.tabooViolations.some((v) => v.includes('Precedent violation'))).toBe(true);
   });
+
+  it('does NOT flag zero-proof mocktails, sparkling teas, and botanical infusions as alcohol violations', () => {
+    const zeroProofDining: DiningProposal[] = [
+      {
+        id: 'dining_zero_proof_kaiseki',
+        venueName: 'Modernist Artisanal Counter & Private Salon',
+        cuisineType: 'Certified Halal Wagyu & Kaiseki Private Salon',
+        neighborhood: 'Downtown Financial District',
+        vibeAnchor: 'Zen Architectural Minimalism',
+        pairingNotes:
+          'Zero-proof mocktail alchemy: rare cold-brew Gyokuro tea, roasted Hojicha infusions, fermented sparkling teas, and mountain botanical cordials (100% alcohol-free)',
+        culturalRationale: 'Pure, authentic culinary experience calibrated for zero-alcohol protocols.',
+      },
+    ];
+
+    const result = complianceGuardrailService.auditCompliance(
+      mockProfile,
+      [],
+      zeroProofDining,
+      'executive_500'
+    );
+
+    const alcoholCheck = result.checks.find((c) => c.id === 'alcohol');
+    expect(alcoholCheck?.status).toBe('pass');
+    expect(result.blockedItems.some((b) => b.itemId === 'dining_zero_proof_kaiseki')).toBe(false);
+    expect(result.tabooViolations.some((v) => v.toLowerCase().includes('alcohol'))).toBe(false);
+  });
 });

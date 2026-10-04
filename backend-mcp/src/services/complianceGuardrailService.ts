@@ -11,11 +11,75 @@ import type {
 import { BUDGET_TIER_CAPS } from '../types/index.js';
 import { vipDossierRepo } from '../database/vipDossierRepo.js';
 
-const ALCOHOL_KEYWORDS = [
-  'wine', 'whisky', 'whiskey', 'scotch', 'bourbon', 'champagne', 'vodka', 'gin',
-  'rum', 'tequila', 'cognac', 'armagnac', 'sake', 'beer', 'cellar', 'vintage wine',
-  'single malt', 'distillery', 'barware', 'cocktail', 'sommelier', 'decanter'
+const NON_ALCOHOLIC_EXEMPTIONS = [
+  'tea',
+  'mocktail',
+  'zero-proof',
+  'alcohol-free',
+  'non-alcoholic',
+  'cordial',
+  'infusion',
+  'cold-brew',
 ];
+
+const GENUINE_ALCOHOL_REGEXES = [
+  /\bwine(s)?\b/i,
+  /\bwhisky\b/i,
+  /\bwhiskey\b/i,
+  /\bscotch\b/i,
+  /\bbourbon\b/i,
+  /\bchampagne\b/i,
+  /\bvodka\b/i,
+  /\bgin\b/i,
+  /\brum\b/i,
+  /\btequila\b/i,
+  /\bcognac\b/i,
+  /\barmagnac\b/i,
+  /\bsake\b/i,
+  /\bbeer(s)?\b/i,
+  /\bcellar\b/i,
+  /\bdistillery\b/i,
+  /\bspirits\b/i,
+  /\bcabernet\b/i,
+  /\bbordeaux\b/i,
+  /\b(?<!mock)cocktail(s)?\b/i,
+  /\bsommelier\b/i,
+  /\bdecanter\b/i,
+  /\bsingle malt\b/i,
+];
+
+function isAlcoholViolation(text: string): boolean {
+  const lower = text.toLowerCase();
+
+  // If text contains non-alcoholic exemptions (tea, mocktail, zero-proof, alcohol-free, non-alcoholic, cordial, infusion, cold-brew)
+  const hasExemption = NON_ALCOHOLIC_EXEMPTIONS.some((kw) => lower.includes(kw));
+
+  // Find any matches for genuine alcohol
+  const matchedAlcoholRegex = GENUINE_ALCOHOL_REGEXES.find((regex) => regex.test(lower));
+  if (!matchedAlcoholRegex) {
+    return false;
+  }
+
+  // If there's an exemption like zero-proof / non-alcoholic / alcohol-free / tea:
+  if (hasExemption) {
+    // If the text specifies zero-proof, alcohol-free, or non-alcoholic without hard spirits
+    const isExplicitlyAlcoholFree = /zero-proof|alcohol-free|non-alcoholic|100%\s*alcohol-free/i.test(lower);
+    const hasUnqualifiedAlcohol = /\b(whisky|whiskey|scotch|bourbon|vodka|gin|rum|tequila|cognac|armagnac|single malt|bordeaux|cabernet)\b/i.test(lower);
+    
+    if (isExplicitlyAlcoholFree && !hasUnqualifiedAlcohol) {
+      return false;
+    }
+
+    // If it's purely a soft beverage service (teas, mocktails, herbal infusions, botanical cordials, cold-brew)
+    const isSoftBeverageService = /\b(tea|teas|mocktail|mocktails|infusion|infusions|cordial|cordials|cold-brew)\b/i.test(lower);
+    const hasStrictAlcohol = /\b(wine flight|vintage wine|scotch|bourbon|whisky|whiskey|vodka|gin|rum|tequila|single malt|distillery|cellar)\b/i.test(lower);
+    if (isSoftBeverageService && !hasStrictAlcohol) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 const PORK_KEYWORDS = ['pork', 'ham', 'bacon', 'prosciutto', 'pancetta', 'lard', 'pigskin'];
 const SHELLFISH_KEYWORDS = ['shellfish', 'lobster', 'crab', 'shrimp', 'prawn', 'oyster', 'clam', 'mussel', 'scallop'];
@@ -93,13 +157,13 @@ export class ComplianceGuardrailService {
         : 'Low risk: Private commercial relationship within standard customary corporate thresholds.',
     });
 
-    // 4. Alcohol Taboo Check
+    // 4. Alcohol Taboo Check (Safe from false positives like mocktails & sparkling teas)
     let alcoholPassed = true;
     if (vipProfile.taboos.alcohol) {
       // Check gifts
       for (const gift of curatedGifts) {
-        const text = `${gift.title} ${gift.culturalRationale} ${gift.category} ${(gift.materials || []).join(' ')}`.toLowerCase();
-        if (ALCOHOL_KEYWORDS.some((kw) => text.includes(kw))) {
+        const text = `${gift.title} ${gift.culturalRationale} ${gift.category} ${(gift.materials || []).join(' ')}`;
+        if (isAlcoholViolation(text)) {
           alcoholPassed = false;
           const msg = `Gift '${gift.title}' contains alcohol elements prohibited for this principal`;
           tabooViolations.push(msg);
@@ -114,8 +178,8 @@ export class ComplianceGuardrailService {
 
       // Check dining pairing notes
       for (const dining of diningOptions) {
-        const text = `${dining.venueName} ${dining.pairingNotes} ${dining.culturalRationale}`.toLowerCase();
-        if (ALCOHOL_KEYWORDS.some((kw) => text.includes(kw))) {
+        const text = `${dining.venueName} ${dining.pairingNotes} ${dining.culturalRationale}`;
+        if (isAlcoholViolation(text)) {
           alcoholPassed = false;
           const msg = `Dining venue '${dining.venueName}' suggests alcoholic pairing for non-drinking principal`;
           tabooViolations.push(msg);
