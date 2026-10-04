@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Compass, SplitSquareVertical, Download, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Compass, SplitSquareVertical, Download, Zap, Volume2, VolumeX } from 'lucide-react';
+import { soundService } from '../services/soundService';
 import type { ExecutionMode, ExecutiveDossier } from '../types';
 
 interface TopNavBarProps {
@@ -22,6 +23,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   qlooLiveStatus = false,
 }) => {
   const isGrounded = executionMode === 'qloo_grounded';
+  const [isMuted, setIsMuted] = useState(soundService.isMuted());
 
   return (
     <header className="w-full bg-[#F8F6F0] border-b border-[#E5E0D6] px-6 py-4">
@@ -47,7 +49,10 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           {/* Grounding Engine Segmented Toggle */}
           <div className="flex items-center p-1 rounded-lg border border-[#E5E0D6] bg-[#FAF8F5]">
             <button
-              onClick={() => onToggleMode('qloo_grounded')}
+              onClick={() => {
+                soundService.playToggleClick();
+                onToggleMode('qloo_grounded');
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase tracking-wide transition-all rounded-md ${
                 isGrounded
                   ? 'bg-[#183D33] text-white font-semibold shadow-sm'
@@ -60,7 +65,10 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
             </button>
 
             <button
-              onClick={() => onToggleMode('generic_llm')}
+              onClick={() => {
+                soundService.playToggleClick();
+                onToggleMode('generic_llm');
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase tracking-wide transition-all rounded-md ${
                 !isGrounded
                   ? 'bg-[#C53030] text-white font-semibold shadow-sm'
@@ -75,7 +83,10 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
 
           {/* Benchmark Button */}
           <button
-            onClick={onOpenSideBySide}
+            onClick={() => {
+              soundService.playMechanicalClick();
+              onOpenSideBySide();
+            }}
             className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide border border-[#E5E0D6] bg-white text-[#161A18] hover:border-[#183D33] hover:text-[#183D33] transition-colors rounded-lg shadow-sm"
           >
             <SplitSquareVertical className="w-3.5 h-3.5 text-[#183D33]" />
@@ -85,7 +96,10 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           {/* Export PDF Button */}
           {activeDossier && (
             <button
-              onClick={onExportPdf}
+              onClick={() => {
+                soundService.playMechanicalClick();
+                onExportPdf?.();
+              }}
               className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide bg-[#183D33] text-white hover:bg-[#224F43] transition-colors rounded-lg shadow-sm"
               title="Export 1-Page Archival PDF Summary"
             >
@@ -93,6 +107,23 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
               <span>Export Ledger</span>
             </button>
           )}
+
+          {/* Audio Feedback Mute Toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              const muted = soundService.toggleMute();
+              setIsMuted(muted);
+            }}
+            className={`p-2 border rounded-lg transition-colors shadow-2xs ${
+              !isMuted
+                ? 'border-[#C8DCD1] bg-[#EDF4F0] text-[#1D5A4A]'
+                : 'border-[#E5E0D6] bg-white text-[#8C938E] hover:text-[#161A18]'
+            }`}
+            title={isMuted ? 'Muted: Bấm để bật âm thanh phản hồi haptic' : 'Bật âm: Bấm để tắt'}
+          >
+            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+          </button>
 
           {/* System Provenance Stamp */}
           <div className="hidden xl:flex items-center gap-2 text-xs font-medium px-3 py-1 border border-[#C8DCD1] bg-[#EDF4F0] text-[#1D5A4A] rounded-full">

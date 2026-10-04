@@ -12,7 +12,7 @@ export const ComplianceAuditCard: React.FC<ComplianceAuditCardProps> = ({ audit 
   const isCompliant = audit.isCompliant;
 
   return (
-    <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl p-6 shadow-sm">
+    <div className="border border-[#183D33]/15 bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 pb-4 mb-5 border-b border-[#EBE6DD]">
         <div>

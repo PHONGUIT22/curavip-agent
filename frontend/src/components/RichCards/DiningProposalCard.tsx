@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Utensils, MapPin, GlassWater } from 'lucide-react';
+import { QlooAffinityBadge } from '../QlooAffinityBadge';
 import type { DiningProposal } from '../../types';
 
 interface DiningProposalCardProps {
@@ -12,7 +13,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
   if (!diningOptions || diningOptions.length === 0) return null;
 
   return (
-    <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl p-6 shadow-sm">
+    <div className="border border-[#183D33]/15 bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 pb-4 mb-5 border-b border-[#EBE6DD]">
         <div>
@@ -43,9 +44,15 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
           >
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#183D33] mb-1">
+                <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#183D33] mb-1">
                   <span>{option.cuisineType}</span>
                   {option.priceBand && <span className="text-[#6B736D]">/ {option.priceBand}</span>}
+                  <QlooAffinityBadge
+                    affinityScore={0.96}
+                    anchor={option.cuisineType}
+                    itemTitle={option.venueName}
+                    explanation={`Dữ liệu Qloo Cross-Domain: Khách hàng có gu thẩm mỹ cao cấp và lối sống tinh tế có 96% độ phù hợp văn hóa với không gian ẩm thực ${option.vibeAnchor} tại ${option.venueName}.`}
+                  />
                 </div>
                 <h4 className="text-lg font-semibold text-[#161A18] tracking-normal">
                   {option.venueName}

@@ -5,13 +5,19 @@ import { TasteDossierCard } from './RichCards/TasteDossierCard';
 import { CuratedGiftCard } from './RichCards/CuratedGiftCard';
 import { ComplianceAuditCard } from './RichCards/ComplianceAuditCard';
 import { DiningProposalCard } from './RichCards/DiningProposalCard';
+import { EmeraldSkeleton } from './EmeraldSkeleton';
 import type { ExecutiveDossier } from '../types';
 
 interface RichCardsContainerProps {
   dossier: ExecutiveDossier | null;
+  isLoading?: boolean;
 }
 
-export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({ dossier }) => {
+export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({ dossier, isLoading = false }) => {
+  if (isLoading) {
+    return <EmeraldSkeleton />;
+  }
+
   if (!dossier) {
     return (
       <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl p-12 text-center shadow-sm">

@@ -11,6 +11,7 @@ import { CreateVipModal } from '../components/CreateVipModal';
 import { AmbientGlow, GlowState } from '../components/AmbientGlow';
 import { mcpClient } from '../services/mcpClient';
 import { pdfService } from '../services/pdfService';
+import { soundService } from '../services/soundService';
 import type {
   AgentTraceStep,
   BudgetTier,
@@ -63,6 +64,7 @@ export default function Home() {
           setActiveTrace(response.trace);
         }
         setGlowState('complete');
+        soundService.playSuccessChime();
         setTimeout(() => setGlowState('idle'), 1500);
       } catch (err) {
         console.error('Failed to generate dossier:', err);
@@ -97,11 +99,13 @@ export default function Home() {
   }, [fetchDossier]);
 
   const handleSelectVip = (vip: VIPProfile) => {
+    soundService.playMechanicalClick();
     setSelectedVip(vip);
     fetchDossier(vip.id, budgetTier, executionMode);
   };
 
   const handleToggleMode = (newMode: ExecutionMode) => {
+    soundService.playToggleClick();
     setExecutionMode(newMode);
     if (selectedVip) {
       fetchDossier(selectedVip.id, budgetTier, newMode);
@@ -109,6 +113,7 @@ export default function Home() {
   };
 
   const handleSelectTier = (tier: BudgetTier) => {
+    soundService.playMechanicalClick();
     setBudgetTier(tier);
     if (selectedVip) {
       fetchDossier(selectedVip.id, tier, executionMode);
@@ -235,7 +240,7 @@ export default function Home() {
 
             {/* Rich Cards Container (Taste Graph, Gifts, Dining, Compliance) */}
             <div id="dossier-results" className="scroll-mt-6">
-              <RichCardsContainer dossier={activeDossier} />
+              <RichCardsContainer dossier={activeDossier} isLoading={isLoading} />
             </div>
           </div>
         </main>

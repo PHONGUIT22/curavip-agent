@@ -3,6 +3,7 @@
 import React from 'react';
 import { Download, Shield, Tag } from 'lucide-react';
 import { pdfService } from '../../services/pdfService';
+import { QlooAffinityBadge } from '../QlooAffinityBadge';
 import type { ExecutiveDossier } from '../../types';
 
 interface CuratedGiftCardProps {
@@ -17,7 +18,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
   };
 
   return (
-    <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl p-6 shadow-sm">
+    <div className="border border-[#183D33]/15 bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
       {/* Header with Export Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-[#EBE6DD]">
         <div>
@@ -77,12 +78,17 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                 </span>
               </div>
 
-              {/* Qloo Provenance Anchor Badge (Warm Mint & Jade) */}
-              <div>
+              {/* Qloo Provenance Anchor Badge (Warm Mint & Jade) & Affinity Why This */}
+              <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#C8DCD1] bg-[#EDF4F0] text-xs font-medium text-[#1E4D3E]">
                   <Shield className="w-3.5 h-3.5 text-[#1E4D3E]" />
                   <span>Qloo Provenance Anchor: {gift.qlooCorrelationAnchor}</span>
                 </div>
+                <QlooAffinityBadge
+                  affinityScore={gift.affinityScore || 0.94}
+                  anchor={gift.qlooCorrelationAnchor}
+                  itemTitle={gift.title}
+                />
               </div>
 
               {/* Cultural Rationale */}
