@@ -17,14 +17,14 @@ export const ComplianceAuditCard: React.FC<ComplianceAuditCardProps> = ({ audit 
       <div className="flex items-start justify-between gap-4 pb-3 mb-4 border-b border-stone-800">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-champagne-400 font-bold">
+            <span className="text-[10px] font-sans font-medium tracking-widest uppercase text-champagne-400">
               Governance & Guardrails
             </span>
-            <span className="text-[9px] font-mono px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300 uppercase">
+            <span className="text-[9px] font-sans font-medium px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300 uppercase">
               FCPA Audited
             </span>
           </div>
-          <h3 className="font-serif text-lg font-bold text-stone-100">
+          <h3 className="text-xl font-medium text-white tracking-tight">
             Compliance & Taboo Verification Ledger
           </h3>
         </div>
@@ -54,7 +54,7 @@ export const ComplianceAuditCard: React.FC<ComplianceAuditCardProps> = ({ audit 
           <AlertOctagon className="w-4 h-4 flex-shrink-0" />
         )}
         <div>
-          <h4 className="font-mono text-xs font-bold uppercase tracking-wider">
+          <h4 className="font-sans text-xs font-semibold uppercase tracking-wider">
             {isCompliant
               ? '100% FCPA & Taboo Compliant'
               : 'Compliance Hold Flagged / Governance Review Required'}
@@ -93,7 +93,7 @@ export const ComplianceAuditCard: React.FC<ComplianceAuditCardProps> = ({ audit 
               </div>
 
               <span
-                className={`text-[9px] font-mono uppercase px-1.5 py-0.5 border font-bold flex-shrink-0 ${
+                className={`text-[9px] font-sans font-semibold uppercase px-1.5 py-0.5 border flex-shrink-0 ${
                   isPass
                     ? 'border-emeraldStatus/30 bg-emeraldStatus/10 text-emeraldStatus'
                     : isWarn
@@ -111,7 +111,7 @@ export const ComplianceAuditCard: React.FC<ComplianceAuditCardProps> = ({ audit 
       {/* Blocked Items (if any) */}
       {audit.blockedItems && audit.blockedItems.length > 0 && (
         <div className="p-3 border border-crimsonAlert/30 bg-crimsonAlert/5">
-          <div className="flex items-center gap-2 mb-2 text-xs font-mono uppercase text-crimsonAlert font-bold">
+          <div className="flex items-center gap-2 mb-2 text-xs font-sans font-semibold uppercase text-crimsonAlert">
             <AlertOctagon className="w-3.5 h-3.5" />
             <span>Blocked Proposals & Intercepted Violations ({audit.blockedItems.length})</span>
           </div>

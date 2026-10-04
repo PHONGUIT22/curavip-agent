@@ -11,9 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'],
-        serif: ['var(--font-serif)', 'serif'],
-        mono: ['var(--font-mono)', 'monospace'],
+        sans: ["'Google Sans'", "'Google Sans Text'", 'system-ui', 'sans-serif'],
       },
       colors: {
         obsidian: {

@@ -22,11 +22,11 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
         <div className="flex items-center justify-between px-4 py-3 border-b border-stone-800 bg-[#070709]">
           <div className="flex items-center gap-2">
             <User className="w-3.5 h-3.5 text-champagne-400" />
-            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-200">
+            <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-stone-200">
               Principal Roster
             </h3>
           </div>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 border border-stone-800 text-stone-400">
+          <span className="text-[10px] font-sans font-medium px-1.5 py-0.5 border border-stone-800 text-stone-400">
             {profiles.length} Active
           </span>
         </div>
@@ -52,7 +52,7 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                   <h4 className="font-sans text-sm font-semibold text-stone-100 tracking-tight">
                     {vip.fullName}
                   </h4>
-                  <span className="font-mono tabular-nums text-xs text-champagne-400 font-medium">
+                  <span className="font-sans font-semibold text-xs text-champagne-400">
                     ${vip.budgetLimitUsd}
                   </span>
                 </div>
@@ -61,7 +61,7 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                   {vip.role} / {vip.organization}
                 </p>
 
-                <div className="flex items-center justify-between gap-2 text-[10px] font-mono text-stone-400 mb-2">
+                <div className="flex items-center justify-between gap-2 text-[10px] font-sans font-medium text-stone-400 mb-2">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-3 h-3 text-stone-500" />
                     <span>{vip.city}</span>
@@ -79,13 +79,13 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                   {vip.explicitInterests.slice(0, 3).map((interest, idx) => (
                     <span
                       key={idx}
-                      className="text-[9px] font-mono uppercase px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300"
+                      className="text-[9px] font-sans font-medium uppercase px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300"
                     >
                       {interest}
                     </span>
                   ))}
                   {vip.explicitInterests.length > 3 && (
-                    <span className="text-[9px] font-mono px-1 py-0.5 text-stone-500">
+                    <span className="text-[9px] font-sans font-medium px-1 py-0.5 text-stone-500">
                       +{vip.explicitInterests.length - 3}
                     </span>
                   )}

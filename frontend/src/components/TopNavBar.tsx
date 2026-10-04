@@ -29,10 +29,10 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
         {/* Brand Header */}
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-none border border-champagne-500/40 bg-[#0B0B10] flex items-center justify-center">
-            <span className="font-serif font-bold text-sm text-champagne-400">CV</span>
+            <span className="font-sans font-bold text-sm text-champagne-400">CV</span>
           </div>
           <div className="flex items-baseline gap-2.5">
-            <h1 className="font-serif text-base font-bold tracking-[0.2em] text-stone-100">
+            <h1 className="font-sans text-base font-semibold tracking-[0.2em] text-stone-100">
               CURAVIP
             </h1>
             <span className="hidden sm:inline-block font-sans text-[10px] tracking-widest text-neutral-400 uppercase font-medium">
@@ -47,7 +47,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           <div className="flex items-center border border-stone-800 bg-[#0B0B10]">
             <button
               onClick={() => onToggleMode('qloo_grounded')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider transition-colors font-medium ${
                 isGrounded
                   ? 'bg-champagne-500 text-[#070709] font-bold'
                   : 'text-stone-400 hover:text-stone-200'
@@ -60,7 +60,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
 
             <button
               onClick={() => onToggleMode('generic_llm')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors border-l border-stone-800 ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider transition-colors border-l border-stone-800 font-medium ${
                 !isGrounded
                   ? 'bg-crimsonAlert/20 text-crimsonAlert font-bold'
                   : 'text-stone-400 hover:text-stone-200'
@@ -75,7 +75,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           {/* Side-by-Side Comparison Trigger */}
           <button
             onClick={onOpenSideBySide}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider font-medium border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
           >
             <SplitSquareVertical className="w-3 h-3 text-champagne-400" />
             <span className="hidden sm:inline">Benchmark</span>
@@ -85,7 +85,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           {activeDossier && (
             <button
               onClick={onExportPdf}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider font-medium border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
               title="Export 1-Page Archival PDF Summary"
             >
               <Download className="w-3 h-3 text-champagne-400" />
@@ -94,7 +94,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           )}
 
           {/* System Provenance Stamp */}
-          <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-mono px-2 py-1 border border-stone-800 bg-[#0B0B10] text-stone-400">
+          <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-sans font-medium px-2 py-1 border border-stone-800 bg-[#0B0B10] text-stone-400">
             <span className="w-1.5 h-1.5 rounded-none bg-emeraldStatus" />
             <span>{qlooLiveStatus ? 'QLOO LIVE API' : 'QLOO TASTE GRAPH'}</span>
           </div>

@@ -60,11 +60,11 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
       <div className="flex items-start justify-between gap-4 pb-3 mb-4 border-b border-stone-800">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-champagne-400 font-bold">
+            <span className="text-[10px] font-sans font-medium tracking-widest uppercase text-champagne-400">
               Archival Taste Graph
             </span>
             <span
-              className={`text-[9px] font-mono px-1.5 py-0.5 border uppercase font-bold ${
+              className={`text-[9px] font-sans font-medium px-1.5 py-0.5 border uppercase ${
                 isGrounded
                   ? 'border-emeraldStatus/40 bg-emeraldStatus/10 text-emeraldStatus'
                   : 'border-stone-700 bg-stone-900 text-stone-400'
@@ -75,7 +75,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           </div>
           <h3 className="font-sans font-semibold text-lg text-stone-100 tracking-tight">
             {vipProfile.fullName}{' '}
-            <span className="font-mono text-xs text-neutral-400 font-normal">
+            <span className="font-sans text-xs text-neutral-400 font-normal">
               / Cultural Affinity Ledger
             </span>
           </h3>
@@ -88,7 +88,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
 
       {/* 3 Crisp Ledger Points (Anti-Slop: No fake-philosophical italics) */}
       <div className="border border-stone-800 bg-[#070709] p-3.5 mb-5">
-        <div className="flex items-center gap-2 mb-2 text-champagne-400 text-xs font-mono font-bold">
+        <div className="flex items-center gap-2 mb-2 text-champagne-400 text-xs font-sans font-semibold">
           <Sparkles className="w-3.5 h-3.5" />
           <span>SYNTHESIZED CROSS-DOMAIN THEME</span>
         </div>
@@ -105,7 +105,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
 
       {/* Cultural Entity Nodes Grid */}
       <div className="mb-5">
-        <div className="flex items-center gap-2 mb-2.5 text-[10px] font-mono uppercase text-stone-400 tracking-wider">
+        <div className="flex items-center gap-2 mb-2.5 text-[10px] font-sans font-medium uppercase text-stone-400 tracking-wider">
           <Layers className="w-3.5 h-3.5 text-champagne-400" />
           <span>Correlated Taste Nodes</span>
         </div>
@@ -118,21 +118,21 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
                 className="flex items-center justify-between p-2.5 border border-stone-800 bg-[#070709] text-xs hover:border-stone-700 transition-colors"
               >
                 <div className="min-w-0 pr-2">
-                  <span className="font-mono text-[11px] text-champagne-500/80 font-medium tracking-wide block mb-0.5">
+                  <span className="font-sans text-xs text-champagne-400/80 font-medium tracking-wide block mb-0.5">
                     [{entity.category.slice(0, 4).toUpperCase()}]
                   </span>
                   <span className="font-sans text-stone-200 font-medium truncate block">
                     {entity.name}
                   </span>
                 </div>
-                <span className="font-mono tabular-nums text-xs text-neutral-300 font-normal flex-shrink-0">
+                <span className="font-sans tabular-nums text-xs text-neutral-300 font-normal flex-shrink-0">
                   {Math.round(entity.affinityScore * 100)}%
                 </span>
               </div>
             ))}
           </div>
         ) : (
-          <div className="p-3 border border-stone-800 bg-[#070709] text-center text-xs font-mono text-stone-500">
+          <div className="p-3 border border-stone-800 bg-[#070709] text-center text-xs font-sans text-stone-500">
             No correlated nodes surfaced in ungrounded baseline mode.
           </div>
         )}
@@ -140,7 +140,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
 
       {/* Strategic Conversational Openings (Diplomatic Ice-Breakers) */}
       <div>
-        <div className="flex items-center gap-2 mb-2.5 text-[10px] font-mono uppercase text-champagne-400 tracking-wider font-bold">
+        <div className="flex items-center gap-2 mb-2.5 text-[10px] font-sans font-medium uppercase text-champagne-400 tracking-wider">
           <MessageSquareQuote className="w-3.5 h-3.5" />
           <span>Strategic Conversational Openings</span>
         </div>
@@ -149,10 +149,10 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           {iceBreakerScripts.map((script, idx) => (
             <div key={idx} className="p-3 text-xs leading-relaxed">
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-mono text-[10px] text-champagne-400 font-bold">
+                <span className="font-sans text-[10px] text-champagne-400 font-semibold">
                   [{String(idx + 1).padStart(2, '0')}]
                 </span>
-                <span className="font-mono text-[10px] text-neutral-400 uppercase tracking-wider">
+                <span className="font-sans text-[10px] text-neutral-400 uppercase tracking-wider font-medium">
                   Executive Opening Script
                 </span>
               </div>

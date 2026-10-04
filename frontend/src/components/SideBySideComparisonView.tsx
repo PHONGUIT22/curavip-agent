@@ -27,14 +27,14 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
         <div className="px-5 py-3.5 border-b border-stone-800 flex items-center justify-between bg-[#0B0B10]">
           <div>
             <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px] font-mono tracking-widest uppercase text-champagne-400 font-bold">
+              <span className="text-[10px] font-sans font-medium tracking-widest uppercase text-champagne-400">
                 Competitive Benchmark
               </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.2 border border-stone-800 bg-[#070709] text-stone-400 uppercase">
+              <span className="text-[9px] font-sans font-medium px-1.5 py-0.2 border border-stone-800 bg-[#070709] text-stone-400 uppercase">
                 The Grounding Difference
               </span>
             </div>
-            <h2 className="font-serif text-lg font-bold text-stone-100">
+            <h2 className="font-sans text-lg font-semibold text-stone-100 tracking-tight">
               Why Generic LLMs Fail High-Ticket Dealmakers: {groundedVip.fullName}
             </h2>
           </div>
@@ -53,7 +53,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
           <div className="space-y-4">
             {/* Column Title */}
             <div className="p-3 border border-crimsonAlert/30 bg-crimsonAlert/10">
-              <div className="flex items-center gap-2 text-crimsonAlert font-mono text-xs font-bold uppercase mb-0.5">
+              <div className="flex items-center gap-2 text-crimsonAlert font-sans text-xs font-semibold uppercase mb-0.5">
                 <Zap className="w-3.5 h-3.5" />
                 <span>Generic LLM Baseline (Without Qloo)</span>
               </div>
@@ -64,7 +64,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Compliance Fail Callout */}
             <div className="p-3 border border-crimsonAlert/30 bg-[#0B0B10]">
-              <div className="flex items-center gap-2 text-xs font-mono text-crimsonAlert font-bold mb-1">
+              <div className="flex items-center gap-2 text-xs font-sans text-crimsonAlert font-semibold mb-1">
                 <AlertOctagon className="w-3.5 h-3.5" />
                 <span>Governance Risk: Taboo & FCPA Violations</span>
               </div>
@@ -81,17 +81,17 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Cliché Gifts */}
             <div>
-              <span className="text-[10px] font-mono uppercase text-stone-400 tracking-wider block mb-2 font-bold">
+              <span className="text-[10px] font-sans font-medium uppercase text-stone-400 tracking-wider block mb-2">
                 Generic Gift Proposals
               </span>
               <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
                 {generic.dossier.curatedGifts.map((gift) => (
                   <div key={gift.id} className="p-3">
                     <div className="flex justify-between items-start mb-0.5">
-                      <h4 className="font-serif font-bold text-sm text-stone-200">{gift.title}</h4>
-                      <span className="font-mono tabular-nums text-xs text-stone-400 font-bold">${gift.estimatedPriceUsd}</span>
+                      <h4 className="font-sans font-semibold text-sm text-stone-200">{gift.title}</h4>
+                      <span className="font-sans font-semibold text-xs text-stone-400">${gift.estimatedPriceUsd}</span>
                     </div>
-                    <span className="text-[9px] font-mono text-crimsonAlert/90 block mb-1">
+                    <span className="text-[9px] font-sans font-medium text-crimsonAlert/90 block mb-1">
                       Anchor: {gift.qlooCorrelationAnchor}
                     </span>
                     <p className="text-xs text-stone-400 font-sans leading-relaxed">
@@ -104,7 +104,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Cliché Ice-Breakers */}
             <div>
-              <span className="text-[10px] font-mono uppercase text-stone-400 tracking-wider block mb-2 font-bold">
+              <span className="text-[10px] font-sans font-medium uppercase text-stone-400 tracking-wider block mb-2">
                 Superficial Conversation Openers
               </span>
               <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
@@ -121,7 +121,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
           <div className="space-y-4">
             {/* Column Title */}
             <div className="p-3 border border-emeraldStatus/30 bg-emeraldStatus/10">
-              <div className="flex items-center gap-2 text-emeraldStatus font-mono text-xs font-bold uppercase mb-0.5">
+              <div className="flex items-center gap-2 text-emeraldStatus font-sans text-xs font-semibold uppercase mb-0.5">
                 <Sparkles className="w-3.5 h-3.5 text-champagne-400" />
                 <span>CuraVIP (Qloo Taste Graph Grounded)</span>
               </div>
@@ -132,7 +132,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Compliance Passed Callout */}
             <div className="p-3 border border-emeraldStatus/30 bg-[#0B0B10]">
-              <div className="flex items-center gap-2 text-xs font-mono text-emeraldStatus font-bold mb-1">
+              <div className="flex items-center gap-2 text-xs font-sans text-emeraldStatus font-semibold mb-1">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>100% FCPA & Taboo Compliant Verified</span>
               </div>
@@ -143,17 +143,17 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Grounded Bespoke Gifts */}
             <div>
-              <span className="text-[10px] font-mono uppercase text-champagne-400 tracking-wider block mb-2 font-bold">
+              <span className="text-[10px] font-sans font-medium uppercase text-champagne-400 tracking-wider block mb-2">
                 Grounded Bespoke Artifacts
               </span>
               <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
                 {grounded.dossier.curatedGifts.map((gift) => (
                   <div key={gift.id} className="p-3">
                     <div className="flex justify-between items-start mb-0.5">
-                      <h4 className="font-serif font-bold text-sm text-champagne-200">{gift.title}</h4>
-                      <span className="font-mono tabular-nums text-xs text-champagne-400 font-bold">${gift.estimatedPriceUsd}</span>
+                      <h4 className="font-sans font-semibold text-sm text-champagne-200">{gift.title}</h4>
+                      <span className="font-sans font-semibold text-xs text-champagne-400">${gift.estimatedPriceUsd}</span>
                     </div>
-                    <span className="text-[9px] font-mono text-champagne-400 block mb-1">
+                    <span className="text-[9px] font-sans font-medium text-champagne-400 block mb-1">
                       Anchor: {gift.qlooCorrelationAnchor}
                     </span>
                     <p className="text-xs text-stone-300 font-sans leading-relaxed">
@@ -166,7 +166,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Grounded Ice-Breakers */}
             <div>
-              <span className="text-[10px] font-mono uppercase text-champagne-400 tracking-wider block mb-2 font-bold">
+              <span className="text-[10px] font-sans font-medium uppercase text-champagne-400 tracking-wider block mb-2">
                 Diplomatic Rapport Openings
               </span>
               <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
@@ -182,12 +182,12 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
         {/* Footer */}
         <div className="px-5 py-3 border-t border-stone-800 bg-[#0B0B10] flex items-center justify-between">
-          <span className="text-[11px] text-stone-500 font-mono">
+          <span className="text-[11px] text-stone-500 font-sans">
             Powered by Qloo Taste Graph Correlation Engine & Model Context Protocol
           </span>
           <button
             onClick={onClose}
-            className="px-3 py-1 border border-champagne-500 bg-champagne-500 text-[#070709] text-xs font-mono font-bold hover:bg-champagne-400 transition-colors"
+            className="px-3 py-1 border border-champagne-500 bg-champagne-500 text-[#070709] text-xs font-sans font-semibold hover:bg-champagne-400 transition-colors"
           >
             Close Benchmark
           </button>

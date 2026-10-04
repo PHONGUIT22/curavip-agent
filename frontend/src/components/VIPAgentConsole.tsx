@@ -128,7 +128,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-4 border-b border-stone-800">
         <div className="flex items-center gap-2">
           <Terminal className="w-4 h-4 text-champagne-400" />
-          <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-stone-200">
+          <h2 className="font-sans text-xs font-semibold uppercase tracking-wider text-stone-200">
             {selectedVip ? `Briefing Terminal / ${selectedVip.fullName}` : 'Select a VIP Principal'}
           </h2>
         </div>
@@ -138,7 +138,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
           <button
             type="button"
             onClick={handleReadout}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono uppercase tracking-wider border transition-colors ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans font-medium uppercase tracking-wider border transition-colors ${
               isSpeaking
                 ? 'bg-champagne-500/20 text-champagne-400 border-champagne-500'
                 : 'border-stone-800 bg-[#070709] text-stone-300 hover:text-champagne-400 hover:border-stone-700'
@@ -158,7 +158,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             onChange={(e) => setMeetingBrief(e.target.value)}
             placeholder="Enter meeting context, deal parameters, or high-stakes hospitality objectives..."
             rows={3}
-            className="w-full bg-[#070709] text-stone-200 placeholder-stone-600 text-xs font-mono p-3 pr-10 border border-stone-800 focus:border-champagne-500 focus:outline-none transition-colors resize-none leading-relaxed"
+            className="w-full bg-[#070709] text-stone-200 placeholder-stone-600 text-xs font-sans p-3 pr-10 border border-stone-800 focus:border-champagne-500 focus:outline-none transition-colors resize-none leading-relaxed"
           />
 
           <button
@@ -179,14 +179,14 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
           {/* Policy Tier Group with 1px Divider */}
           <div className="flex items-center border border-stone-800 bg-[#070709] divide-x divide-stone-800">
-            <span className="text-[10px] font-mono uppercase text-stone-500 px-2.5 py-1">
+            <span className="text-[10px] font-sans font-medium uppercase text-stone-500 px-2.5 py-1">
               Tier:
             </span>
 
             <button
               type="button"
               onClick={() => onSelectTier('standard_200')}
-              className={`px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
+              className={`px-2.5 py-1 text-xs font-sans font-medium uppercase tracking-wider transition-colors ${
                 budgetTier === 'standard_200'
                   ? 'bg-champagne-500/15 text-champagne-400 font-bold'
                   : 'text-stone-400 hover:text-stone-200'
@@ -198,7 +198,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             <button
               type="button"
               onClick={() => onSelectTier('executive_500')}
-              className={`px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
+              className={`px-2.5 py-1 text-xs font-sans font-medium uppercase tracking-wider transition-colors ${
                 budgetTier === 'executive_500'
                   ? 'bg-champagne-500/15 text-champagne-400 font-bold'
                   : 'text-stone-400 hover:text-stone-200'
@@ -210,7 +210,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             <button
               type="button"
               onClick={() => onSelectTier('unlimited_vip')}
-              className={`px-2.5 py-1 text-xs font-mono uppercase tracking-wider transition-colors ${
+              className={`px-2.5 py-1 text-xs font-sans font-medium uppercase tracking-wider transition-colors ${
                 budgetTier === 'unlimited_vip'
                   ? 'bg-champagne-500/15 text-champagne-400 font-bold'
                   : 'text-stone-400 hover:text-stone-200'

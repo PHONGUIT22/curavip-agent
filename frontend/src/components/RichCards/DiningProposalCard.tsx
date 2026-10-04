@@ -17,14 +17,14 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
       <div className="flex items-start justify-between gap-4 pb-3 mb-4 border-b border-stone-800">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-champagne-400 font-bold">
+            <span className="text-[10px] font-sans font-medium tracking-widest uppercase text-champagne-400">
               Executive Hospitality
             </span>
-            <span className="text-[9px] font-mono px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300 uppercase font-semibold">
+            <span className="text-[9px] font-sans font-medium px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300 uppercase">
               Private Salon & Dining
             </span>
           </div>
-          <h3 className="font-serif text-lg font-bold text-stone-100">
+          <h3 className="text-xl font-medium text-white tracking-tight">
             Curated Dining Reservations
           </h3>
         </div>
@@ -40,11 +40,11 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
           <div key={option.id} className="p-4 transition-colors hover:bg-[#0E0E16]">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
               <div>
-                <div className="flex items-center gap-2 text-[10px] font-mono text-champagne-400 mb-0.5">
+                <div className="flex items-center gap-2 text-[10px] font-sans font-medium text-champagne-400 mb-0.5">
                   <span>{option.cuisineType}</span>
                   {option.priceBand && <span>/ {option.priceBand}</span>}
                 </div>
-                <h4 className="font-serif text-base font-bold text-stone-100">
+                <h4 className="text-base font-semibold text-white tracking-normal">
                   {option.venueName}
                 </h4>
               </div>
@@ -57,7 +57,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
 
             {/* Vibe Anchor */}
             <div className="mb-2 text-xs text-stone-300 font-sans">
-              <span className="text-stone-500 uppercase font-mono text-[10px] mr-1.5">Atmosphere:</span>
+              <span className="text-stone-500 uppercase font-sans font-medium text-[10px] mr-1.5">Atmosphere:</span>
               <span className="text-stone-200">{option.vibeAnchor}</span>
             </div>
 
@@ -65,7 +65,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
             <div className="mb-2 p-2.5 border border-stone-800 bg-[#0B0B10] text-xs text-stone-300 flex items-start gap-2">
               <GlassWater className="w-3.5 h-3.5 text-champagne-400 mt-0.5 flex-shrink-0" />
               <div>
-                <span className="text-[10px] font-mono uppercase text-champagne-400 block mb-0.5 font-bold">
+                <span className="text-[10px] font-sans font-medium uppercase text-champagne-400 block mb-0.5">
                   Pairing Protocol
                 </span>
                 <span className="font-sans leading-relaxed text-stone-300">{option.pairingNotes}</span>
@@ -73,7 +73,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
             </div>
 
             {/* Cultural Rationale */}
-            <p className="text-xs text-stone-400 leading-relaxed font-sans">
+            <p className="text-sm text-neutral-300 leading-relaxed font-sans font-normal">
               {option.culturalRationale}
             </p>
           </div>

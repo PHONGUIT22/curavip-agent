@@ -16,9 +16,9 @@ export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({ dossier 
     return (
       <div className="border border-stone-800 bg-[#0B0B10] p-12 text-center">
         <div className="w-10 h-10 mx-auto mb-3 border border-stone-800 bg-[#070709] flex items-center justify-center">
-          <span className="font-serif text-base font-bold text-champagne-400">CV</span>
+          <span className="font-sans text-base font-bold text-champagne-400">CV</span>
         </div>
-        <h3 className="font-serif text-base font-bold text-stone-200 mb-1">
+        <h3 className="font-sans text-base font-semibold text-stone-200 mb-1 tracking-tight">
           No Executive Dossier Loaded
         </h3>
         <p className="text-xs text-stone-500 max-w-md mx-auto leading-relaxed font-sans">
