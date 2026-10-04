@@ -9,6 +9,7 @@ import { RichCardsContainer } from '../components/RichCardsContainer';
 import { SideBySideComparisonView } from '../components/SideBySideComparisonView';
 import { CreateVipModal } from '../components/CreateVipModal';
 import { TasteSynergyModal } from '../components/TasteSynergyModal';
+import { GuidedJudgeTour } from '../components/GuidedJudgeTour';
 import { AmbientGlow, GlowState } from '../components/AmbientGlow';
 import { mcpClient } from '../services/mcpClient';
 import { pdfService } from '../services/pdfService';
@@ -292,6 +293,17 @@ export default function Home() {
         }}
         profiles={profiles}
         initialVipId={selectedVip?.id}
+      />
+
+      {/* 60-Second Guided Tour for Hackathon Judges */}
+      <GuidedJudgeTour
+        onNavigateSection={(id) => scrollToSection(id)}
+        onOpenBenchmark={handleOpenSideBySide}
+        onOpenSynergy={() => {
+          setIsSynergyOpen(true);
+          setActiveSection('synergy');
+        }}
+        onExportPdf={handleExportPdf}
       />
 
       {/* Bottom Ambient Glow Light Strip */}

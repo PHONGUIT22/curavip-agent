@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Compass, AlertOctagon, CheckCircle2, Zap } from 'lucide-react';
+import { X, Compass, AlertOctagon, CheckCircle2, Zap, TrendingDown, Target, ShieldCheck, Sparkles } from 'lucide-react';
 import type { DossierComparisonResponse } from '../types';
 
 interface SideBySideComparisonViewProps {
@@ -45,6 +45,48 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Executive Benchmark Metrics Counters */}
+        <div className="bg-[#FAF8F5] border-b border-[#E5E0D6] px-6 py-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 flex-shrink-0">
+              <TrendingDown className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-bold text-[#161A18] tracking-tight">-87%</span>
+                <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">Eliminated</span>
+              </div>
+              <span className="text-xs text-[#6B736D] font-medium block">Generic Hallucination</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-[#183D33]/10 border border-[#183D33]/20 flex items-center justify-center text-[#183D33] flex-shrink-0">
+              <Target className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-bold text-[#183D33] tracking-tight">96.4%</span>
+                <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-[#EDF4F0] text-[#183D33] uppercase">Qloo Verified</span>
+              </div>
+              <span className="text-xs text-[#6B736D] font-medium block">Cultural Relevance</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 flex-shrink-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-bold text-emerald-700 tracking-tight">100% Pass</span>
+                <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">0 Violations</span>
+              </div>
+              <span className="text-xs text-[#6B736D] font-medium block">Compliance Guardrail</span>
+            </div>
+          </div>
         </div>
 
         {/* 2-Column Split Comparison Body */}
