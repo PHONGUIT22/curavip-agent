@@ -1,15 +1,21 @@
 'use client';
 
-import React from 'react';
-import { Utensils, MapPin, GlassWater } from 'lucide-react';
+import React, { useState } from 'react';
+import { Utensils, MapPin, GlassWater, BellRing, Calendar, Share2 } from 'lucide-react';
 import { QlooAffinityBadge } from '../QlooAffinityBadge';
+import { ActionDispatchModal, ActionModalData } from '../ActionDispatchModal';
+import { soundService } from '../../services/soundService';
+import { calendarService } from '../../services/calendarService';
 import type { DiningProposal } from '../../types';
 
 interface DiningProposalCardProps {
   diningOptions: DiningProposal[];
+  vipName?: string;
 }
 
-export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOptions }) => {
+export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOptions, vipName }) => {
+  const [actionModalData, setActionModalData] = useState<ActionModalData | null>(null);
+
   if (!diningOptions || diningOptions.length === 0) return null;
 
   return (
@@ -88,9 +94,79 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
             <p className="my-3 text-sm text-[#323835] leading-relaxed font-sans font-normal">
               {option.culturalRationale}
             </p>
+
+            {/* 1-Click Agentic Action Dispatch Bar */}
+            <div className="pt-3 border-t border-[#EBE6DD] flex flex-wrap items-center justify-between gap-2.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundService.playMechanicalClick();
+                    setActionModalData({
+                      type: 'book_table',
+                      title: option.venueName,
+                      venueOrBrand: option.cuisineType,
+                      location: `${option.neighborhood}, Diplomatic District`,
+                      vipName,
+                      pairingNotes: option.pairingNotes,
+                      notes: option.culturalRationale,
+                    });
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#183D33] hover:bg-[#224F43] text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-2xs"
+                  title="Mô phỏng gửi yêu cầu đặt chỗ tới nhà hàng"
+                >
+                  <BellRing className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Book via Concierge API</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundService.playMechanicalClick();
+                    calendarService.downloadIcsEvent({
+                      title: `CuraVIP Executive Dining: ${option.venueName}`,
+                      description: `${option.cuisineType}\\nPairing: ${option.pairingNotes}\\nAtmosphere: ${option.vibeAnchor}\\nPrincipal: ${vipName || 'VIP'}`,
+                      location: `${option.neighborhood}, Diplomatic District`,
+                    });
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[#E5E0D6] bg-white hover:border-[#183D33] hover:bg-[#FAF8F5] text-xs font-semibold text-[#183D33] rounded-xl transition-all shadow-2xs"
+                  title="Tải file lịch .ics thật về máy tính"
+                >
+                  <Calendar className="w-3.5 h-3.5 text-[#183D33]" />
+                  <span>Download .ICS</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundService.playMechanicalClick();
+                  setActionModalData({
+                    type: 'share_briefing',
+                    title: option.venueName,
+                    venueOrBrand: option.cuisineType,
+                    location: `${option.neighborhood}, Diplomatic District`,
+                    vipName,
+                    pairingNotes: option.pairingNotes,
+                  });
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#6B736D] hover:text-[#183D33] hover:bg-[#FAF8F5] rounded-lg transition-colors border border-transparent hover:border-[#E5E0D6]"
+                title="Gửi tóm tắt nhanh qua WhatsApp / Signal"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>WhatsApp / Signal</span>
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      {/* Action Dispatch Modal */}
+      <ActionDispatchModal
+        data={actionModalData}
+        isOpen={Boolean(actionModalData)}
+        onClose={() => setActionModalData(null)}
+      />
     </div>
   );
 };

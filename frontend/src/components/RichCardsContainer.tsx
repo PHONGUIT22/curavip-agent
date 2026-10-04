@@ -47,7 +47,7 @@ export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({ dossier,
       <CuratedGiftCard dossier={dossier} />
 
       {/* 3. Executive Dining Reservations */}
-      <DiningProposalCard diningOptions={dossier.diningOptions} />
+      <DiningProposalCard diningOptions={dossier.diningOptions} vipName={dossier.vipProfile.fullName} />
 
       {/* 4. FCPA & Taboo Compliance Guardrails */}
       <ComplianceAuditCard audit={dossier.complianceAudit} />

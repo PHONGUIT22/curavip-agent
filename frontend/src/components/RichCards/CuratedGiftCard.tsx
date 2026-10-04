@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
-import { Download, Shield, Tag } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, Shield, Tag, PackageCheck, Share2 } from 'lucide-react';
 import { pdfService } from '../../services/pdfService';
+import { soundService } from '../../services/soundService';
 import { QlooAffinityBadge } from '../QlooAffinityBadge';
+import { ActionDispatchModal, ActionModalData } from '../ActionDispatchModal';
 import type { ExecutiveDossier } from '../../types';
 
 interface CuratedGiftCardProps {
@@ -11,6 +13,7 @@ interface CuratedGiftCardProps {
 }
 
 export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => {
+  const [actionModalData, setActionModalData] = useState<ActionModalData | null>(null);
   const gifts = dossier.curatedGifts || [];
 
   const handleExport = () => {
@@ -103,10 +106,60 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                   <span>Verified Materials: {gift.materials.join(', ')}</span>
                 </div>
               )}
+
+              {/* 1-Click Agentic Action Dispatch Bar */}
+              <div className="pt-3 border-t border-[#EBE6DD] flex flex-wrap items-center justify-between gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundService.playMechanicalClick();
+                    setActionModalData({
+                      type: 'commission_gift',
+                      title: gift.title,
+                      venueOrBrand: gift.brandOrArtisan,
+                      vipName: dossier.vipProfile.fullName,
+                      price: `$${gift.estimatedPriceUsd.toLocaleString()}`,
+                      notes: gift.culturalRationale,
+                    });
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#183D33] hover:bg-[#224F43] text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-2xs"
+                  title="Ủy thác chế tác qua xưởng thủ công độc lập"
+                >
+                  <PackageCheck className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Commission via Atelier</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundService.playMechanicalClick();
+                    setActionModalData({
+                      type: 'share_briefing',
+                      title: gift.title,
+                      venueOrBrand: gift.brandOrArtisan,
+                      vipName: dossier.vipProfile.fullName,
+                      price: `$${gift.estimatedPriceUsd.toLocaleString()}`,
+                      notes: gift.culturalRationale,
+                    });
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#6B736D] hover:text-[#183D33] hover:bg-[#FAF8F5] rounded-lg transition-colors border border-transparent hover:border-[#E5E0D6]"
+                  title="Gửi tóm tắt quà tặng qua WhatsApp / Signal"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>WhatsApp / Signal</span>
+                </button>
+              </div>
             </div>
           );
         })}
       </div>
+
+      {/* Action Dispatch Modal */}
+      <ActionDispatchModal
+        data={actionModalData}
+        isOpen={Boolean(actionModalData)}
+        onClose={() => setActionModalData(null)}
+      />
     </div>
   );
 };
