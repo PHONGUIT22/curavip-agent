@@ -1,19 +1,21 @@
 'use client';
 
 import React from 'react';
-import { Menu, SlidersHorizontal, Users, FileText, SplitSquareVertical } from 'lucide-react';
+import { Menu, SlidersHorizontal, Users, FileText, SplitSquareVertical, Sparkles } from 'lucide-react';
 
 interface AppSidebarProps {
   onOpenBenchmark?: () => void;
+  onOpenSynergy?: () => void;
   onNavigateConsole?: () => void;
   onNavigateRoster?: () => void;
   onNavigateDossier?: () => void;
-  activeSection?: 'console' | 'roster' | 'dossier' | 'benchmark';
+  activeSection?: 'console' | 'roster' | 'dossier' | 'benchmark' | 'synergy';
   qlooLiveStatus?: boolean;
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
   onOpenBenchmark,
+  onOpenSynergy,
   onNavigateConsole,
   onNavigateRoster,
   onNavigateDossier,
@@ -89,6 +91,20 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             title="Side-by-Side Benchmark"
           >
             <SplitSquareVertical className="w-4 h-4" />
+          </button>
+
+          {/* Taste Synergy Matcher Trigger */}
+          <button
+            type="button"
+            onClick={onOpenSynergy}
+            className={`w-10 h-10 flex items-center justify-center transition-all ${
+              activeSection === 'synergy'
+                ? 'bg-[#1D5A4A] border border-[#2D7360] text-white shadow-sm rounded-xl'
+                : 'text-[#8BA89B] hover:text-[#DDEBE3] hover:bg-[#1A4237] rounded-lg transition-colors'
+            }`}
+            title="Dual-VIP Taste Synergy Matcher"
+          >
+            <Sparkles className="w-4 h-4" />
           </button>
         </div>
       </div>

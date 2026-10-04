@@ -8,6 +8,7 @@ import { VIPAgentConsole } from '../components/VIPAgentConsole';
 import { RichCardsContainer } from '../components/RichCardsContainer';
 import { SideBySideComparisonView } from '../components/SideBySideComparisonView';
 import { CreateVipModal } from '../components/CreateVipModal';
+import { TasteSynergyModal } from '../components/TasteSynergyModal';
 import { AmbientGlow, GlowState } from '../components/AmbientGlow';
 import { mcpClient } from '../services/mcpClient';
 import { pdfService } from '../services/pdfService';
@@ -36,7 +37,10 @@ export default function Home() {
   // Side-by-side benchmark modal
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
   const [comparisonData, setComparisonData] = useState<DossierComparisonResponse | null>(null);
-  const [activeSection, setActiveSection] = useState<'console' | 'roster' | 'dossier' | 'benchmark'>('console');
+  const [activeSection, setActiveSection] = useState<'console' | 'roster' | 'dossier' | 'benchmark' | 'synergy'>('console');
+
+  // Dual-VIP Taste Synergy matcher modal
+  const [isSynergyOpen, setIsSynergyOpen] = useState(false);
 
   // Custom VIP Builder modal for hackathon judges
   const [isCreateVipOpen, setIsCreateVipOpen] = useState(false);
@@ -188,6 +192,10 @@ export default function Home() {
       {/* Left Deep Pine Sidebar */}
       <AppSidebar
         onOpenBenchmark={handleOpenSideBySide}
+        onOpenSynergy={() => {
+          setIsSynergyOpen(true);
+          setActiveSection('synergy');
+        }}
         onNavigateConsole={() => scrollToSection('console-section', 'console')}
         onNavigateRoster={() => scrollToSection('roster-section', 'roster')}
         onNavigateDossier={() => scrollToSection('dossier-results', 'dossier')}
@@ -202,6 +210,10 @@ export default function Home() {
           executionMode={executionMode}
           onToggleMode={handleToggleMode}
           onOpenSideBySide={handleOpenSideBySide}
+          onOpenSynergy={() => {
+            setIsSynergyOpen(true);
+            setActiveSection('synergy');
+          }}
           onExportPdf={handleExportPdf}
           activeDossier={activeDossier}
           qlooLiveStatus={qlooLiveStatus}
@@ -269,6 +281,17 @@ export default function Home() {
         onClose={() => setIsCreateVipOpen(false)}
         onSubmit={handleCreateVip}
         isLoading={isLoading}
+      />
+
+      {/* Dual-VIP Taste Synergy & Diplomatic Collab Modal */}
+      <TasteSynergyModal
+        isOpen={isSynergyOpen}
+        onClose={() => {
+          setIsSynergyOpen(false);
+          setActiveSection('console');
+        }}
+        profiles={profiles}
+        initialVipId={selectedVip?.id}
       />
 
       {/* Bottom Ambient Glow Light Strip */}

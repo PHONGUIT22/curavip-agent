@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Compass, SplitSquareVertical, Download, Zap, Volume2, VolumeX } from 'lucide-react';
+import { Compass, SplitSquareVertical, Download, Zap, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { soundService } from '../services/soundService';
 import type { ExecutionMode, ExecutiveDossier } from '../types';
 
@@ -9,6 +9,7 @@ interface TopNavBarProps {
   executionMode: ExecutionMode;
   onToggleMode: (mode: ExecutionMode) => void;
   onOpenSideBySide: () => void;
+  onOpenSynergy?: () => void;
   onExportPdf?: () => void;
   activeDossier: ExecutiveDossier | null;
   qlooLiveStatus?: boolean;
@@ -18,6 +19,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   executionMode,
   onToggleMode,
   onOpenSideBySide,
+  onOpenSynergy,
   onExportPdf,
   activeDossier,
   qlooLiveStatus = false,
@@ -92,6 +94,21 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
             <SplitSquareVertical className="w-3.5 h-3.5 text-[#183D33]" />
             <span>Benchmark</span>
           </button>
+
+          {/* Taste Synergy Matcher Button */}
+          {onOpenSynergy && (
+            <button
+              onClick={() => {
+                soundService.playMechanicalClick();
+                onOpenSynergy();
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide border border-[#2D7360]/30 bg-[#EDF4F0] text-[#183D33] hover:bg-[#183D33] hover:text-white transition-all rounded-lg shadow-sm"
+              title="Diplomatic Collab & Taste Synergy Matcher"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#2D7360]" />
+              <span>Taste Synergy</span>
+            </button>
+          )}
 
           {/* Export PDF Button */}
           {activeDossier && (
