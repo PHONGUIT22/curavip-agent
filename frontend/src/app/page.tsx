@@ -7,21 +7,25 @@ import { VIPRosterRail } from '../components/VIPRosterRail';
 import { VIPAgentConsole } from '../components/VIPAgentConsole';
 import { RichCardsContainer } from '../components/RichCardsContainer';
 import { SideBySideComparisonView } from '../components/SideBySideComparisonView';
+import { CreateVipModal } from '../components/CreateVipModal';
 import { AmbientGlow, GlowState } from '../components/AmbientGlow';
 import { mcpClient } from '../services/mcpClient';
 import { pdfService } from '../services/pdfService';
 import type {
+  AgentTraceStep,
   BudgetTier,
   DossierComparisonResponse,
   ExecutionMode,
   ExecutiveDossier,
   VIPProfile,
+  VIPProfileInput,
 } from '../types';
 
 export default function Home() {
   const [profiles, setProfiles] = useState<VIPProfile[]>([]);
   const [selectedVip, setSelectedVip] = useState<VIPProfile | null>(null);
   const [activeDossier, setActiveDossier] = useState<ExecutiveDossier | null>(null);
+  const [activeTrace, setActiveTrace] = useState<AgentTraceStep[]>([]);
   const [budgetTier, setBudgetTier] = useState<BudgetTier>('executive_500');
   const [executionMode, setExecutionMode] = useState<ExecutionMode>('qloo_grounded');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +35,9 @@ export default function Home() {
   // Side-by-side benchmark modal
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
   const [comparisonData, setComparisonData] = useState<DossierComparisonResponse | null>(null);
+
+  // Custom VIP Builder modal for hackathon judges
+  const [isCreateVipOpen, setIsCreateVipOpen] = useState(false);
 
   const fetchDossier = useCallback(
     async (
@@ -51,6 +58,9 @@ export default function Home() {
         });
 
         setActiveDossier(response.dossier);
+        if (response.trace) {
+          setActiveTrace(response.trace);
+        }
         setGlowState('complete');
         setTimeout(() => setGlowState('idle'), 1500);
       } catch (err) {
@@ -109,6 +119,23 @@ export default function Home() {
     await fetchDossier(selectedVip.id, budgetTier, executionMode, brief);
   };
 
+  const handleCreateVip = async (newProfileInput: VIPProfileInput) => {
+    try {
+      setIsLoading(true);
+      setGlowState('reasoning');
+      const saved = await mcpClient.upsertVIP(newProfileInput);
+      setProfiles((prev) => [saved, ...prev.filter((p) => p.id !== saved.id)]);
+      setSelectedVip(saved);
+      // Immediately trigger dynamic dossier synthesis for the new principal
+      await fetchDossier(saved.id, budgetTier, executionMode);
+    } catch (err) {
+      console.error('Failed to create custom VIP:', err);
+      setGlowState('error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleOpenSideBySide = async () => {
     if (!selectedVip) return;
     setIsLoading(true);
@@ -137,7 +164,7 @@ export default function Home() {
 
   return (
     <div className="min-h-[100dvh] bg-[#F8F6F0] text-[#161A18] flex flex-row relative selection:bg-[#183D33]/15 selection:text-[#183D33]">
-      {/* Left Deep Pine Sidebar (Inspired by reference mockimage.png) */}
+      {/* Left Deep Pine Sidebar */}
       <AppSidebar
         onOpenBenchmark={handleOpenSideBySide}
         qlooLiveStatus={qlooLiveStatus}
@@ -162,6 +189,7 @@ export default function Home() {
             profiles={profiles}
             selectedVipId={selectedVip?.id || null}
             onSelectVip={handleSelectVip}
+            onOpenCreateVip={() => setIsCreateVipOpen(true)}
           />
 
           {/* Center & Right Column: Agent Console & Rich Dossier Cards */}
@@ -177,6 +205,8 @@ export default function Home() {
               onVoiceStateChange={(listening) =>
                 setGlowState(listening ? 'listening' : 'idle')
               }
+              traceSteps={activeTrace}
+              onAddTraceStep={(step) => setActiveTrace((prev) => [step, ...prev])}
             />
 
             {/* Rich Cards Container (Taste Graph, Gifts, Dining, Compliance) */}
@@ -190,6 +220,14 @@ export default function Home() {
         comparison={comparisonData}
         isOpen={isComparisonOpen}
         onClose={() => setIsComparisonOpen(false)}
+      />
+
+      {/* Custom VIP Builder Modal for Hackathon Judges */}
+      <CreateVipModal
+        isOpen={isCreateVipOpen}
+        onClose={() => setIsCreateVipOpen(false)}
+        onSubmit={handleCreateVip}
+        isLoading={isLoading}
       />
 
       {/* Bottom Ambient Glow Light Strip */}
