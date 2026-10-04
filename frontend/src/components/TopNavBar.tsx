@@ -31,12 +31,12 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           <div className="w-8 h-8 rounded-none border border-champagne-500/40 bg-[#0B0B10] flex items-center justify-center">
             <span className="font-serif font-bold text-sm text-champagne-400">CV</span>
           </div>
-          <div className="flex items-baseline gap-2">
-            <h1 className="font-serif text-base font-bold tracking-widest text-stone-100">
+          <div className="flex items-baseline gap-2.5">
+            <h1 className="font-serif text-base font-bold tracking-[0.2em] text-stone-100">
               CURAVIP
             </h1>
-            <span className="hidden sm:inline-block text-[10px] font-mono text-stone-500 tracking-wider uppercase">
-              / Family Office Concierge
+            <span className="hidden sm:inline-block font-sans text-[10px] tracking-widest text-neutral-400 uppercase font-medium">
+              FAMILY OFFICE CONCIERGE
             </span>
           </div>
         </div>

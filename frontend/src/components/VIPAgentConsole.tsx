@@ -224,22 +224,22 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
           <button
             type="submit"
             disabled={isLoading || !selectedVip}
-            className={`flex items-center justify-center gap-2 px-5 py-2 text-xs font-mono uppercase tracking-wider font-bold transition-colors border ${
+            className={`flex items-center justify-center gap-2 px-5 py-2 text-xs font-sans uppercase tracking-wider font-semibold transition-colors border ${
               isLoading || !selectedVip
                 ? 'bg-stone-900 text-stone-600 border-stone-800 cursor-not-allowed'
-                : 'bg-champagne-500 text-[#070709] border-champagne-500 hover:bg-champagne-400'
+                : 'bg-[#C5A880] text-[#070709] border-[#C5A880] hover:bg-[#D4AF37]'
             }`}
           >
             {isLoading ? (
               <>
-                <span className="w-2.5 h-2.5 bg-[#070709] animate-ping" />
-                <span>Synthesizing...</span>
+                <span className="w-2 h-2 bg-[#070709] animate-ping" />
+                <span>SYNTHESIZING...</span>
               </>
             ) : (
               <>
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>
-                  {executionMode === 'qloo_grounded' ? 'Synthesize Dossier' : 'Run Generic Baseline'}
+                  {executionMode === 'qloo_grounded' ? 'SYNTHESIZE DOSSIER' : 'RUN GENERIC BASELINE'}
                 </span>
               </>
             )}

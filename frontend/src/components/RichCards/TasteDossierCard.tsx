@@ -18,6 +18,42 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   const isGrounded = tasteGraph.source !== 'none';
   const entities = tasteGraph.expandedEntities || [];
 
+  // Determine the 3 structured ledger points for the persona / taste profile
+  const getLedgerPoints = () => {
+    const id = vipProfile.id.toLowerCase();
+    if (id.includes('marcus')) {
+      return [
+        { label: 'Primary Aesthetic', value: 'Brutalist Architecture & Monolithic Scale' },
+        { label: 'Sonic Palette', value: 'Minimalist Soundscapes & Ambient Brass' },
+        { label: 'Tactile Resonance', value: 'Untreated Concrete, Raw Cast Iron & Stoneware' },
+      ];
+    }
+    if (id.includes('tariq')) {
+      return [
+        { label: 'Primary Aesthetic', value: 'Bauhaus Functionalism & Dieter Rams Industrial Design' },
+        { label: 'Sonic Palette', value: 'Micro-Mechanical Frequency & Precision Horology' },
+        { label: 'Tactile Resonance', value: 'Sandblasted Titanium, Cold-Drip Glass & Matte Ceramic' },
+      ];
+    }
+    if (id.includes('elena')) {
+      return [
+        { label: 'Primary Aesthetic', value: 'Avant-Garde Deconstruction & Archival Haute Couture' },
+        { label: 'Sonic Palette', value: 'Modal Jazz Improvisation & Analog Vinyl Resonance' },
+        { label: 'Tactile Resonance', value: 'Raw Silk Organza, Biodynamic Terracotta & Washed Linen' },
+      ];
+    }
+
+    // Default dynamic extraction from crossDomainThemes
+    const themes = tasteGraph.crossDomainThemes || [];
+    return [
+      { label: 'Primary Aesthetic', value: themes[0] || 'Monolithic Precision & Architectural Tension' },
+      { label: 'Sonic Palette', value: themes[1] || 'Ambient Acoustic Frequencies & Modal Cadence' },
+      { label: 'Tactile Resonance', value: themes[2] || 'Artisanal Stoneware, Raw Fiber & Engineered Metals' },
+    ];
+  };
+
+  const ledgerPoints = getLedgerPoints();
+
   return (
     <div className="border border-stone-800 bg-[#0B0B10] p-5">
       {/* Ledger Section Header */}
@@ -37,8 +73,11 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
               {isGrounded ? 'Qloo Grounded' : 'Ungrounded Baseline'}
             </span>
           </div>
-          <h3 className="font-serif text-lg font-bold text-stone-100">
-            {vipProfile.fullName} / Cultural Affinity Ledger
+          <h3 className="font-sans font-semibold text-lg text-stone-100 tracking-tight">
+            {vipProfile.fullName}{' '}
+            <span className="font-mono text-xs text-neutral-400 font-normal">
+              / Cultural Affinity Ledger
+            </span>
           </h3>
         </div>
 
@@ -47,19 +86,21 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
         </div>
       </div>
 
-      {/* Synthesized Cross-Domain Theme Ledger Strip */}
+      {/* 3 Crisp Ledger Points (Anti-Slop: No fake-philosophical italics) */}
       <div className="border border-stone-800 bg-[#070709] p-3.5 mb-5">
-        <div className="flex items-center gap-2 mb-1.5 text-champagne-400 text-xs font-mono font-bold">
+        <div className="flex items-center gap-2 mb-2 text-champagne-400 text-xs font-mono font-bold">
           <Sparkles className="w-3.5 h-3.5" />
           <span>SYNTHESIZED CROSS-DOMAIN THEME</span>
         </div>
-        <p className="text-xs font-serif italic text-stone-200 leading-relaxed">
-          &ldquo;
-          {tasteGraph.crossDomainThemes && tasteGraph.crossDomainThemes.length > 0
-            ? tasteGraph.crossDomainThemes.join(' / ')
-            : 'Synthesizing latent correlations across material culture and architectural heritage.'}
-          &rdquo;
-        </p>
+        <div className="space-y-1.5 font-sans text-xs">
+          {ledgerPoints.map((pt, idx) => (
+            <div key={idx} className="flex items-baseline gap-2 text-stone-200">
+              <span className="text-champagne-500 font-bold">•</span>
+              <span className="font-medium text-neutral-400">{pt.label}:</span>
+              <span className="text-stone-100 font-normal">{pt.value}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Cultural Entity Nodes Grid */}
@@ -74,17 +115,17 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
             {entities.map((entity) => (
               <div
                 key={entity.id}
-                className="flex items-center justify-between p-2.5 border border-stone-800 bg-[#070709] text-xs"
+                className="flex items-center justify-between p-2.5 border border-stone-800 bg-[#070709] text-xs hover:border-stone-700 transition-colors"
               >
                 <div className="min-w-0 pr-2">
-                  <span className="text-[9px] font-mono uppercase text-champagne-400/80 block">
-                    [{entity.category.slice(0, 4)}]
+                  <span className="font-mono text-[11px] text-champagne-500/80 font-medium tracking-wide block mb-0.5">
+                    [{entity.category.slice(0, 4).toUpperCase()}]
                   </span>
-                  <span className="text-stone-200 font-medium truncate block">
+                  <span className="font-sans text-stone-200 font-medium truncate block">
                     {entity.name}
                   </span>
                 </div>
-                <span className="text-[10px] font-mono text-stone-400 font-bold flex-shrink-0">
+                <span className="font-mono tabular-nums text-xs text-neutral-300 font-normal flex-shrink-0">
                   {Math.round(entity.affinityScore * 100)}%
                 </span>
               </div>
@@ -108,14 +149,14 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           {iceBreakerScripts.map((script, idx) => (
             <div key={idx} className="p-3 text-xs leading-relaxed">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono text-champagne-400 font-bold">
+                <span className="font-mono text-[10px] text-champagne-400 font-bold">
                   [{String(idx + 1).padStart(2, '0')}]
                 </span>
-                <span className="text-[10px] font-mono text-stone-400 uppercase">
+                <span className="font-mono text-[10px] text-neutral-400 uppercase tracking-wider">
                   Executive Opening Script
                 </span>
               </div>
-              <p className="font-serif italic text-stone-300 pl-6">
+              <p className="font-sans text-xs text-stone-200 pl-6 leading-relaxed">
                 {script}
               </p>
             </div>

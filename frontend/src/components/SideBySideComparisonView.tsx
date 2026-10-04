@@ -89,7 +89,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
                   <div key={gift.id} className="p-3">
                     <div className="flex justify-between items-start mb-0.5">
                       <h4 className="font-serif font-bold text-sm text-stone-200">{gift.title}</h4>
-                      <span className="font-mono text-xs text-stone-400 font-bold">${gift.estimatedPriceUsd}</span>
+                      <span className="font-mono tabular-nums text-xs text-stone-400 font-bold">${gift.estimatedPriceUsd}</span>
                     </div>
                     <span className="text-[9px] font-mono text-crimsonAlert/90 block mb-1">
                       Anchor: {gift.qlooCorrelationAnchor}
@@ -109,7 +109,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
               </span>
               <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
                 {generic.dossier.iceBreakerScripts.map((script, i) => (
-                  <div key={i} className="p-2.5 text-xs font-serif italic text-stone-400">
+                  <div key={i} className="p-2.5 text-xs font-sans text-stone-400 leading-relaxed">
                     {script}
                   </div>
                 ))}
@@ -151,7 +151,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
                   <div key={gift.id} className="p-3">
                     <div className="flex justify-between items-start mb-0.5">
                       <h4 className="font-serif font-bold text-sm text-champagne-200">{gift.title}</h4>
-                      <span className="font-mono text-xs text-champagne-400 font-bold">${gift.estimatedPriceUsd}</span>
+                      <span className="font-mono tabular-nums text-xs text-champagne-400 font-bold">${gift.estimatedPriceUsd}</span>
                     </div>
                     <span className="text-[9px] font-mono text-champagne-400 block mb-1">
                       Anchor: {gift.qlooCorrelationAnchor}
@@ -171,7 +171,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
               </span>
               <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
                 {grounded.dossier.iceBreakerScripts.map((script, i) => (
-                  <div key={i} className="p-2.5 text-xs font-serif italic text-stone-200">
+                  <div key={i} className="p-2.5 text-xs font-sans text-stone-200 leading-relaxed">
                     {script}
                   </div>
                 ))}

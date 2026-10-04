@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Geist, Cormorant_Garamond } from 'next/font/google';
+import { Inter, Playfair_Display, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
@@ -8,16 +8,16 @@ const inter = Inter({
   display: 'swap',
 });
 
-const geist = Geist({
+const playfair = Playfair_Display({
   subsets: ['latin'],
-  variable: '--font-geist',
+  variable: '--font-serif',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
 });
 
-const cormorant = Cormorant_Garamond({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-cormorant',
-  weight: ['400', '500', '600', '700'],
+  variable: '--font-mono',
   display: 'swap',
 });
 
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${geist.variable} ${cormorant.variable} dark`}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${jetbrainsMono.variable} dark`}>
       <body className="font-sans antialiased text-stone-100 min-h-[100dvh] bg-[#070709] selection:bg-champagne-500/20 selection:text-champagne-400">
         {children}
       </body>

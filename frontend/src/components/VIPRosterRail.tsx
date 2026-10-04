@@ -49,10 +49,10 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                 }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-1">
-                  <h4 className="font-serif text-sm font-bold text-stone-100">
+                  <h4 className="font-sans text-sm font-semibold text-stone-100 tracking-tight">
                     {vip.fullName}
                   </h4>
-                  <span className="font-mono text-xs text-champagne-400 font-bold">
+                  <span className="font-mono tabular-nums text-xs text-champagne-400 font-medium">
                     ${vip.budgetLimitUsd}
                   </span>
                 </div>

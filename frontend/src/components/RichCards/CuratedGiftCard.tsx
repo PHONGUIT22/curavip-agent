@@ -72,7 +72,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                 </div>
 
                 <div className="text-right flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-1">
-                  <span className="font-mono text-sm font-bold text-champagne-400">
+                  <span className="font-mono tabular-nums text-sm font-bold text-champagne-400">
                     ${gift.estimatedPriceUsd.toLocaleString()}
                   </span>
                   <span className="text-[9px] font-mono uppercase text-stone-500">
