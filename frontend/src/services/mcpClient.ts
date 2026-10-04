@@ -5,6 +5,7 @@ import type {
   DossierRequest,
   DossierResponse,
   ExecutionMode,
+  ExecutiveDossier,
   HealthStatus,
   ReservationOrder,
   TasteNegotiationResult,
@@ -132,6 +133,8 @@ export const mcpClient = {
     speechResponse: string;
     offlineFallbackUsed?: boolean;
     traceStep?: AgentTraceStep;
+    updatedDossier?: ExecutiveDossier;
+    diffHighlights?: string[];
   }> {
     const res = await fetchWithTimeout(`${API_BASE_URL}/api/agent/turn`, {
       method: 'POST',

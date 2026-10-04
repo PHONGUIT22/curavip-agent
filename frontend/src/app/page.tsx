@@ -230,6 +230,13 @@ export default function Home() {
                 executionMode={executionMode}
                 onGenerateDossier={handleGenerateFromConsole}
                 isLoading={isLoading}
+                activeDossier={activeDossier}
+                onDossierUpdated={(newDossier) => {
+                  setActiveDossier(newDossier);
+                  setTimeout(() => {
+                    scrollToSection('dossier-results', 'dossier');
+                  }, 150);
+                }}
                 onVoiceStateChange={(listening) =>
                   setGlowState(listening ? 'listening' : 'idle')
                 }

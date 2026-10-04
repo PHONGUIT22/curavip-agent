@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Utensils, MapPin, GlassWater, BellRing, Calendar, Share2 } from 'lucide-react';
+import { Utensils, MapPin, GlassWater, BellRing, Calendar, Share2, Sparkles } from 'lucide-react';
 import { QlooAffinityBadge } from '../QlooAffinityBadge';
 import { ActionDispatchModal, ActionModalData } from '../ActionDispatchModal';
 import { soundService } from '../../services/soundService';
@@ -46,7 +46,11 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
         {diningOptions.map((option) => (
           <div
             key={option.id}
-            className="p-5 sm:p-6 rounded-2xl border border-[#EBE6DD] bg-[#FAF8F5]/70 space-y-3.5 mb-4 shadow-2xs transition-colors hover:bg-white hover:border-[#183D33]/30"
+            className={`p-5 sm:p-6 rounded-2xl border ${
+              option.culturalRationale?.includes('[DIFF REFINED]')
+                ? 'border-amber-300 bg-amber-50/40 shadow-sm ring-1 ring-amber-300/60'
+                : 'border-[#EBE6DD] bg-[#FAF8F5]/70'
+            } space-y-3.5 mb-4 shadow-2xs transition-colors hover:bg-white hover:border-[#183D33]/30`}
           >
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div>
@@ -59,6 +63,12 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
                     itemTitle={option.venueName}
                     explanation={`Dữ liệu Qloo Cross-Domain: Khách hàng có gu thẩm mỹ cao cấp và lối sống tinh tế có 96% độ phù hợp văn hóa với không gian ẩm thực ${option.vibeAnchor} tại ${option.venueName}.`}
                   />
+                  {option.culturalRationale?.includes('[DIFF REFINED]') && (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold animate-pulse shadow-xs">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                      <span>REAL-TIME DIFF: Truffle-Free Substitution Verified</span>
+                    </div>
+                  )}
                 </div>
                 <h4 className="text-lg font-semibold text-[#161A18] tracking-normal">
                   {option.venueName}

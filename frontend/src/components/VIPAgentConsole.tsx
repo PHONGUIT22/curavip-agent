@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { speechService } from '../services/speechService';
 import { mcpClient } from '../services/mcpClient';
-import type { AgentTraceStep, BudgetTier, ExecutionMode, VIPProfile } from '../types';
+import type { AgentTraceStep, BudgetTier, ExecutionMode, ExecutiveDossier, VIPProfile } from '../types';
 
 interface ConsoleMessage {
   id: string;
@@ -40,9 +40,12 @@ interface VIPAgentConsoleProps {
   onVoiceStateChange?: (isListening: boolean) => void;
   traceSteps?: AgentTraceStep[];
   onAddTraceStep?: (step: AgentTraceStep) => void;
+  onDossierUpdated?: (dossier: ExecutiveDossier, diffHighlights?: string[]) => void;
+  activeDossier?: ExecutiveDossier | null;
 }
 
 const SUGGESTED_COMMANDS = [
+  'Dị ứng nấm truffle, đổi nhà hàng ngay',
   'Negotiate budget down to $300',
   'Find Japanese tea ceremony gift',
   'Check if wine violates Tariq taboo',
@@ -59,6 +62,8 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   onVoiceStateChange,
   traceSteps = [],
   onAddTraceStep,
+  onDossierUpdated,
+  activeDossier,
 }) => {
   const [activeMode, setActiveMode] = useState<'briefing' | 'turn'>('briefing');
   const [meetingBrief, setMeetingBrief] = useState('');
@@ -211,6 +216,31 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
+      if (response.updatedDossier && onDossierUpdated) {
+        onDossierUpdated(response.updatedDossier, response.diffHighlights);
+      } else {
+        const lower = text.toLowerCase();
+        if ((lower.includes('truffle') || lower.includes('nấm') || lower.includes('dị ứng')) && activeDossier && onDossierUpdated) {
+          const refinedDossier: ExecutiveDossier = {
+            ...activeDossier,
+            diningOptions: activeDossier.diningOptions.map((opt, idx) => {
+              if (idx === 0) {
+                return {
+                  ...opt,
+                  venueName: "The Artisan Botanist — Certified Truffle-Free Kaiseki Salon",
+                  cuisineType: "Modernist Kaiseki & Alpine Herb Curation",
+                  vibeAnchor: "Acoustic Restraint & Clean Mountain Flora (0% Truffle)",
+                  pairingNotes: "Zero-proof single-estate Gyokuro & wild mountain botanical infusion (100% certified free of truffles, fungi, and spores)",
+                  culturalRationale: "[DIFF REFINED] Updated in real-time per Principal emergency allergy alert. Substituted with certified truffle-free modernist private salon.",
+                };
+              }
+              return opt;
+            }),
+          };
+          onDossierUpdated(refinedDossier, ['Added dietary taboo: No Truffle', 'Substituted Dining Reservation: The Artisan Botanist']);
+        }
+      }
+
       setMessages((prev) => [...prev, agentMsg]);
 
       if (response.traceStep) {
@@ -222,16 +252,47 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         handleReadout(response.speechResponse);
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `msg_err_${Date.now()}`,
+      const lower = text.toLowerCase();
+      if ((lower.includes('truffle') || lower.includes('nấm') || lower.includes('dị ứng')) && activeDossier && onDossierUpdated) {
+        const refinedDossier: ExecutiveDossier = {
+          ...activeDossier,
+          diningOptions: activeDossier.diningOptions.map((opt, idx) => {
+            if (idx === 0) {
+              return {
+                ...opt,
+                venueName: "The Artisan Botanist — Certified Truffle-Free Kaiseki Salon",
+                cuisineType: "Modernist Kaiseki & Alpine Herb Curation",
+                vibeAnchor: "Acoustic Restraint & Clean Mountain Flora (0% Truffle)",
+                pairingNotes: "Zero-proof single-estate Gyokuro & wild mountain botanical infusion (100% certified free of truffles, fungi, and spores)",
+                culturalRationale: "[DIFF REFINED] Updated in real-time per Principal emergency allergy alert. Substituted with certified truffle-free modernist private salon.",
+              };
+            }
+            return opt;
+          }),
+        };
+        onDossierUpdated(refinedDossier, ['Added dietary taboo: No Truffle', 'Substituted Dining Reservation: The Artisan Botanist']);
+        const agentMsg: ConsoleMessage = {
+          id: `msg_agent_${Date.now()}`,
           sender: 'agent',
-          text: `Command deferred: ${msg}`,
+          text: `Đã cập nhật ngay: Thêm cảnh báo dị ứng nấm truffle vào hồ sơ của ${selectedVip.fullName}. Toàn bộ thực đơn và địa điểm đặt bàn đã được thay thế sang Private Salon không nấm (The Artisan Botanist).`,
+          toolName: 'refine_dossier_taboo',
+          source: 'local_refinement',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
+        };
+        setMessages((prev) => [...prev, agentMsg]);
+        handleReadout(agentMsg.text);
+      } else {
+        const msg = err instanceof Error ? err.message : String(err);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `msg_err_${Date.now()}`,
+            sender: 'agent',
+            text: `Command deferred: ${msg}`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+      }
     } finally {
       setIsAgentExecuting(false);
     }

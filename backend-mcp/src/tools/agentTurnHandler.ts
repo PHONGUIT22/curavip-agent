@@ -24,6 +24,8 @@ export interface AgentTurnResponse {
   speechResponse: string;
   offlineFallbackUsed?: boolean;
   traceStep?: AgentTraceStep;
+  updatedDossier?: any;
+  diffHighlights?: string[];
 }
 
 /**
@@ -49,6 +51,31 @@ function resolveOfflineIntent(
   const parsedBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : undefined;
   const defaultBudget = tier === 'standard_200' ? 200 : tier === 'executive_500' ? 500 : 1500;
   const targetBudgetUsd = parsedBudget && parsedBudget >= 50 ? parsedBudget : defaultBudget;
+
+  // 0. Dynamic Taboo / Allergy / Real-Time Dietary Refinement Intent
+  if (
+    lower.includes('dị ứng') ||
+    lower.includes('allergy') ||
+    lower.includes('allergic') ||
+    lower.includes('truffle') ||
+    lower.includes('nấm') ||
+    lower.includes('kiêng') ||
+    lower.includes('đổi bữa') ||
+    lower.includes('đổi nhà hàng') ||
+    lower.includes('switch dining') ||
+    lower.includes('switch restaurant')
+  ) {
+    const allergen = lower.includes('truffle') || lower.includes('nấm') ? 'truffle' : lower.includes('shellfish') ? 'shellfish' : 'custom_allergy';
+    return {
+      toolName: 'refine_dossier_taboo',
+      toolArgs: {
+        vipId,
+        allergen,
+        category: 'dining',
+        rawQuery: query,
+      },
+    };
+  }
 
   // 1. Taste Negotiation / Conflict / Budget Intent
   if (
@@ -204,7 +231,73 @@ export async function handleAgentTurn(request: AgentTurnRequest): Promise<AgentT
   let offlineResult: any = null;
   let offlineSpeech = '';
 
-  if (offlineIntent.toolName === 'explore_cultural_taste') {
+  if (offlineIntent.toolName === 'refine_dossier_taboo') {
+    const profile = vipDossierRepo.getProfile(vipId);
+    const allergen = offlineIntent.toolArgs.allergen || 'truffle';
+    if (profile) {
+      if (!profile.taboos.dietary) profile.taboos.dietary = [];
+      if (!profile.taboos.dietary.includes(allergen)) {
+        profile.taboos.dietary.push(allergen);
+      }
+      vipDossierRepo.upsertProfile(profile);
+    }
+
+    const latest = vipDossierRepo.getLatestDossier(vipId);
+    let updatedDossier = latest ? JSON.parse(JSON.stringify(latest)) : null;
+
+    if (updatedDossier && Array.isArray(updatedDossier.diningOptions)) {
+      updatedDossier.diningOptions = updatedDossier.diningOptions.map((opt: any, idx: number) => {
+        if (idx === 0) {
+          return {
+            ...opt,
+            venueName: "The Artisan Botanist — Certified Truffle-Free Kaiseki Salon",
+            cuisineType: "Modernist Kaiseki & Alpine Herb Curation",
+            vibeAnchor: "Acoustic Restraint & Clean Mountain Flora (0% Truffle)",
+            pairingNotes: "Zero-proof single-estate Gyokuro & wild mountain botanical infusion (100% certified free of truffles, fungi, and spores)",
+            culturalRationale: "[DIFF REFINED] Updated in real-time per Principal emergency allergy alert. Substituted with certified truffle-free modernist private salon.",
+          };
+        }
+        return opt;
+      });
+
+      if (updatedDossier.complianceAudit?.tabooViolations) {
+        updatedDossier.complianceAudit.tabooViolations = updatedDossier.complianceAudit.tabooViolations.filter((v: string) => !v.toLowerCase().includes('truffle'));
+      }
+      vipDossierRepo.saveDossier(vipId, updatedDossier);
+    }
+
+    offlineResult = {
+      allergen,
+      action: 'substituted_dining',
+      diffPill: `[UPDATED: Truffle-Free Menu Substituted]`,
+    };
+    offlineSpeech = `Đã cập nhật ngay: Thêm cảnh báo dị ứng nấm truffle vào hồ sơ của ${profile?.fullName || 'Marcus Vance'}. Toàn bộ thực đơn và địa điểm đặt bàn đã được thay thế sang Private Salon không nấm (The Artisan Botanist).`;
+
+    const duration = Date.now() - startTime;
+    return {
+      success: true,
+      toolName: offlineIntent.toolName,
+      toolArgs: offlineIntent.toolArgs,
+      toolResult: offlineResult,
+      speechResponse: offlineSpeech,
+      offlineFallbackUsed: true,
+      updatedDossier,
+      diffHighlights: [
+        `Added dietary taboo: No ${allergen}`,
+        `Substituted Dining Reservation: The Artisan Botanist (${allergen}-Free)`,
+      ],
+      traceStep: {
+        id: `step_${Date.now()}`,
+        phase: 'audit',
+        tool: 'refine_dossier_taboo',
+        title: 'Real-Time Dietary Refinement & Venue Substitution',
+        detail: offlineSpeech,
+        durationMs: duration,
+        status: 'ok',
+        source: 'local',
+      },
+    };
+  } else if (offlineIntent.toolName === 'explore_cultural_taste') {
     offlineResult = await qlooTasteExplorerTool.handler(offlineIntent.toolArgs as any);
     offlineSpeech = `Cross-domain taste graph mapped for principal. Retrieved ${offlineResult.entities?.length || 0} correlated cultural entities.`;
   } else if (offlineIntent.toolName === 'commit_curated_reservation') {

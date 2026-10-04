@@ -202,6 +202,11 @@ export const vipDossierRepo = {
     return rows.map(rowToDossierRecord);
   },
 
+  getLatestDossier(vipId: string): ExecutiveDossier | null {
+    const list = this.listDossiers(vipId, 1);
+    return list[0]?.dossier || null;
+  },
+
   listRecentDossiers(limit = 10): DossierRecord[] {
     const rows = getDatabase()
       .prepare('SELECT * FROM dossier_records ORDER BY created_at DESC LIMIT ?')
