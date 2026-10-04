@@ -11,10 +11,13 @@ import {
 export interface QlooEntityResponse {
   id?: string;
   name?: string;
+  title?: string;
   category?: string;
   type?: string;
+  types?: string[];
   score?: number;
   affinity?: number;
+  popularity?: number;
   urn?: string;
   properties?: Record<string, unknown>;
 }
@@ -24,6 +27,62 @@ export interface QlooInsightsResponse {
   results?: QlooEntityResponse[];
   data?: QlooEntityResponse[];
   themes?: string[];
+}
+
+export function mapQlooCategory(rawType?: string, name?: string): CulturalCategory {
+  const lower = (rawType || '').toLowerCase();
+  if (
+    lower.includes('artist') ||
+    lower.includes('music') ||
+    lower.includes('song') ||
+    lower.includes('track') ||
+    lower.includes('album')
+  ) {
+    return 'music';
+  }
+  if (
+    lower.includes('movie') ||
+    lower.includes('film') ||
+    lower.includes('cinema') ||
+    lower.includes('tv')
+  ) {
+    return 'film';
+  }
+  if (
+    lower.includes('place') ||
+    lower.includes('dining') ||
+    lower.includes('restaurant') ||
+    lower.includes('venue') ||
+    lower.includes('bar') ||
+    lower.includes('food')
+  ) {
+    return 'dining';
+  }
+  if (
+    lower.includes('brand') ||
+    lower.includes('fashion') ||
+    lower.includes('clothing') ||
+    lower.includes('luxury') ||
+    lower.includes('retail')
+  ) {
+    return 'fashion';
+  }
+  if (
+    lower.includes('book') ||
+    lower.includes('literature') ||
+    lower.includes('author') ||
+    lower.includes('novel')
+  ) {
+    return 'literature';
+  }
+  if (
+    lower.includes('architecture') ||
+    lower.includes('monument') ||
+    lower.includes('building')
+  ) {
+    return 'architecture';
+  }
+  return guessCategory(name || '');
 }
 
 export class QlooClient {
@@ -40,32 +99,62 @@ export class QlooClient {
   }
 
   /**
-   * Search for cultural entities matching a query in a specific or broad category.
+   * Root API URL without trailing `/v2` path if present.
    */
-  public async searchEntities(query: string, category?: CulturalCategory): Promise<CulturalEntity[]> {
+  private get rootBaseUrl(): string {
+    return this.baseUrl.replace(/\/v2$/, '');
+  }
+
+  /**
+   * Search for cultural entities matching a query across Qloo entities.
+   * Endpoint: GET ${this.baseUrl}/search?query=${query}&types=${types}
+   */
+  public async searchEntities(
+    query: string,
+    type?: string | CulturalCategory
+  ): Promise<CulturalEntity[]> {
     const trimmed = query.trim();
     if (!trimmed) return [];
 
     if (!this.isConfigured) {
       const match = resolveCuratedSeed(trimmed);
-      return match ? [match] : [{
-        id: `curated:${category || guessCategory(trimmed)}:${slugify(trimmed)}`,
-        name: trimmed,
-        category: category || guessCategory(trimmed),
-        affinityScore: 0.95,
-        metadata: { source: 'curated_fallback' }
-      }];
+      const cat = (type && ['music', 'film', 'dining', 'fashion', 'literature', 'architecture'].includes(type)
+        ? type
+        : guessCategory(trimmed)) as CulturalCategory;
+      return match
+        ? [match]
+        : [
+            {
+              id: `curated:${cat}:${slugify(trimmed)}`,
+              name: trimmed,
+              category: cat,
+              affinityScore: 0.95,
+              metadata: { source: 'curated_fallback' },
+            },
+          ];
     }
 
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
 
-      const endpoint = `${this.baseUrl}/v2/search?query=${encodeURIComponent(trimmed)}${category ? `&filter.type=${category}` : ''}`;
+      // Map broad category name to Qloo search types if passed as CulturalCategory
+      let typesParam = 'movie,artist,place,brand,book';
+      if (type) {
+        if (type === 'music') typesParam = 'artist';
+        else if (type === 'film') typesParam = 'movie';
+        else if (type === 'dining') typesParam = 'place';
+        else if (type === 'fashion') typesParam = 'brand';
+        else if (type === 'literature') typesParam = 'book';
+        else typesParam = String(type);
+      }
+
+      const endpoint = `${this.rootBaseUrl}/search?query=${encodeURIComponent(trimmed)}&types=${encodeURIComponent(typesParam)}`;
+
       const response = await fetch(endpoint, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'X-Api-Key': process.env.QLOO_API_KEY!.trim(),
         },
         signal: controller.signal,
@@ -74,31 +163,38 @@ export class QlooClient {
       clearTimeout(timeout);
 
       if (!response.ok) {
-        console.warn(`[QlooClient] searchEntities returned ${response.status}. Deferring to curated fallback.`);
+        console.warn(
+          `[QlooClient] searchEntities returned ${response.status}. Deferring to curated fallback.`
+        );
         const fallback = resolveCuratedSeed(trimmed);
         return fallback ? [fallback] : [];
       }
 
-      const data = (await response.json()) as QlooInsightsResponse;
-      const rawList = data.entities || data.results || data.data || [];
+      const data = (await response.json()) as any;
+      const rawList: QlooEntityResponse[] =
+        data.results || data.data || data.entities || (Array.isArray(data) ? data : []);
 
-      if (rawList.length === 0) {
+      if (!Array.isArray(rawList) || rawList.length === 0) {
         const fallback = resolveCuratedSeed(trimmed);
         return fallback ? [fallback] : [];
       }
 
       return rawList.map((item) => {
-        const rawCat = (item.category || item.type || category || guessCategory(item.name || trimmed)) as string;
-        const normalizedCat: CulturalCategory = (['music', 'film', 'dining', 'fashion', 'literature', 'architecture'].includes(rawCat)
-          ? rawCat
-          : guessCategory(item.name || trimmed)) as CulturalCategory;
+        const rawType = item.type || item.category || (Array.isArray(item.types) ? item.types[0] : undefined);
+        const cat = mapQlooCategory(rawType, item.name || trimmed);
+        const id = item.urn || item.id || `urn:entity:${rawType || 'entity'}:${slugify(item.name || trimmed)}`;
 
         return {
-          id: item.urn || item.id || `qloo:${normalizedCat}:${slugify(item.name || trimmed)}`,
-          name: item.name || trimmed,
-          category: normalizedCat,
-          affinityScore: Number(item.score || item.affinity || 0.95),
-          metadata: { ...item.properties, source: 'qloo_live' },
+          id,
+          name: item.name || item.title || trimmed,
+          category: cat,
+          affinityScore: Number(item.score ?? item.popularity ?? item.affinity ?? 0.95),
+          metadata: {
+            ...item.properties,
+            urn: id,
+            type: rawType,
+            source: 'qloo_live',
+          },
         };
       });
     } catch (err: unknown) {
@@ -110,12 +206,16 @@ export class QlooClient {
   }
 
   /**
-   * Cross-domain taste correlation.
-   * Maps a set of seed interests/entities into correlated affinities across requested cultural categories.
+   * Cross-domain taste correlation via Qloo Hackathon /v2/insights.
+   * Endpoint: GET ${this.baseUrl}/v2/insights with query params:
+   *  - signal.interests.entities (entity URNs)
+   *  - filter.type (one of urn:entity:artist, urn:entity:movie, urn:entity:place, urn:entity:brand, urn:entity:book)
+   *  - location (optional for places)
    */
   public async getCrossDomainCorrelations(
     seedInterests: string[],
-    targetCategories: CulturalCategory[] = ['music', 'film', 'dining', 'fashion', 'literature', 'architecture']
+    targetCategories: CulturalCategory[] = ['music', 'film', 'dining', 'fashion', 'literature', 'architecture'],
+    location?: string
   ): Promise<CulturalEntity[]> {
     if (!seedInterests || seedInterests.length === 0) return [];
 
@@ -124,54 +224,116 @@ export class QlooClient {
     }
 
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+      // Step 1: Resolve seed interests to Entity URNs if not already URNs
+      const entityUrns: string[] = [];
+      for (const seed of seedInterests) {
+        if (seed.startsWith('urn:entity:')) {
+          entityUrns.push(seed);
+        } else {
+          const matches = await this.searchEntities(seed);
+          if (matches.length > 0 && matches[0].id) {
+            entityUrns.push(matches[0].id);
+          }
+        }
+      }
 
-      const endpoint = `${this.baseUrl}/v2/insights`;
-      const payload = {
-        'signal.interests.entities': seedInterests,
-        'filter.types': targetCategories,
-      };
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-Api-Key': process.env.QLOO_API_KEY!.trim(),
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeout);
-
-      if (!response.ok) {
-        console.warn(`[QlooClient] Insights request returned status ${response.status}. Falling back to curated correlation.`);
+      // If no valid entity URNs could be resolved from seeds, fallback to curated correlation
+      if (entityUrns.length === 0) {
+        console.warn('[QlooClient] No entity URNs resolved for seeds. Falling back to curated correlation.');
         return expandCuratedCorrelations(seedInterests, targetCategories);
       }
 
-      const data = (await response.json()) as QlooInsightsResponse;
-      const rawList = data.entities || data.results || data.data || [];
+      // Step 2: Define valid Qloo filter types mapped to internal cultural categories
+      const filterTypeConfigs: Array<{ filterType: string; category: CulturalCategory }> = [
+        { filterType: 'urn:entity:artist', category: 'music' },
+        { filterType: 'urn:entity:movie', category: 'film' },
+        { filterType: 'urn:entity:place', category: 'dining' },
+        { filterType: 'urn:entity:brand', category: 'fashion' },
+        { filterType: 'urn:entity:book', category: 'literature' },
+      ];
 
-      if (!Array.isArray(rawList) || rawList.length === 0) {
+      // Query only categories that overlap with targetCategories
+      const activeConfigs = filterTypeConfigs.filter((cfg) =>
+        targetCategories.includes(cfg.category)
+      );
+
+      const apiKey = process.env.QLOO_API_KEY!.trim();
+
+      // Step 3: Promise.allSettled GET requests in parallel
+      const fetchPromises = activeConfigs.map(async ({ filterType, category }) => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+
+        try {
+          const url = new URL(`${this.rootBaseUrl}/v2/insights`);
+          for (const urn of entityUrns) {
+            url.searchParams.append('signal.interests.entities', urn);
+          }
+          url.searchParams.set('filter.type', filterType);
+
+          if (location && filterType === 'urn:entity:place') {
+            url.searchParams.set('location', location);
+          }
+
+          const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'X-Api-Key': apiKey,
+            },
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeout);
+
+          if (!response.ok) {
+            console.warn(`[QlooClient] Insights ${filterType} failed with status ${response.status}`);
+            return [];
+          }
+
+          const data = (await response.json()) as any;
+          const rawList: QlooEntityResponse[] =
+            data.results || data.data || data.entities || (Array.isArray(data) ? data : []);
+
+          if (!Array.isArray(rawList)) return [];
+
+          return rawList.map((item): CulturalEntity => {
+            const urn = item.urn || item.id || `urn:entity:${filterType.split(':').pop()}:${slugify(item.name || 'entity')}`;
+            return {
+              id: urn,
+              name: item.name || item.title || 'Cultural Entity',
+              category,
+              affinityScore: Number(item.score ?? item.affinity ?? item.popularity ?? 0.88),
+              metadata: {
+                ...item.properties,
+                urn,
+                type: filterType,
+                source: 'qloo_live',
+              },
+            };
+          });
+        } catch (err) {
+          clearTimeout(timeout);
+          console.warn(`[QlooClient] Insights fetch error for ${filterType}:`, err);
+          return [];
+        }
+      });
+
+      const settled = await Promise.allSettled(fetchPromises);
+      const combined: CulturalEntity[] = [];
+
+      for (const res of settled) {
+        if (res.status === 'fulfilled' && Array.isArray(res.value)) {
+          combined.push(...res.value);
+        }
+      }
+
+      if (combined.length === 0) {
+        console.warn('[QlooClient] Live insights returned 0 entities. Deferring to curated correlations.');
         return expandCuratedCorrelations(seedInterests, targetCategories);
       }
 
-      return rawList.map((item) => {
-        const cat = (item.category || item.type || 'dining') as string;
-        const normalizedCat: CulturalCategory = (['music', 'film', 'dining', 'fashion', 'literature', 'architecture'].includes(cat)
-          ? cat
-          : guessCategory(item.name || '')) as CulturalCategory;
-
-        return {
-          id: item.urn || item.id || `qloo:${normalizedCat}:${slugify(item.name || 'entity')}`,
-          name: item.name || 'Cultural Entity',
-          category: normalizedCat,
-          affinityScore: Number(item.score || item.affinity || 0.88),
-          metadata: { ...item.properties, source: 'qloo_live' },
-        };
-      });
+      return combined;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.warn(`[QlooClient] Live cross-domain query failed (${msg}). Falling back to curated correlations.`);
@@ -182,7 +344,7 @@ export class QlooClient {
   /**
    * Synthesize a full CulturalTasteGraph for a VIP profile.
    */
-  public async fetchTasteGraph(seedInterests: string[]): Promise<CulturalTasteGraph> {
+  public async fetchTasteGraph(seedInterests: string[], location?: string): Promise<CulturalTasteGraph> {
     if (!this.isConfigured) {
       return buildFallbackTasteGraph(seedInterests);
     }
@@ -199,12 +361,16 @@ export class QlooClient {
             name: seed,
             category: guessCategory(seed),
             affinityScore: 0.98,
-            metadata: { source: 'seed_input' }
+            metadata: { source: 'seed_input' },
           });
         }
       }
 
-      const expandedEntities = await this.getCrossDomainCorrelations(seedInterests);
+      const expandedEntities = await this.getCrossDomainCorrelations(
+        seedInterests,
+        ['music', 'film', 'dining', 'fashion', 'literature', 'architecture'],
+        location
+      );
 
       if (expandedEntities.length === 0) {
         return buildFallbackTasteGraph(seedInterests);
@@ -219,7 +385,9 @@ export class QlooClient {
         resolvedSeeds,
         expandedEntities,
         crossDomainThemes,
-        source: 'qloo_live',
+        source: expandedEntities.some((e) => e.metadata?.source === 'qloo_live')
+          ? 'qloo_live'
+          : 'curated_fallback',
       };
     } catch {
       return buildFallbackTasteGraph(seedInterests);

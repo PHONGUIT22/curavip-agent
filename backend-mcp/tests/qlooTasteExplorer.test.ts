@@ -50,4 +50,105 @@ describe('Qloo Taste Explorer & Cultural Graph', () => {
     });
     expect(result.entities.length).toBe(0);
   });
+
+  describe('QlooClient Live Specs Compliance', () => {
+    const originalFetch = global.fetch;
+    const originalKey = process.env.QLOO_API_KEY;
+
+    beforeEach(() => {
+      process.env.QLOO_API_KEY = 'test_qloo_live_key_12345';
+    });
+
+    afterEach(() => {
+      global.fetch = originalFetch;
+      process.env.QLOO_API_KEY = originalKey;
+    });
+
+    it('calls GET /search with X-Api-Key and parses entity URN', async () => {
+      const calls: Array<{ url: string; options: any }> = [];
+      global.fetch = (async (url: string | URL | Request, options?: any) => {
+        calls.push({ url: url.toString(), options });
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            results: [
+              {
+                id: 'urn:entity:movie:interstellar_2014',
+                name: 'Interstellar',
+                type: 'movie',
+                score: 0.98,
+              },
+            ],
+          }),
+        } as any;
+      }) as typeof fetch;
+
+      const entities = await qlooClient.searchEntities('Interstellar', 'film');
+      expect(calls.length).toBe(1);
+      expect(calls[0].url).toContain('/search?query=Interstellar&types=movie');
+      expect(calls[0].options.method).toBe('GET');
+      expect(calls[0].options.headers['X-Api-Key']).toBe('test_qloo_live_key_12345');
+      expect(entities[0].id).toBe('urn:entity:movie:interstellar_2014');
+      expect(entities[0].category).toBe('film');
+      expect(entities[0].metadata?.source).toBe('qloo_live');
+    });
+
+    it('calls GET /v2/insights with query params (no POST) and parallel filter.types', async () => {
+      const calls: Array<{ url: string; options: any }> = [];
+      global.fetch = (async (url: string | URL | Request, options?: any) => {
+        const urlStr = url.toString();
+        calls.push({ url: urlStr, options });
+
+        // Search mock
+        if (urlStr.includes('/search')) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              results: [
+                {
+                  id: 'urn:entity:artist:hans_zimmer',
+                  name: 'Hans Zimmer',
+                  type: 'artist',
+                  score: 0.99,
+                },
+              ],
+            }),
+          } as any;
+        }
+
+        // Insights mock
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            results: [
+              {
+                urn: 'urn:entity:place:blue_note_tokyo',
+                name: 'Blue Note Tokyo',
+                score: 0.91,
+              },
+            ],
+          }),
+        } as any;
+      }) as typeof fetch;
+
+      const results = await qlooClient.getCrossDomainCorrelations(
+        ['Hans Zimmer'],
+        ['dining', 'music'],
+        'Tokyo'
+      );
+
+      expect(results.length).toBeGreaterThan(0);
+      const insightCalls = calls.filter((c) => c.url.includes('/v2/insights'));
+      expect(insightCalls.length).toBeGreaterThan(0);
+      for (const call of insightCalls) {
+        expect(call.options.method).toBe('GET');
+        expect(call.options.body).toBeUndefined();
+        expect(call.options.headers['X-Api-Key']).toBe('test_qloo_live_key_12345');
+        expect(call.url).toContain('signal.interests.entities=urn%3Aentity%3Aartist%3Ahans_zimmer');
+      }
+    });
+  });
 });
