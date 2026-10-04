@@ -9,6 +9,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      spacing: {
+        '4.5': '1.125rem', // 18px
+        '5.5': '1.375rem', // 22px
+      },
       fontFamily: {
         sans: ["'Google Sans'", "'Google Sans Text'", 'system-ui', 'sans-serif'],
       },

@@ -5,11 +5,19 @@ import { Menu, SlidersHorizontal, Users, FileText, SplitSquareVertical } from 'l
 
 interface AppSidebarProps {
   onOpenBenchmark?: () => void;
+  onNavigateConsole?: () => void;
+  onNavigateRoster?: () => void;
+  onNavigateDossier?: () => void;
+  activeSection?: 'console' | 'roster' | 'dossier' | 'benchmark';
   qlooLiveStatus?: boolean;
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({
   onOpenBenchmark,
+  onNavigateConsole,
+  onNavigateRoster,
+  onNavigateDossier,
+  activeSection = 'console',
   qlooLiveStatus = false,
 }) => {
   return (
@@ -18,6 +26,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       <div className="flex flex-col items-center gap-6 w-full">
         <button
           type="button"
+          onClick={onNavigateConsole}
           className="w-10 h-10 flex items-center justify-center text-[#DDEBE3] hover:text-white transition-colors"
           title="CuraVIP Navigation"
         >
@@ -26,20 +35,30 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
         {/* Core Navigation Icons */}
         <div className="flex flex-col items-center gap-3 w-full px-2">
-          {/* Active Terminal Icon */}
+          {/* Executive Console */}
           <button
             type="button"
-            className="w-10 h-10 rounded-xl bg-[#1D5A4A] border border-[#2D7360] flex items-center justify-center text-white shadow-sm transition-all"
-            title="Concierge Terminal"
+            onClick={onNavigateConsole}
+            className={`w-10 h-10 flex items-center justify-center transition-all ${
+              activeSection === 'console'
+                ? 'bg-[#1D5A4A] border border-[#2D7360] text-white shadow-sm rounded-xl'
+                : 'text-[#8BA89B] hover:text-[#DDEBE3] hover:bg-[#1A4237] rounded-lg transition-colors'
+            }`}
+            title="Executive Console"
           >
             <SlidersHorizontal className="w-4 h-4" />
           </button>
 
-          {/* Principals Roster */}
+          {/* VIP Principals Roster */}
           <button
             type="button"
-            className="w-10 h-10 rounded-lg hover:bg-[#1A4237] text-[#8BA89B] hover:text-[#DDEBE3] flex items-center justify-center transition-colors"
-            title="VIP Principals"
+            onClick={onNavigateRoster}
+            className={`w-10 h-10 flex items-center justify-center transition-all ${
+              activeSection === 'roster'
+                ? 'bg-[#1D5A4A] border border-[#2D7360] text-white shadow-sm rounded-xl'
+                : 'text-[#8BA89B] hover:text-[#DDEBE3] hover:bg-[#1A4237] rounded-lg transition-colors'
+            }`}
+            title="VIP Principals Roster"
           >
             <Users className="w-4 h-4" />
           </button>
@@ -47,8 +66,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           {/* Taste Graph Ledger */}
           <button
             type="button"
-            className="w-10 h-10 rounded-lg hover:bg-[#1A4237] text-[#8BA89B] hover:text-[#DDEBE3] flex items-center justify-center transition-colors"
-            title="Taste Graph Archive"
+            onClick={onNavigateDossier}
+            className={`w-10 h-10 flex items-center justify-center transition-all ${
+              activeSection === 'dossier'
+                ? 'bg-[#1D5A4A] border border-[#2D7360] text-white shadow-sm rounded-xl'
+                : 'text-[#8BA89B] hover:text-[#DDEBE3] hover:bg-[#1A4237] rounded-lg transition-colors'
+            }`}
+            title="Taste Graph & Dossier Ledger"
           >
             <FileText className="w-4 h-4" />
           </button>
@@ -57,7 +81,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           <button
             type="button"
             onClick={onOpenBenchmark}
-            className="w-10 h-10 rounded-lg hover:bg-[#1A4237] text-[#8BA89B] hover:text-[#DDEBE3] flex items-center justify-center transition-colors"
+            className={`w-10 h-10 flex items-center justify-center transition-all ${
+              activeSection === 'benchmark'
+                ? 'bg-[#1D5A4A] border border-[#2D7360] text-white shadow-sm rounded-xl'
+                : 'text-[#8BA89B] hover:text-[#DDEBE3] hover:bg-[#1A4237] rounded-lg transition-colors'
+            }`}
             title="Side-by-Side Benchmark"
           >
             <SplitSquareVertical className="w-4 h-4" />

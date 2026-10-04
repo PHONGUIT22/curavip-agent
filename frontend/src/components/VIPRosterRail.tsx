@@ -50,10 +50,10 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                 key={vip.id}
                 type="button"
                 onClick={() => onSelectVip(vip)}
-                className={`w-full text-left transition-all ${
+                className={`w-full text-left transition-all p-5 ${
                   isSelected
-                    ? 'bg-[#F4F1EA] border-l-4 border-l-[#183D33] pl-5 pr-4 py-4'
-                    : 'bg-white hover:bg-[#FAF8F5] p-4.5'
+                    ? 'bg-[#F4F1EA] border-l-4 border-l-[#183D33] pl-6'
+                    : 'bg-white hover:bg-[#FAF8F5]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-1.5">

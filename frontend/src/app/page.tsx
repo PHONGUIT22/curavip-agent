@@ -35,6 +35,7 @@ export default function Home() {
   // Side-by-side benchmark modal
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
   const [comparisonData, setComparisonData] = useState<DossierComparisonResponse | null>(null);
+  const [activeSection, setActiveSection] = useState<'console' | 'roster' | 'dossier' | 'benchmark'>('console');
 
   // Custom VIP Builder modal for hackathon judges
   const [isCreateVipOpen, setIsCreateVipOpen] = useState(false);
@@ -114,9 +115,23 @@ export default function Home() {
     }
   };
 
+  const scrollToSection = (id: string, section?: 'console' | 'roster' | 'dossier' | 'benchmark') => {
+    if (section) {
+      setActiveSection(section);
+    }
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const handleGenerateFromConsole = async (brief: string) => {
     if (!selectedVip) return;
     await fetchDossier(selectedVip.id, budgetTier, executionMode, brief);
+    // Tự động cuộn xuống phần kết quả
+    setTimeout(() => {
+      scrollToSection('dossier-results', 'dossier');
+    }, 200);
   };
 
   const handleCreateVip = async (newProfileInput: VIPProfileInput) => {
@@ -138,6 +153,7 @@ export default function Home() {
 
   const handleOpenSideBySide = async () => {
     if (!selectedVip) return;
+    setActiveSection('benchmark');
     setIsLoading(true);
     setGlowState('reasoning');
 
@@ -167,6 +183,10 @@ export default function Home() {
       {/* Left Deep Pine Sidebar */}
       <AppSidebar
         onOpenBenchmark={handleOpenSideBySide}
+        onNavigateConsole={() => scrollToSection('console-section', 'console')}
+        onNavigateRoster={() => scrollToSection('roster-section', 'roster')}
+        onNavigateDossier={() => scrollToSection('dossier-results', 'dossier')}
+        activeSection={activeSection}
         qlooLiveStatus={qlooLiveStatus}
       />
 
@@ -185,32 +205,38 @@ export default function Home() {
         {/* Main Workspace Layout */}
         <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-8 flex-1 flex flex-col lg:flex-row gap-8">
           {/* Left Sidebar: VIP Principals Roster */}
-          <VIPRosterRail
-            profiles={profiles}
-            selectedVipId={selectedVip?.id || null}
-            onSelectVip={handleSelectVip}
-            onOpenCreateVip={() => setIsCreateVipOpen(true)}
-          />
+          <div id="roster-section" className="w-full lg:w-80 flex-shrink-0 scroll-mt-6">
+            <VIPRosterRail
+              profiles={profiles}
+              selectedVipId={selectedVip?.id || null}
+              onSelectVip={handleSelectVip}
+              onOpenCreateVip={() => setIsCreateVipOpen(true)}
+            />
+          </div>
 
           {/* Center & Right Column: Agent Console & Rich Dossier Cards */}
           <div className="flex-1 min-w-0">
             {/* Executive Chief of Staff Console */}
-            <VIPAgentConsole
-              selectedVip={selectedVip}
-              budgetTier={budgetTier}
-              onSelectTier={handleSelectTier}
-              executionMode={executionMode}
-              onGenerateDossier={handleGenerateFromConsole}
-              isLoading={isLoading}
-              onVoiceStateChange={(listening) =>
-                setGlowState(listening ? 'listening' : 'idle')
-              }
-              traceSteps={activeTrace}
-              onAddTraceStep={(step) => setActiveTrace((prev) => [step, ...prev])}
-            />
+            <div id="console-section" className="scroll-mt-6">
+              <VIPAgentConsole
+                selectedVip={selectedVip}
+                budgetTier={budgetTier}
+                onSelectTier={handleSelectTier}
+                executionMode={executionMode}
+                onGenerateDossier={handleGenerateFromConsole}
+                isLoading={isLoading}
+                onVoiceStateChange={(listening) =>
+                  setGlowState(listening ? 'listening' : 'idle')
+                }
+                traceSteps={activeTrace}
+                onAddTraceStep={(step) => setActiveTrace((prev) => [step, ...prev])}
+              />
+            </div>
 
             {/* Rich Cards Container (Taste Graph, Gifts, Dining, Compliance) */}
-            <RichCardsContainer dossier={activeDossier} />
+            <div id="dossier-results" className="scroll-mt-6">
+              <RichCardsContainer dossier={activeDossier} />
+            </div>
           </div>
         </main>
       </div>
@@ -219,7 +245,10 @@ export default function Home() {
       <SideBySideComparisonView
         comparison={comparisonData}
         isOpen={isComparisonOpen}
-        onClose={() => setIsComparisonOpen(false)}
+        onClose={() => {
+          setIsComparisonOpen(false);
+          setActiveSection('console');
+        }}
       />
 
       {/* Custom VIP Builder Modal for Hackathon Judges */}

@@ -44,9 +44,9 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
         </button>
       </div>
 
-      {/* 3 Tier Proposals with 1px Ledger Borders */}
-      <div className="border border-[#E5E0D6] bg-white rounded-xl overflow-hidden shadow-2xs">
-        {gifts.map((gift, idx) => {
+      {/* 3 Tier Proposals as Dedicated Sub-Cards */}
+      <div>
+        {gifts.map((gift) => {
           const tierLabel =
             gift.tier === 'signature'
               ? 'Signature Proposal'
@@ -57,9 +57,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
           return (
             <div
               key={gift.id}
-              className={`p-6 transition-colors hover:bg-[#FAF8F5] ${
-                idx > 0 ? 'pt-6 mt-6 border-t border-[#EBE6DD]' : ''
-              }`}
+              className="bg-[#FAF8F5]/60 border border-[#EBE6DD] rounded-xl p-5 sm:p-6 mb-4 last:mb-0 space-y-3 transition-colors hover:bg-white hover:border-[#183D33]/30 shadow-2xs"
             >
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="text-xs font-semibold uppercase tracking-wider text-[#183D33]">
@@ -70,23 +68,17 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                 </span>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mb-3">
-                <h4 className="text-lg font-semibold text-[#161A18] tracking-normal leading-snug flex-1">
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <h4 className="font-sans font-semibold text-lg text-[#161A18] leading-snug flex-1 min-w-0 pr-2">
                   {gift.title}
                 </h4>
-
-                <div className="text-right flex items-baseline justify-between sm:justify-end gap-1.5 shrink-0">
-                  <span className="font-sans font-semibold text-2xl text-[#183D33] tabular-nums">
-                    ${gift.estimatedPriceUsd.toLocaleString()}
-                  </span>
-                  <span className="text-xs font-semibold uppercase text-[#6B736D]">
-                    USD Est.
-                  </span>
-                </div>
+                <span className="font-sans font-semibold text-sm sm:text-base text-[#183D33] tabular-nums shrink-0 whitespace-nowrap bg-[#183D33]/5 px-2.5 py-1 rounded-md">
+                  ${gift.estimatedPriceUsd.toLocaleString()}
+                </span>
               </div>
 
               {/* Qloo Provenance Anchor Badge (Warm Mint & Jade) */}
-              <div className="mb-3">
+              <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#C8DCD1] bg-[#EDF4F0] text-xs font-medium text-[#1E4D3E]">
                   <Shield className="w-3.5 h-3.5 text-[#1E4D3E]" />
                   <span>Qloo Provenance Anchor: {gift.qlooCorrelationAnchor}</span>
@@ -94,13 +86,13 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
               </div>
 
               {/* Cultural Rationale */}
-              <p className="font-sans text-base text-[#323835] leading-relaxed font-normal mb-3">
+              <p className="font-sans text-sm sm:text-base text-[#323835] leading-relaxed font-normal">
                 {gift.culturalRationale}
               </p>
 
               {/* Materials / Guardrail notes */}
               {gift.materials && gift.materials.length > 0 && (
-                <div className="flex items-center gap-2 text-xs font-medium text-[#6B736D]">
+                <div className="flex items-center gap-2 text-xs font-medium text-[#6B736D] pt-1">
                   <Tag className="w-3.5 h-3.5 text-[#8C938E]" />
                   <span>Verified Materials: {gift.materials.join(', ')}</span>
                 </div>

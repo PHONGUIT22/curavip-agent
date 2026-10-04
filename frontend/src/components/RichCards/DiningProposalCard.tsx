@@ -39,7 +39,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
         {diningOptions.map((option) => (
           <div
             key={option.id}
-            className="bg-[#FAF8F5]/60 border border-[#EBE6DD] rounded-xl p-5.5 space-y-3 transition-colors hover:bg-white hover:border-[#183D33]/30 shadow-2xs"
+            className="p-5 sm:p-6 rounded-2xl border border-[#EBE6DD] bg-[#FAF8F5]/70 space-y-3.5 mb-4 shadow-2xs transition-colors hover:bg-white hover:border-[#183D33]/30"
           >
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
               <div>
@@ -59,7 +59,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
             </div>
 
             {/* Vibe Anchor */}
-            <div className="my-2.5 text-sm text-[#323835] font-sans">
+            <div className="my-3 text-sm text-[#323835] leading-relaxed font-sans">
               <span className="text-[#6B736D] uppercase text-xs font-semibold mr-2 tracking-wide">
                 Atmosphere:
               </span>
@@ -67,7 +67,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
             </div>
 
             {/* Pairing protocol with roomy padding and soft warm canvas */}
-            <div className="p-4.5 border border-[#E5E0D6] bg-[#F8F6F0] text-sm text-[#323835] flex items-start gap-3 rounded-xl">
+            <div className="p-4 sm:p-5 rounded-xl border border-[#E5E0D6] bg-[#F8F6F0] flex items-start gap-3.5 text-sm text-[#323835]">
               <GlassWater className="w-4 h-4 text-[#183D33] mt-0.5 flex-shrink-0" />
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-[#183D33] block mb-1">
@@ -78,7 +78,7 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({ diningOp
             </div>
 
             {/* Cultural Rationale */}
-            <p className="my-2.5 text-base text-[#323835] leading-relaxed font-sans font-normal">
+            <p className="my-3 text-sm text-[#323835] leading-relaxed font-sans font-normal">
               {option.culturalRationale}
             </p>
           </div>

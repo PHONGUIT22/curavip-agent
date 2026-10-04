@@ -24,7 +24,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   const isGrounded = executionMode === 'qloo_grounded';
 
   return (
-    <header className="w-full bg-[#F8F6F0] border-b border-[#E5E0D6] px-6 py-4.5">
+    <header className="w-full bg-[#F8F6F0] border-b border-[#E5E0D6] px-6 py-4">
       <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Editorial Sub-Header Breadcrumb & Title */}
         <div>

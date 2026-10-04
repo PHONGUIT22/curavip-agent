@@ -68,9 +68,11 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   const [isAgentExecuting, setIsAgentExecuting] = useState(false);
   const [isTraceExpanded, setIsTraceExpanded] = useState(true);
   const [messages, setMessages] = useState<ConsoleMessage[]>([]);
+  const [synthesizedSuccess, setSynthesizedSuccess] = useState(false);
 
   // Default suggested brief when selecting a principal
   useEffect(() => {
+    setSynthesizedSuccess(false);
     if (selectedVip) {
       if (selectedVip.id.includes('marcus')) {
         setMeetingBrief(
@@ -165,10 +167,16 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
     }
   };
 
-  const handleGenerateSubmit = (e: React.FormEvent) => {
+  const handleGenerateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
-    onGenerateDossier(meetingBrief);
+    setSynthesizedSuccess(false);
+    try {
+      await onGenerateDossier(meetingBrief);
+      setSynthesizedSuccess(true);
+    } catch {
+      setSynthesizedSuccess(false);
+    }
   };
 
   const handleExecuteAgentTurn = async (queryText?: string) => {
@@ -298,7 +306,10 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             <div className="relative">
               <textarea
                 value={meetingBrief}
-                onChange={(e) => setMeetingBrief(e.target.value)}
+                onChange={(e) => {
+                  setMeetingBrief(e.target.value);
+                  setSynthesizedSuccess(false);
+                }}
                 placeholder="Enter meeting context, deal parameters, or high-stakes hospitality objectives..."
                 rows={3}
                 className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-sm p-4 pr-12 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none transition-colors rounded-lg resize-none leading-relaxed"
@@ -389,6 +400,24 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                 )}
               </button>
             </div>
+
+            {/* Live Success Banner */}
+            {synthesizedSuccess && (
+              <div className="flex items-center justify-between gap-2.5 px-3.5 py-2.5 bg-[#EDF4F0] border border-[#C8DCD1] text-[#1D5A4A] text-xs font-medium rounded-lg animate-fade-slide shadow-2xs">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#1D5A4A] shrink-0" />
+                  <span>Dossier synthesized with live brief context. Viewing updated proposals below.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSynthesizedSuccess(false)}
+                  className="text-[#1D5A4A]/70 hover:text-[#1D5A4A] text-xs px-1 transition-colors font-semibold"
+                  title="Dismiss notification"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
           </form>
         )}
 

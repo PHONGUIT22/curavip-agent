@@ -259,6 +259,32 @@ function synthesizeDynamicGroundedRuleBased(
   const dEntity1 = diningEntities[0]?.name || 'Private Dining Salon';
   const dEntity2 = diningEntities[1]?.name || 'Atelier Chef Table';
 
+  const formatDiningVenueName = (rawName: string, defaultSuffix: string): string => {
+    const trimmed = rawName.trim();
+    const lower = trimmed.toLowerCase();
+
+    // Specific case: Chef's-counter tasting menus or similar
+    if (lower.includes('chef') && (lower.includes('counter') || lower.includes('menu'))) {
+      return "The Chef's Counter — Artisanal Tasting Salon";
+    }
+
+    const awkwardWords = ['menu', 'counter', 'omakase', 'cuisine', 'cooking'];
+    const hasAwkward = awkwardWords.some((w) => lower.includes(w));
+
+    if (hasAwkward) {
+      if (lower.endsWith('salon') || lower.endsWith('studio') || lower.endsWith('loft')) {
+        return trimmed;
+      }
+      return `${trimmed} Salon`;
+    }
+
+    if (lower.endsWith('salon') || lower.endsWith('studio') || lower.endsWith('loft') || lower.endsWith('atelier')) {
+      return trimmed;
+    }
+
+    return `${trimmed} ${defaultSuffix}`;
+  };
+
   const isNoAlcohol = Boolean(profile.taboos.alcohol);
   const dietaryList = profile.taboos.dietary || [];
   const isHalal = dietaryList.includes('halal');
@@ -284,7 +310,7 @@ function synthesizeDynamicGroundedRuleBased(
   const diningOptions: DiningProposal[] = [
     {
       id: `dining_dyn_${Date.now()}_1`,
-      venueName: `${dEntity1} Private Studio`,
+      venueName: formatDiningVenueName(dEntity1, 'Private Studio'),
       cuisineType: cuisine1,
       neighborhood: `${profile.city || 'Global Hub'} Diplomatic District`,
       vibeAnchor: 'Wabi-Sabi Minimalism & Monolithic Stone Counter',
@@ -295,7 +321,7 @@ function synthesizeDynamicGroundedRuleBased(
     },
     {
       id: `dining_dyn_${Date.now()}_2`,
-      venueName: `${dEntity2} Private Loft`,
+      venueName: formatDiningVenueName(dEntity2, 'Private Loft'),
       cuisineType: cuisine2,
       neighborhood: `${profile.city || 'Global Hub'} Historic Quarter`,
       vibeAnchor: 'Acoustic Restraint & Hand-Hewn Architectural Wood',

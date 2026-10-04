@@ -24,7 +24,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 overflow-y-auto">
       <div className="w-full max-w-6xl max-h-[92vh] flex flex-col border border-[#E5E0D6]/80 bg-[#F8F6F0] rounded-2xl shadow-2xl overflow-hidden">
         {/* Modal Header */}
-        <div className="px-6 py-4.5 border-b border-[#E5E0D6] flex items-center justify-between bg-white">
+        <div className="px-6 py-4 sm:py-5 border-b border-[#E5E0D6] flex items-center justify-between bg-white">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
@@ -52,7 +52,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
           {/* COLUMN 1: GENERIC LLM BASELINE (UNGROUNDED) */}
           <div className="space-y-5">
             {/* Column Title */}
-            <div className="p-4.5 border border-[#F8B4B4] bg-[#FDF2F2] rounded-xl shadow-2xs">
+            <div className="p-4 sm:p-5 border border-[#F8B4B4] bg-[#FDF2F2] rounded-xl shadow-2xs">
               <div className="flex items-center gap-2 text-[#C53030] font-sans text-xs font-semibold uppercase mb-1">
                 <Zap className="w-4 h-4" />
                 <span>Generic LLM Baseline (Without Qloo)</span>
@@ -63,7 +63,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
             </div>
 
             {/* Compliance Fail Callout */}
-            <div className="p-4.5 border border-[#F8B4B4] bg-white rounded-xl shadow-2xs">
+            <div className="p-4 sm:p-5 border border-[#F8B4B4] bg-white rounded-xl shadow-2xs">
               <div className="flex items-center gap-2 text-xs font-sans text-[#C53030] font-semibold uppercase mb-2">
                 <AlertOctagon className="w-4 h-4" />
                 <span>Governance Risk: Taboo & FCPA Violations</span>
@@ -87,9 +87,13 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
               <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-xl shadow-2xs overflow-hidden">
                 {generic.dossier.curatedGifts.map((gift) => (
                   <div key={gift.id} className="p-4">
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-sans font-semibold text-base text-[#161A18]">{gift.title}</h4>
-                      <span className="font-sans font-semibold text-sm text-[#6B736D]">${gift.estimatedPriceUsd}</span>
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <h4 className="font-sans font-semibold text-base text-[#161A18] leading-snug flex-1 min-w-0 pr-2">
+                        {gift.title}
+                      </h4>
+                      <span className="font-sans font-semibold text-sm text-[#6B736D] tabular-nums shrink-0 whitespace-nowrap bg-neutral-100 px-2.5 py-1 rounded-md">
+                        ${gift.estimatedPriceUsd}
+                      </span>
                     </div>
                     <span className="text-xs font-semibold text-[#C53030] block mb-1.5">
                       Anchor: {gift.qlooCorrelationAnchor}
@@ -120,7 +124,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
           {/* COLUMN 2: QLOO GROUNDED CONCIERGE (CURAVIP) */}
           <div className="space-y-5">
             {/* Column Title */}
-            <div className="p-4.5 border border-[#C8DCD1] bg-[#EDF4F0] rounded-xl shadow-2xs">
+            <div className="p-4 sm:p-5 border border-[#C8DCD1] bg-[#EDF4F0] rounded-xl shadow-2xs">
               <div className="flex items-center gap-2 text-[#1D5A4A] font-sans text-xs font-semibold uppercase mb-1">
                 <Compass className="w-4 h-4 text-[#1D5A4A]" />
                 <span>CuraVIP (Qloo Taste Graph Grounded)</span>
@@ -131,7 +135,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
             </div>
 
             {/* Compliance Passed Callout */}
-            <div className="p-4.5 border border-[#C8DCD1] bg-white rounded-xl shadow-2xs">
+            <div className="p-4 sm:p-5 border border-[#C8DCD1] bg-white rounded-xl shadow-2xs">
               <div className="flex items-center gap-2 text-xs font-sans text-[#1D5A4A] font-semibold uppercase mb-1.5">
                 <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
                 <span>100% FCPA & Taboo Compliant Verified</span>
@@ -149,9 +153,13 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
               <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-xl shadow-2xs overflow-hidden">
                 {grounded.dossier.curatedGifts.map((gift) => (
                   <div key={gift.id} className="p-4">
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-sans font-semibold text-base text-[#161A18]">{gift.title}</h4>
-                      <span className="font-sans font-semibold text-sm text-[#183D33] tabular-nums">${gift.estimatedPriceUsd}</span>
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <h4 className="font-sans font-semibold text-base text-[#161A18] leading-snug flex-1 min-w-0 pr-2">
+                        {gift.title}
+                      </h4>
+                      <span className="font-sans font-semibold text-sm text-[#183D33] tabular-nums shrink-0 whitespace-nowrap bg-[#183D33]/5 px-2.5 py-1 rounded-md">
+                        ${gift.estimatedPriceUsd}
+                      </span>
                     </div>
                     <span className="text-xs font-semibold text-[#183D33] block mb-1.5">
                       Anchor: {gift.qlooCorrelationAnchor}
