@@ -230,7 +230,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   };
 
   return (
-    <section className="border border-[#E5E0D6] bg-white rounded-sm shadow-sm mb-6 overflow-hidden">
+    <section className="border border-[#E5E0D6]/80 bg-white rounded-2xl shadow-sm mb-6 overflow-hidden">
       {/* Console Top Header & Mode Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-3.5 border-b border-[#EBE6DD] bg-[#FAF8F5]">
         <div className="flex items-center gap-3">
@@ -242,11 +242,11 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
 
         {/* Mode Switcher Tabs */}
         <div className="flex items-center gap-2">
-          <div className="inline-flex p-0.5 border border-[#E5E0D6] bg-white rounded-sm text-xs">
+          <div className="inline-flex p-1 border border-[#E5E0D6] bg-white rounded-lg text-xs">
             <button
               type="button"
               onClick={() => setActiveMode('briefing')}
-              className={`flex items-center gap-1.5 px-3 py-1 font-semibold uppercase tracking-wider rounded-xs transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1 font-semibold uppercase tracking-wider rounded-md transition-colors ${
                 activeMode === 'briefing'
                   ? 'bg-[#183D33] text-white'
                   : 'text-[#6B736D] hover:text-[#161A18]'
@@ -259,7 +259,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             <button
               type="button"
               onClick={() => setActiveMode('turn')}
-              className={`flex items-center gap-1.5 px-3 py-1 font-semibold uppercase tracking-wider rounded-xs transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1 font-semibold uppercase tracking-wider rounded-md transition-colors ${
                 activeMode === 'turn'
                   ? 'bg-[#183D33] text-white'
                   : 'text-[#6B736D] hover:text-[#161A18]'
@@ -278,7 +278,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             <button
               type="button"
               onClick={() => handleReadout()}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider border rounded-sm transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider border rounded-lg transition-colors ${
                 isSpeaking
                   ? 'bg-[#EDF4F0] text-[#1D5A4A] border-[#C8DCD1]'
                   : 'border-[#E5E0D6] bg-white text-[#323835] hover:border-[#183D33] hover:text-[#183D33]'
@@ -301,13 +301,13 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                 onChange={(e) => setMeetingBrief(e.target.value)}
                 placeholder="Enter meeting context, deal parameters, or high-stakes hospitality objectives..."
                 rows={3}
-                className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-sm p-3.5 pr-12 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none transition-colors rounded-sm resize-none leading-relaxed"
+                className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-sm p-4 pr-12 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none transition-colors rounded-lg resize-none leading-relaxed"
               />
 
               <button
                 type="button"
                 onClick={() => toggleVoiceRecording('brief')}
-                className={`absolute right-3 bottom-3 p-1.5 border rounded-sm transition-colors ${
+                className={`absolute right-3.5 bottom-3.5 p-2 border rounded-lg transition-colors ${
                   isListening
                     ? 'bg-[#C53030] text-white border-[#C53030]'
                     : 'border-[#E5E0D6] bg-white text-[#6B736D] hover:text-[#183D33] hover:border-[#183D33]'
@@ -320,7 +320,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
 
             {/* Policy Tier Selector & Submit Action */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-              <div className="flex items-center border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm divide-x divide-[#E5E0D6]">
+              <div className="flex items-center border border-[#E5E0D6] bg-[#FAF8F5] rounded-lg divide-x divide-[#E5E0D6] overflow-hidden">
                 <span className="text-xs font-semibold uppercase text-[#6B736D] px-3.5 py-2">
                   Tier:
                 </span>
@@ -366,7 +366,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
               <button
                 type="submit"
                 disabled={isLoading || !selectedVip}
-                className={`flex items-center justify-center gap-2.5 px-6 py-2.5 text-sm uppercase tracking-wider font-semibold transition-all rounded-sm shadow-sm ${
+                className={`flex items-center justify-center gap-2.5 px-6 py-2.5 text-sm uppercase tracking-wider font-semibold transition-all rounded-lg shadow-sm ${
                   isLoading || !selectedVip
                     ? 'bg-[#EBE6DD] text-[#8C938E] border border-[#E5E0D6] cursor-not-allowed'
                     : 'bg-[#183D33] hover:bg-[#224F43] text-white border border-[#183D33]'
@@ -406,7 +406,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                   type="button"
                   onClick={() => handleExecuteAgentTurn(cmd)}
                   disabled={isAgentExecuting || !selectedVip}
-                  className="text-xs px-2.5 py-1 border border-[#E5E0D6] bg-[#FAF8F5] text-[#183D33] hover:bg-white hover:border-[#183D33] rounded-sm transition-colors"
+                  className="text-xs px-3 py-1 border border-[#E5E0D6] bg-[#FAF8F5] text-[#183D33] hover:bg-white hover:border-[#183D33] rounded-full transition-colors"
                 >
                   {cmd}
                 </button>
@@ -414,7 +414,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             </div>
 
             {/* Conversation Thread */}
-            <div className="border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm p-4 min-h-[140px] max-h-[260px] overflow-y-auto space-y-3">
+            <div className="border border-[#E5E0D6] bg-[#FAF8F5] rounded-xl p-4 min-h-[140px] max-h-[260px] overflow-y-auto space-y-3 shadow-2xs">
               {messages.length === 0 ? (
                 <div className="text-center py-6 text-xs text-[#8C938E]">
                   <Bot className="w-6 h-6 mx-auto mb-2 text-[#8C938E]/60" />
@@ -429,10 +429,10 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                     }`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-sm p-3 text-xs leading-relaxed ${
+                      className={`max-w-[85%] rounded-xl p-3.5 text-xs leading-relaxed ${
                         msg.sender === 'user'
-                          ? 'bg-[#183D33] text-white'
-                          : 'bg-white border border-[#E5E0D6] text-[#161A18] shadow-xs'
+                          ? 'bg-[#183D33] text-white shadow-2xs'
+                          : 'bg-white border border-[#E5E0D6] text-[#161A18] shadow-2xs'
                       }`}
                     >
                       {msg.sender === 'agent' && (
@@ -442,7 +442,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                             <span>Executive Agent</span>
                           </div>
                           {msg.toolName && (
-                            <span className="text-[10px] px-1.5 py-0.5 bg-[#FAF8F5] border border-[#E5E0D6] text-[#6B736D] rounded font-mono">
+                            <span className="text-[10px] px-2 py-0.5 bg-[#FAF8F5] border border-[#E5E0D6] text-[#6B736D] rounded-full font-mono">
                               {msg.toolName}
                             </span>
                           )}
@@ -473,13 +473,13 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                   }}
                   placeholder="Ask agent: 'Negotiate budget down to $300' or 'Find Japanese tea ceremony gift'..."
                   disabled={isAgentExecuting || !selectedVip}
-                  className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-xs p-3 pr-10 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none rounded-sm"
+                  className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-xs p-3 pr-10 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none rounded-lg"
                 />
 
                 <button
                   type="button"
                   onClick={() => toggleVoiceRecording('query')}
-                  className={`absolute right-2 top-2 p-1 border rounded-sm transition-colors ${
+                  className={`absolute right-2 top-2 p-1.5 border rounded-lg transition-colors ${
                     isListening
                       ? 'bg-[#C53030] text-white border-[#C53030]'
                       : 'border-[#E5E0D6] bg-white text-[#6B736D] hover:text-[#183D33]'
@@ -494,7 +494,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                 type="button"
                 onClick={() => handleExecuteAgentTurn()}
                 disabled={isAgentExecuting || !agentQuery.trim() || !selectedVip}
-                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white rounded-sm transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white rounded-lg transition-all ${
                   isAgentExecuting || !agentQuery.trim() || !selectedVip
                     ? 'bg-[#EBE6DD] text-[#8C938E] cursor-not-allowed'
                     : 'bg-[#183D33] hover:bg-[#224F43]'
@@ -545,7 +545,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                   return (
                     <div
                       key={step.id || idx}
-                      className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 p-3 bg-[#FAF8F5] border border-[#E5E0D6] rounded-sm text-xs"
+                      className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 p-3.5 bg-[#FAF8F5] border border-[#E5E0D6] rounded-xl text-xs shadow-2xs"
                     >
                       <div className="flex items-start gap-2.5">
                         <div className="mt-0.5">
@@ -561,29 +561,29 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                             <span className="font-semibold text-[#161A18]">
                               {step.title}
                             </span>
-                            <span className="font-mono text-[10px] px-1.5 py-0.2 border border-[#E5E0D6] bg-white text-[#6B736D] rounded">
+                            <span className="font-mono text-[10px] px-2 py-0.5 border border-[#E5E0D6] bg-white text-[#6B736D] rounded-full">
                               {step.tool}
                             </span>
 
                             {/* Source Badge with Gold Qloo Live Badge */}
                             {isQlooLive && (
-                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#F59E0B] rounded shadow-xs">
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#F59E0B] rounded-full shadow-2xs">
                                 <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
                                 QLOO LIVE
                               </span>
                             )}
                             {isFallback && (
-                              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#F3F4F6] text-[#4B5563] border border-[#D1D5DB] rounded">
+                              <span className="px-2.5 py-0.5 text-[10px] font-medium bg-[#F3F4F6] text-[#4B5563] border border-[#D1D5DB] rounded-full">
                                 CURATED FALLBACK
                               </span>
                             )}
                             {isBedrock && (
-                              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#EDE9FE] text-[#5B21B6] border border-[#C4B5FD] rounded">
+                              <span className="px-2.5 py-0.5 text-[10px] font-medium bg-[#EDE9FE] text-[#5B21B6] border border-[#C4B5FD] rounded-full">
                                 BEDROCK LLM
                               </span>
                             )}
                             {step.source === 'local' && (
-                              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#E0E7FF] text-[#3730A3] border border-[#A5B4FC] rounded">
+                              <span className="px-2.5 py-0.5 text-[10px] font-medium bg-[#E0E7FF] text-[#3730A3] border border-[#A5B4FC] rounded-full">
                                 LOCAL GUARD
                               </span>
                             )}

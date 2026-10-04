@@ -98,11 +98,11 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl bg-[#FAF8F5] border border-[#E5E0D6] rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="w-full max-w-2xl bg-[#FAF8F5] border border-[#E5E0D6]/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#EBE6DD] bg-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-[#183D33]/10 flex items-center justify-center text-[#183D33]">
+            <div className="w-8 h-8 rounded-full bg-[#183D33]/10 flex items-center justify-center text-[#183D33]">
               <UserPlus className="w-4 h-4" />
             </div>
             <div>
@@ -117,7 +117,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-[#6B736D] hover:text-[#161A18] rounded-sm transition-colors"
+            className="p-1.5 text-[#6B736D] hover:text-[#161A18] rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -137,7 +137,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Mike Diolosa"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-sm focus:border-[#183D33] focus:outline-none"
+                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-lg focus:border-[#183D33] focus:outline-none"
               />
             </div>
 
@@ -150,7 +150,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 placeholder="e.g. CTO & Head of Product"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-sm focus:border-[#183D33] focus:outline-none"
+                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-lg focus:border-[#183D33] focus:outline-none"
               />
             </div>
 
@@ -163,7 +163,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                 value={organization}
                 onChange={(e) => setOrganization(e.target.value)}
                 placeholder="e.g. Qloo / Strategic Partner"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-sm focus:border-[#183D33] focus:outline-none"
+                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-lg focus:border-[#183D33] focus:outline-none"
               />
             </div>
 
@@ -176,7 +176,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="e.g. New York, London, Tokyo, Riyadh"
-                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-sm focus:border-[#183D33] focus:outline-none"
+                className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-lg focus:border-[#183D33] focus:outline-none"
               />
             </div>
           </div>
@@ -198,12 +198,12 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                   }
                 }}
                 placeholder="Type a passion (e.g. Scandinavian design) and press Enter"
-                className="flex-1 px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-sm focus:border-[#183D33] focus:outline-none"
+                className="flex-1 px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-lg focus:border-[#183D33] focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => handleAddPassion(newPassionInput)}
-                className="px-3.5 py-2 text-xs font-semibold uppercase bg-[#FAF8F5] border border-[#E5E0D6] text-[#183D33] hover:bg-white rounded-sm flex items-center gap-1"
+                className="px-3.5 py-2 text-xs font-semibold uppercase bg-[#FAF8F5] border border-[#E5E0D6] text-[#183D33] hover:bg-white rounded-lg flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add
@@ -215,7 +215,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
               {passions.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-white border border-[#183D33]/30 text-[#183D33] rounded-sm"
+                  className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-white border border-[#183D33]/30 text-[#183D33] rounded-full shadow-2xs"
                 >
                   {tag}
                   <button
@@ -237,7 +237,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                   key={suggested}
                   type="button"
                   onClick={() => handleAddPassion(suggested)}
-                  className="text-[11px] px-2 py-0.5 border border-dashed border-[#C8DCD1] text-[#1D5A4A] hover:bg-[#EDF4F0] rounded-sm transition-colors"
+                  className="text-[11px] px-2.5 py-0.5 border border-dashed border-[#C8DCD1] text-[#1D5A4A] hover:bg-[#EDF4F0] rounded-full transition-colors"
                 >
                   + {suggested}
                 </button>
@@ -251,7 +251,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
               Ethical, Religious & Dietary Taboos
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              <label className="flex items-center gap-2 p-2.5 bg-white border border-[#E5E0D6] rounded-sm cursor-pointer hover:border-[#183D33]">
+              <label className="flex items-center gap-2 p-2.5 bg-white border border-[#E5E0D6] rounded-lg cursor-pointer hover:border-[#183D33] transition-colors">
                 <input
                   type="checkbox"
                   checked={noAlcohol}
@@ -264,7 +264,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
               {['halal', 'kosher', 'shellfish', 'vegan', 'gluten-free'].map((taboo) => (
                 <label
                   key={taboo}
-                  className="flex items-center gap-2 p-2.5 bg-white border border-[#E5E0D6] rounded-sm cursor-pointer hover:border-[#183D33]"
+                  className="flex items-center gap-2 p-2.5 bg-white border border-[#E5E0D6] rounded-lg cursor-pointer hover:border-[#183D33] transition-colors"
                 >
                   <input
                     type="checkbox"
@@ -296,7 +296,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                   key={opt.id}
                   type="button"
                   onClick={() => setBudgetTierChoice(opt.id as any)}
-                  className={`py-2 text-xs font-semibold uppercase tracking-wider border rounded-sm transition-all ${
+                  className={`py-2 text-xs font-semibold uppercase tracking-wider border rounded-lg transition-all ${
                     budgetTierChoice === opt.id
                       ? 'bg-[#183D33] text-white border-[#183D33]'
                       : 'bg-white text-[#6B736D] border-[#E5E0D6] hover:border-[#183D33]'
@@ -316,7 +316,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
                   placeholder="Enter custom budget cap in USD"
                   min="50"
                   max="10000"
-                  className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-sm focus:border-[#183D33] focus:outline-none"
+                  className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-lg focus:border-[#183D33] focus:outline-none"
                 />
               </div>
             )}
@@ -332,7 +332,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
               value={rawBio}
               onChange={(e) => setRawBio(e.target.value)}
               placeholder="Notable personality traits, aesthetics, or communication style..."
-              className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-sm focus:border-[#183D33] focus:outline-none resize-none"
+              className="w-full px-3.5 py-2 text-sm bg-white border border-[#E5E0D6] rounded-lg focus:border-[#183D33] focus:outline-none resize-none"
             />
           </div>
 
@@ -349,7 +349,7 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
             <button
               type="submit"
               disabled={isLoading || !fullName.trim()}
-              className={`flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white rounded-sm shadow-sm transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white rounded-lg shadow-sm transition-all ${
                 isLoading || !fullName.trim()
                   ? 'bg-[#8C938E] cursor-not-allowed'
                   : 'bg-[#183D33] hover:bg-[#224F43]'

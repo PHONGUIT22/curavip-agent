@@ -66,7 +66,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   const ledgerPoints = getLedgerPoints();
 
   return (
-    <div className="border border-[#E5E0D6] bg-white rounded-sm p-6 shadow-sm">
+    <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl p-6 shadow-sm">
       {/* Ledger Section Header */}
       <div className="flex items-start justify-between gap-4 pb-4 mb-5 border-b border-[#EBE6DD]">
         <div>
@@ -75,7 +75,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
               Archival Taste Graph
             </span>
             <span
-              className={`text-xs font-medium px-2.5 py-0.5 border rounded-sm uppercase tracking-wide ${
+              className={`text-xs font-medium px-2.5 py-0.5 border rounded-full uppercase tracking-wide ${
                 isGrounded
                   ? 'border-[#C8DCD1] bg-[#EDF4F0] text-[#1D5A4A]'
                   : 'border-[#E5E0D6] bg-[#FAF8F5] text-[#6B736D]'
@@ -92,13 +92,13 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           </h3>
         </div>
 
-        <div className="w-9 h-9 border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm flex items-center justify-center text-[#183D33]">
+        <div className="w-9 h-9 border border-[#E5E0D6] bg-[#FAF8F5] rounded-lg flex items-center justify-center text-[#183D33]">
           <Compass className="w-4 h-4" />
         </div>
       </div>
 
       {/* 3 Crisp Ledger Points (Anti-Slop: Structured Ledger Points) */}
-      <div className="border border-[#E5E0D6] bg-[#FAF8F5] p-4.5 mb-6 rounded-sm">
+      <div className="border border-[#E5E0D6] bg-[#FAF8F5] p-5 mb-6 rounded-xl shadow-2xs">
         <div className="flex items-center gap-2 mb-2.5 text-[#183D33] text-xs font-semibold uppercase tracking-wider">
           <span className="w-1.5 h-1.5 rounded-full bg-[#183D33]" />
           <span>Synthesized Cross-Domain Theme</span>
@@ -122,11 +122,11 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
         </div>
 
         {entities.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {entities.map((entity) => (
               <div
                 key={entity.id}
-                className="flex items-center justify-between p-3.5 border border-[#E5E0D6] bg-[#FAF8F5] hover:bg-white hover:border-[#183D33] rounded-sm transition-all shadow-sm"
+                className="flex items-center justify-between p-3.5 border border-[#E5E0D6] bg-[#FAF8F5] hover:bg-white hover:border-[#183D33]/40 rounded-xl transition-all shadow-2xs"
               >
                 <div className="min-w-0 pr-2">
                   <span className="font-sans text-xs text-[#183D33] font-semibold tracking-wide block mb-0.5">
@@ -143,7 +143,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
             ))}
           </div>
         ) : (
-          <div className="p-4 border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm text-center text-sm font-medium text-[#6B736D]">
+          <div className="p-4 border border-[#E5E0D6] bg-[#FAF8F5] rounded-xl text-center text-sm font-medium text-[#6B736D]">
             No correlated nodes surfaced in ungrounded baseline mode.
           </div>
         )}
@@ -156,7 +156,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           <span>Strategic Conversational Openings</span>
         </div>
 
-        <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm">
+        <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-[#FAF8F5] rounded-xl overflow-hidden shadow-2xs">
           {iceBreakerScripts.map((script, idx) => (
             <div key={idx} className="p-4 text-sm leading-relaxed">
               <div className="flex items-center gap-2.5 mb-1.5">

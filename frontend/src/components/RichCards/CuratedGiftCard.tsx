@@ -17,7 +17,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
   };
 
   return (
-    <div className="border border-[#E5E0D6] bg-white rounded-sm p-6 shadow-sm">
+    <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl p-6 shadow-sm">
       {/* Header with Export Action */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-[#EBE6DD]">
         <div>
@@ -25,7 +25,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
             <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
               Archival Curation
             </span>
-            <span className="text-xs font-medium px-2.5 py-0.5 border border-[#E5E0D6] bg-[#FAF8F5] text-[#6B736D] rounded-sm uppercase tracking-wide">
+            <span className="text-xs font-medium px-2.5 py-0.5 border border-[#E5E0D6] bg-[#FAF8F5] text-[#6B736D] rounded-full uppercase tracking-wide">
               3 Tier Proposals
             </span>
           </div>
@@ -36,7 +36,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
 
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-2 border border-[#E5E0D6] bg-[#FAF8F5] hover:border-[#183D33] text-[#183D33] text-xs font-semibold uppercase tracking-wider transition-colors rounded-sm shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 border border-[#E5E0D6] bg-[#FAF8F5] hover:border-[#183D33] text-[#183D33] text-xs font-semibold uppercase tracking-wider transition-colors rounded-lg shadow-sm"
           title="Export 1-page presentation for committee sign-off"
         >
           <Download className="w-4 h-4 text-[#183D33]" />
@@ -45,7 +45,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
       </div>
 
       {/* 3 Tier Proposals with 1px Ledger Borders */}
-      <div className="border border-[#E5E0D6] bg-white rounded-sm">
+      <div className="border border-[#E5E0D6] bg-white rounded-xl overflow-hidden shadow-2xs">
         {gifts.map((gift, idx) => {
           const tierLabel =
             gift.tier === 'signature'
@@ -87,7 +87,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
 
               {/* Qloo Provenance Anchor Badge (Warm Mint & Jade) */}
               <div className="mb-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-[#C8DCD1] bg-[#EDF4F0] text-xs font-medium text-[#1E4D3E]">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#C8DCD1] bg-[#EDF4F0] text-xs font-medium text-[#1E4D3E]">
                   <Shield className="w-3.5 h-3.5 text-[#1E4D3E]" />
                   <span>Qloo Provenance Anchor: {gift.qlooCorrelationAnchor}</span>
                 </div>

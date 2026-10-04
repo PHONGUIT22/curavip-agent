@@ -19,7 +19,7 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
 }) => {
   return (
     <aside className="w-full lg:w-80 flex-shrink-0">
-      <div className="border border-[#E5E0D6] bg-white rounded-sm shadow-sm overflow-hidden flex flex-col">
+      <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col">
         {/* Section Header */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#EBE6DD] bg-[#FAF8F5]">
           <div className="flex items-center gap-2">
@@ -31,7 +31,7 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
           <button
             type="button"
             onClick={onOpenCreateVip}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#183D33] text-white hover:bg-[#224F43] rounded-sm transition-colors shadow-xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider bg-[#183D33] text-white hover:bg-[#224F43] rounded-lg transition-colors shadow-2xs"
             title="Create custom VIP profile"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -76,7 +76,7 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                   </div>
 
                   {hasTaboos && (
-                    <span className="bg-[#183D33]/5 text-[#183D33] border border-[#183D33]/20 text-[10px] uppercase font-semibold px-2 py-0.5 rounded-sm tracking-wide">
+                    <span className="bg-[#183D33]/5 text-[#183D33] border border-[#183D33]/20 text-[10px] uppercase font-semibold px-2.5 py-0.5 rounded-full tracking-wide">
                       Taboo Guard
                     </span>
                   )}
@@ -87,7 +87,7 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                   {vip.explicitInterests.slice(0, 3).map((interest, idx) => (
                     <span
                       key={idx}
-                      className="text-xs font-medium uppercase px-2 py-1 border border-[#E5E0D6] bg-[#FAF8F5] text-[#323835] rounded-sm"
+                      className="text-xs font-medium uppercase px-2 py-1 border border-[#E5E0D6] bg-[#FAF8F5] text-[#323835] rounded-md"
                     >
                       {interest}
                     </span>

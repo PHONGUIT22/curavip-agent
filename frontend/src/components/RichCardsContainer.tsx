@@ -14,8 +14,8 @@ interface RichCardsContainerProps {
 export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({ dossier }) => {
   if (!dossier) {
     return (
-      <div className="border border-[#E5E0D6] bg-white rounded-sm p-12 text-center shadow-sm">
-        <div className="w-11 h-11 mx-auto mb-3.5 border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm flex items-center justify-center">
+      <div className="border border-[#E5E0D6]/80 bg-white rounded-2xl p-12 text-center shadow-sm">
+        <div className="w-11 h-11 mx-auto mb-3.5 border border-[#E5E0D6] bg-[#FAF8F5] rounded-xl flex items-center justify-center">
           <span className="font-sans text-base font-bold text-[#183D33]">CV</span>
         </div>
         <h3 className="font-sans text-lg font-semibold text-[#161A18] mb-1.5 tracking-tight">
