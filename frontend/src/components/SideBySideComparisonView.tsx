@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Sparkles, AlertOctagon, CheckCircle2, Zap } from 'lucide-react';
+import { X, Compass, AlertOctagon, CheckCircle2, Zap } from 'lucide-react';
 import type { DossierComparisonResponse } from '../types';
 
 interface SideBySideComparisonViewProps {
@@ -122,7 +122,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
             {/* Column Title */}
             <div className="p-4 border border-[#C8DCD1] bg-[#EDF4F0] rounded-sm">
               <div className="flex items-center gap-2 text-[#1D5A4A] font-sans text-xs font-semibold uppercase mb-1">
-                <Sparkles className="w-4 h-4 text-[#1D5A4A]" />
+                <Compass className="w-4 h-4 text-[#1D5A4A]" />
                 <span>CuraVIP (Qloo Taste Graph Grounded)</span>
               </div>
               <p className="text-sm text-[#323835] font-sans leading-relaxed">

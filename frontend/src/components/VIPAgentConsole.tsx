@@ -1,9 +1,34 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Mic, MicOff, Volume2, Sparkles, Terminal } from 'lucide-react';
+import {
+  Mic,
+  MicOff,
+  Volume2,
+  Terminal,
+  Send,
+  Bot,
+  User,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  MessageSquare,
+  Compass,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 import { speechService } from '../services/speechService';
-import type { BudgetTier, ExecutionMode, VIPProfile } from '../types';
+import { mcpClient } from '../services/mcpClient';
+import type { AgentTraceStep, BudgetTier, ExecutionMode, VIPProfile } from '../types';
+
+interface ConsoleMessage {
+  id: string;
+  sender: 'user' | 'agent';
+  text: string;
+  toolName?: string | null;
+  source?: string;
+  timestamp: string;
+}
 
 interface VIPAgentConsoleProps {
   selectedVip: VIPProfile | null;
@@ -13,7 +38,16 @@ interface VIPAgentConsoleProps {
   onGenerateDossier: (brief: string) => Promise<void>;
   isLoading: boolean;
   onVoiceStateChange?: (isListening: boolean) => void;
+  traceSteps?: AgentTraceStep[];
+  onAddTraceStep?: (step: AgentTraceStep) => void;
 }
+
+const SUGGESTED_COMMANDS = [
+  'Negotiate budget down to $300',
+  'Find Japanese tea ceremony gift',
+  'Check if wine violates Tariq taboo',
+  'Reconcile competing aesthetic tastes',
+];
 
 export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   selectedVip,
@@ -23,10 +57,17 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   onGenerateDossier,
   isLoading,
   onVoiceStateChange,
+  traceSteps = [],
+  onAddTraceStep,
 }) => {
+  const [activeMode, setActiveMode] = useState<'briefing' | 'turn'>('briefing');
   const [meetingBrief, setMeetingBrief] = useState('');
+  const [agentQuery, setAgentQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isAgentExecuting, setIsAgentExecuting] = useState(false);
+  const [isTraceExpanded, setIsTraceExpanded] = useState(true);
+  const [messages, setMessages] = useState<ConsoleMessage[]>([]);
 
   // Default suggested brief when selecting a principal
   useEffect(() => {
@@ -44,13 +85,15 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
           'Creative brand partnership launch dinner. Presenting multi-city fashion campaign concept.'
         );
       } else {
-        setMeetingBrief('');
+        setMeetingBrief(
+          `Executive consultation and high-stakes relationship building with ${selectedVip.fullName} (${selectedVip.organization}) in ${selectedVip.city}.`
+        );
       }
     }
   }, [selectedVip]);
 
   // Voice dictation toggle
-  const toggleVoiceRecording = () => {
+  const toggleVoiceRecording = (target: 'brief' | 'query' = 'brief') => {
     if (typeof window === 'undefined') return;
 
     const SpeechRecognition =
@@ -81,7 +124,11 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
 
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
-        setMeetingBrief((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        if (target === 'brief') {
+          setMeetingBrief((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        } else {
+          setAgentQuery((prev) => (prev ? `${prev} ${transcript}` : transcript));
+        }
       };
 
       recognition.onerror = () => {
@@ -101,9 +148,11 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
     }
   };
 
-  const handleReadout = () => {
+  const handleReadout = (customText?: string) => {
     if (!selectedVip) return;
-    const textToSpeak = `Briefing initialized for ${selectedVip.fullName}, ${selectedVip.role} at ${selectedVip.organization}. Grounded in Qloo taste graph under corporate tier ${budgetTier}.`;
+    const textToSpeak =
+      customText ||
+      `Briefing initialized for ${selectedVip.fullName}, ${selectedVip.role} at ${selectedVip.organization}. Grounded in Qloo taste graph under corporate tier ${budgetTier}.`;
 
     if (isSpeaking) {
       speechService.cancel();
@@ -116,136 +165,448 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleGenerateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
     onGenerateDossier(meetingBrief);
   };
 
+  const handleExecuteAgentTurn = async (queryText?: string) => {
+    const text = (queryText || agentQuery).trim();
+    if (!text || !selectedVip || isAgentExecuting) return;
+
+    const userMsg: ConsoleMessage = {
+      id: `msg_user_${Date.now()}`,
+      sender: 'user',
+      text,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setAgentQuery('');
+    setIsAgentExecuting(true);
+
+    try {
+      const response = await mcpClient.executeAgentTurn(
+        text,
+        selectedVip.id,
+        budgetTier,
+        executionMode
+      );
+
+      const agentMsg: ConsoleMessage = {
+        id: `msg_agent_${Date.now()}`,
+        sender: 'agent',
+        text: response.speechResponse,
+        toolName: response.toolName,
+        source: response.offlineFallbackUsed ? 'curated_fallback' : 'qloo_live',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+
+      setMessages((prev) => [...prev, agentMsg]);
+
+      if (response.traceStep) {
+        onAddTraceStep?.(response.traceStep);
+      }
+
+      // Read aloud via Polly / Web Speech
+      if (response.speechResponse) {
+        handleReadout(response.speechResponse);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `msg_err_${Date.now()}`,
+          sender: 'agent',
+          text: `Command deferred: ${msg}`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    } finally {
+      setIsAgentExecuting(false);
+    }
+  };
+
   return (
-    <section className="border border-[#E5E0D6] bg-white rounded-sm p-6 shadow-sm mb-6">
-      {/* Console Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-[#EBE6DD]">
-        <div className="flex items-center gap-2.5">
+    <section className="border border-[#E5E0D6] bg-white rounded-sm shadow-sm mb-6 overflow-hidden">
+      {/* Console Top Header & Mode Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 py-3.5 border-b border-[#EBE6DD] bg-[#FAF8F5]">
+        <div className="flex items-center gap-3">
           <Terminal className="w-4 h-4 text-[#183D33]" />
           <h2 className="font-sans text-xs font-semibold uppercase tracking-wider text-[#161A18]">
             {selectedVip ? `Briefing Terminal / ${selectedVip.fullName}` : 'Select a VIP Principal'}
           </h2>
         </div>
 
-        {/* Audio Brief Action */}
-        {selectedVip && (
-          <button
-            type="button"
-            onClick={handleReadout}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider border rounded-sm transition-colors ${
-              isSpeaking
-                ? 'bg-[#EDF4F0] text-[#1D5A4A] border-[#C8DCD1]'
-                : 'border-[#E5E0D6] bg-[#FAF8F5] text-[#323835] hover:border-[#183D33] hover:text-[#183D33]'
-            }`}
-          >
-            <Volume2 className="w-4 h-4 text-[#183D33]" />
-            <span>{isSpeaking ? 'Speaking' : 'Audio Brief'}</span>
-          </button>
-        )}
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Context Textarea with Dictation */}
-        <div className="relative">
-          <textarea
-            value={meetingBrief}
-            onChange={(e) => setMeetingBrief(e.target.value)}
-            placeholder="Enter meeting context, deal parameters, or high-stakes hospitality objectives..."
-            rows={3}
-            className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-sm p-3.5 pr-12 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none transition-colors rounded-sm resize-none leading-relaxed"
-          />
-
-          <button
-            type="button"
-            onClick={toggleVoiceRecording}
-            className={`absolute right-3 bottom-3 p-1.5 border rounded-sm transition-colors ${
-              isListening
-                ? 'bg-[#C53030] text-white border-[#C53030]'
-                : 'border-[#E5E0D6] bg-white text-[#6B736D] hover:text-[#183D33] hover:border-[#183D33]'
-            }`}
-            title={isListening ? 'Stop listening' : 'Start voice dictation'}
-          >
-            {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </button>
-        </div>
-
-        {/* Policy Tier Selector & Submit Action */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-          {/* Policy Tier Group with 1px Divider */}
-          <div className="flex items-center border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm divide-x divide-[#E5E0D6]">
-            <span className="text-xs font-semibold uppercase text-[#6B736D] px-3.5 py-2">
-              Tier:
-            </span>
-
+        {/* Mode Switcher Tabs */}
+        <div className="flex items-center gap-2">
+          <div className="inline-flex p-0.5 border border-[#E5E0D6] bg-white rounded-sm text-xs">
             <button
               type="button"
-              onClick={() => onSelectTier('standard_200')}
-              className={`px-3.5 py-2 text-xs uppercase tracking-wide transition-all ${
-                budgetTier === 'standard_200'
-                  ? 'bg-[#183D33] text-white font-semibold shadow-sm'
-                  : 'text-[#6B736D] hover:text-[#161A18] font-medium'
+              onClick={() => setActiveMode('briefing')}
+              className={`flex items-center gap-1.5 px-3 py-1 font-semibold uppercase tracking-wider rounded-xs transition-colors ${
+                activeMode === 'briefing'
+                  ? 'bg-[#183D33] text-white'
+                  : 'text-[#6B736D] hover:text-[#161A18]'
               }`}
             >
-              $200 Std
+              <Compass className="w-3.5 h-3.5" />
+              <span>Full Dossier</span>
             </button>
 
             <button
               type="button"
-              onClick={() => onSelectTier('executive_500')}
-              className={`px-3.5 py-2 text-xs uppercase tracking-wide transition-all ${
-                budgetTier === 'executive_500'
-                  ? 'bg-[#183D33] text-white font-semibold shadow-sm'
-                  : 'text-[#6B736D] hover:text-[#161A18] font-medium'
+              onClick={() => setActiveMode('turn')}
+              className={`flex items-center gap-1.5 px-3 py-1 font-semibold uppercase tracking-wider rounded-xs transition-colors ${
+                activeMode === 'turn'
+                  ? 'bg-[#183D33] text-white'
+                  : 'text-[#6B736D] hover:text-[#161A18]'
               }`}
             >
-              $500 Exec
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onSelectTier('unlimited_vip')}
-              className={`px-3.5 py-2 text-xs uppercase tracking-wide transition-all ${
-                budgetTier === 'unlimited_vip'
-                  ? 'bg-[#183D33] text-white font-semibold shadow-sm'
-                  : 'text-[#6B736D] hover:text-[#161A18] font-medium'
-              }`}
-            >
-              Unlimited
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Agent Turn</span>
+              {messages.length > 0 && (
+                <span className="w-1.5 h-1.5 bg-[#F59E0B] rounded-full" />
+              )}
             </button>
           </div>
 
-          {/* Submit Action Button (Deep Pine Green Solid button) */}
-          <button
-            type="submit"
-            disabled={isLoading || !selectedVip}
-            className={`flex items-center justify-center gap-2.5 px-6 py-2.5 text-sm uppercase tracking-wider font-semibold transition-all rounded-sm shadow-sm ${
-              isLoading || !selectedVip
-                ? 'bg-[#EBE6DD] text-[#8C938E] border border-[#E5E0D6] cursor-not-allowed'
-                : 'bg-[#183D33] hover:bg-[#224F43] text-white border border-[#183D33]'
-            }`}
-          >
-            {isLoading ? (
-              <>
-                <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping" />
-                <span>SYNTHESIZING...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 text-white" />
-                <span>
-                  {executionMode === 'qloo_grounded' ? 'SYNTHESIZE DOSSIER' : 'RUN GENERIC BASELINE'}
-                </span>
-              </>
-            )}
-          </button>
+          {/* Audio Brief Action */}
+          {selectedVip && (
+            <button
+              type="button"
+              onClick={() => handleReadout()}
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider border rounded-sm transition-colors ${
+                isSpeaking
+                  ? 'bg-[#EDF4F0] text-[#1D5A4A] border-[#C8DCD1]'
+                  : 'border-[#E5E0D6] bg-white text-[#323835] hover:border-[#183D33] hover:text-[#183D33]'
+              }`}
+            >
+              <Volume2 className="w-3.5 h-3.5 text-[#183D33]" />
+              <span>{isSpeaking ? 'Speaking' : 'Audio'}</span>
+            </button>
+          )}
         </div>
-      </form>
+      </div>
+
+      <div className="p-6">
+        {/* MODE 1: Full Dossier Synthesis */}
+        {activeMode === 'briefing' && (
+          <form onSubmit={handleGenerateSubmit} className="space-y-4">
+            <div className="relative">
+              <textarea
+                value={meetingBrief}
+                onChange={(e) => setMeetingBrief(e.target.value)}
+                placeholder="Enter meeting context, deal parameters, or high-stakes hospitality objectives..."
+                rows={3}
+                className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-sm p-3.5 pr-12 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none transition-colors rounded-sm resize-none leading-relaxed"
+              />
+
+              <button
+                type="button"
+                onClick={() => toggleVoiceRecording('brief')}
+                className={`absolute right-3 bottom-3 p-1.5 border rounded-sm transition-colors ${
+                  isListening
+                    ? 'bg-[#C53030] text-white border-[#C53030]'
+                    : 'border-[#E5E0D6] bg-white text-[#6B736D] hover:text-[#183D33] hover:border-[#183D33]'
+                }`}
+                title={isListening ? 'Stop listening' : 'Start voice dictation'}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Policy Tier Selector & Submit Action */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+              <div className="flex items-center border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm divide-x divide-[#E5E0D6]">
+                <span className="text-xs font-semibold uppercase text-[#6B736D] px-3.5 py-2">
+                  Tier:
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => onSelectTier('standard_200')}
+                  className={`px-3.5 py-2 text-xs uppercase tracking-wide transition-all ${
+                    budgetTier === 'standard_200'
+                      ? 'bg-[#183D33] text-white font-semibold shadow-sm'
+                      : 'text-[#6B736D] hover:text-[#161A18] font-medium'
+                  }`}
+                >
+                  $200 Std
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onSelectTier('executive_500')}
+                  className={`px-3.5 py-2 text-xs uppercase tracking-wide transition-all ${
+                    budgetTier === 'executive_500'
+                      ? 'bg-[#183D33] text-white font-semibold shadow-sm'
+                      : 'text-[#6B736D] hover:text-[#161A18] font-medium'
+                  }`}
+                >
+                  $500 Exec
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onSelectTier('unlimited_vip')}
+                  className={`px-3.5 py-2 text-xs uppercase tracking-wide transition-all ${
+                    budgetTier === 'unlimited_vip'
+                      ? 'bg-[#183D33] text-white font-semibold shadow-sm'
+                      : 'text-[#6B736D] hover:text-[#161A18] font-medium'
+                  }`}
+                >
+                  Unlimited
+                </button>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isLoading || !selectedVip}
+                className={`flex items-center justify-center gap-2.5 px-6 py-2.5 text-sm uppercase tracking-wider font-semibold transition-all rounded-sm shadow-sm ${
+                  isLoading || !selectedVip
+                    ? 'bg-[#EBE6DD] text-[#8C938E] border border-[#E5E0D6] cursor-not-allowed'
+                    : 'bg-[#183D33] hover:bg-[#224F43] text-white border border-[#183D33]'
+                }`}
+              >
+                {isLoading ? (
+                  <>
+                    <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping" />
+                    <span>SYNTHESIZING...</span>
+                  </>
+                ) : (
+                  <>
+                    <Compass className="w-4 h-4 text-white" />
+                    <span>
+                      {executionMode === 'qloo_grounded'
+                        ? 'SYNTHESIZE DOSSIER'
+                        : 'RUN GENERIC BASELINE'}
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* MODE 2: Conversational Agent Turn */}
+        {activeMode === 'turn' && (
+          <div className="space-y-4">
+            {/* Quick Command Suggestions */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-semibold uppercase text-[#8C938E] mr-1">
+                Directives:
+              </span>
+              {SUGGESTED_COMMANDS.map((cmd) => (
+                <button
+                  key={cmd}
+                  type="button"
+                  onClick={() => handleExecuteAgentTurn(cmd)}
+                  disabled={isAgentExecuting || !selectedVip}
+                  className="text-xs px-2.5 py-1 border border-[#E5E0D6] bg-[#FAF8F5] text-[#183D33] hover:bg-white hover:border-[#183D33] rounded-sm transition-colors"
+                >
+                  {cmd}
+                </button>
+              ))}
+            </div>
+
+            {/* Conversation Thread */}
+            <div className="border border-[#E5E0D6] bg-[#FAF8F5] rounded-sm p-4 min-h-[140px] max-h-[260px] overflow-y-auto space-y-3">
+              {messages.length === 0 ? (
+                <div className="text-center py-6 text-xs text-[#8C938E]">
+                  <Bot className="w-6 h-6 mx-auto mb-2 text-[#8C938E]/60" />
+                  Direct Chief of Staff with interactive commands (e.g. negotiate budgets, resolve aesthetic tensions, or query Qloo taste graph).
+                </div>
+              ) : (
+                messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex flex-col ${
+                      msg.sender === 'user' ? 'items-end' : 'items-start'
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-sm p-3 text-xs leading-relaxed ${
+                        msg.sender === 'user'
+                          ? 'bg-[#183D33] text-white'
+                          : 'bg-white border border-[#E5E0D6] text-[#161A18] shadow-xs'
+                      }`}
+                    >
+                      {msg.sender === 'agent' && (
+                        <div className="flex items-center justify-between gap-2 pb-1.5 mb-1.5 border-b border-[#EBE6DD]">
+                          <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#183D33]">
+                            <Bot className="w-3.5 h-3.5" />
+                            <span>Executive Agent</span>
+                          </div>
+                          {msg.toolName && (
+                            <span className="text-[10px] px-1.5 py-0.5 bg-[#FAF8F5] border border-[#E5E0D6] text-[#6B736D] rounded font-mono">
+                              {msg.toolName}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <p>{msg.text}</p>
+                    </div>
+                    <span className="text-[10px] text-[#8C938E] mt-1 px-1">
+                      {msg.timestamp}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Command Input Box */}
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={agentQuery}
+                  onChange={(e) => setAgentQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleExecuteAgentTurn();
+                    }
+                  }}
+                  placeholder="Ask agent: 'Negotiate budget down to $300' or 'Find Japanese tea ceremony gift'..."
+                  disabled={isAgentExecuting || !selectedVip}
+                  className="w-full bg-[#FAF8F5] text-[#161A18] placeholder-[#8C938E] text-xs p-3 pr-10 border border-[#E5E0D6] focus:border-[#183D33] focus:bg-white focus:outline-none rounded-sm"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => toggleVoiceRecording('query')}
+                  className={`absolute right-2 top-2 p-1 border rounded-sm transition-colors ${
+                    isListening
+                      ? 'bg-[#C53030] text-white border-[#C53030]'
+                      : 'border-[#E5E0D6] bg-white text-[#6B736D] hover:text-[#183D33]'
+                  }`}
+                  title={isListening ? 'Stop' : 'Voice command'}
+                >
+                  {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleExecuteAgentTurn()}
+                disabled={isAgentExecuting || !agentQuery.trim() || !selectedVip}
+                className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white rounded-sm transition-all ${
+                  isAgentExecuting || !agentQuery.trim() || !selectedVip
+                    ? 'bg-[#EBE6DD] text-[#8C938E] cursor-not-allowed'
+                    : 'bg-[#183D33] hover:bg-[#224F43]'
+                }`}
+              >
+                {isAgentExecuting ? (
+                  <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="w-3.5 h-3.5" />
+                )}
+                <span>Run</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Trace Timeline View (Autonomous Multi-Tool & Qloo Reasoning Pipeline) */}
+        {traceSteps.length > 0 && (
+          <div className="mt-5 pt-4 border-t border-[#EBE6DD]">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-[#183D33]" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#161A18]">
+                  Autonomous Reasoning Pipeline ({traceSteps.length} Steps)
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsTraceExpanded((prev) => !prev)}
+                className="text-xs text-[#6B736D] hover:text-[#161A18] flex items-center gap-1 font-medium"
+              >
+                <span>{isTraceExpanded ? 'Collapse' : 'Expand Trace'}</span>
+                {isTraceExpanded ? (
+                  <ChevronUp className="w-3.5 h-3.5" />
+                ) : (
+                  <ChevronDown className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+
+            {isTraceExpanded && (
+              <div className="space-y-2">
+                {traceSteps.map((step, idx) => {
+                  const isQlooLive = step.source === 'qloo_live';
+                  const isFallback = step.source === 'curated_fallback';
+                  const isBedrock = step.source === 'bedrock';
+
+                  return (
+                    <div
+                      key={step.id || idx}
+                      className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 p-3 bg-[#FAF8F5] border border-[#E5E0D6] rounded-sm text-xs"
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <div className="mt-0.5">
+                          {step.status === 'ok' ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#1D5A4A]" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-[#B45309]" />
+                          )}
+                        </div>
+
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className="font-semibold text-[#161A18]">
+                              {step.title}
+                            </span>
+                            <span className="font-mono text-[10px] px-1.5 py-0.2 border border-[#E5E0D6] bg-white text-[#6B736D] rounded">
+                              {step.tool}
+                            </span>
+
+                            {/* Source Badge with Gold Qloo Live Badge */}
+                            {isQlooLive && (
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#F59E0B] rounded shadow-xs">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
+                                QLOO LIVE
+                              </span>
+                            )}
+                            {isFallback && (
+                              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#F3F4F6] text-[#4B5563] border border-[#D1D5DB] rounded">
+                                CURATED FALLBACK
+                              </span>
+                            )}
+                            {isBedrock && (
+                              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#EDE9FE] text-[#5B21B6] border border-[#C4B5FD] rounded">
+                                BEDROCK LLM
+                              </span>
+                            )}
+                            {step.source === 'local' && (
+                              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#E0E7FF] text-[#3730A3] border border-[#A5B4FC] rounded">
+                                LOCAL GUARD
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-[#6B736D] leading-relaxed">
+                            {step.detail}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Duration */}
+                      <span className="font-mono text-[11px] text-[#8C938E] self-start sm:self-center shrink-0">
+                        {step.durationMs}ms
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </section>
   );
 };

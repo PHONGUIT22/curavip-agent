@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Compass, Sparkles, MessageSquareQuote, Layers } from 'lucide-react';
+import { Compass, MessageSquareQuote, Layers } from 'lucide-react';
 import type { CulturalTasteGraph, VIPProfile } from '../../types';
 
 interface TasteDossierCardProps {
@@ -9,6 +9,17 @@ interface TasteDossierCardProps {
   vipProfile: VIPProfile;
   iceBreakerScripts: string[];
 }
+
+const getCategoryLabel = (category: string): string => {
+  const cat = category.toLowerCase();
+  if (cat.includes('musi') || cat.includes('artist')) return 'Music';
+  if (cat.includes('dini') || cat.includes('place') || cat.includes('culin')) return 'Dining';
+  if (cat.includes('lite') || cat.includes('book')) return 'Literature';
+  if (cat.includes('fash') || cat.includes('brand')) return 'Fashion';
+  if (cat.includes('arch')) return 'Architecture';
+  if (cat.includes('film') || cat.includes('cinema') || cat.includes('movie')) return 'Cinema';
+  return category.charAt(0).toUpperCase() + category.slice(1);
+};
 
 export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   tasteGraph,
@@ -89,7 +100,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
       {/* 3 Crisp Ledger Points (Anti-Slop: Structured Ledger Points) */}
       <div className="border border-[#E5E0D6] bg-[#FAF8F5] p-4.5 mb-6 rounded-sm">
         <div className="flex items-center gap-2 mb-2.5 text-[#183D33] text-xs font-semibold uppercase tracking-wider">
-          <Sparkles className="w-4 h-4" />
+          <span className="w-1.5 h-1.5 rounded-full bg-[#183D33]" />
           <span>Synthesized Cross-Domain Theme</span>
         </div>
         <div className="space-y-2 font-sans text-sm">
@@ -115,13 +126,13 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
             {entities.map((entity) => (
               <div
                 key={entity.id}
-                className="flex items-center justify-between p-3 border border-[#E5E0D6] bg-[#FAF8F5] hover:bg-white hover:border-[#183D33] rounded-sm transition-all shadow-sm"
+                className="flex items-center justify-between p-3.5 border border-[#E5E0D6] bg-[#FAF8F5] hover:bg-white hover:border-[#183D33] rounded-sm transition-all shadow-sm"
               >
                 <div className="min-w-0 pr-2">
                   <span className="font-sans text-xs text-[#183D33] font-semibold tracking-wide block mb-0.5">
-                    [{entity.category.slice(0, 4).toUpperCase()}]
+                    {getCategoryLabel(entity.category)}
                   </span>
-                  <span className="font-sans text-sm font-semibold text-[#161A18] truncate block">
+                  <span className="font-sans text-xs font-semibold text-[#161A18] line-clamp-2 leading-relaxed block">
                     {entity.name}
                   </span>
                 </div>

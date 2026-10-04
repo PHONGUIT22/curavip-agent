@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Download, Sparkles, Tag } from 'lucide-react';
+import { Download, Shield, Tag } from 'lucide-react';
 import { pdfService } from '../../services/pdfService';
 import type { ExecutiveDossier } from '../../types';
 
@@ -45,8 +45,8 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
       </div>
 
       {/* 3 Tier Proposals with 1px Ledger Borders */}
-      <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-sm">
-        {gifts.map((gift) => {
+      <div className="border border-[#E5E0D6] bg-white rounded-sm">
+        {gifts.map((gift, idx) => {
           const tierLabel =
             gift.tier === 'signature'
               ? 'Signature Proposal'
@@ -55,23 +55,27 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
               : 'Discreet Proposal';
 
           return (
-            <div key={gift.id} className="p-5.5 transition-colors hover:bg-[#FAF8F5]">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2.5">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#183D33]">
-                      {tierLabel}
-                    </span>
-                    <span className="text-xs text-[#6B736D] font-medium">
-                      / {gift.brandOrArtisan}
-                    </span>
-                  </div>
-                  <h4 className="text-lg font-semibold text-[#161A18] tracking-normal">
-                    {gift.title}
-                  </h4>
-                </div>
+            <div
+              key={gift.id}
+              className={`p-6 transition-colors hover:bg-[#FAF8F5] ${
+                idx > 0 ? 'pt-6 mt-6 border-t border-[#EBE6DD]' : ''
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-xs font-semibold uppercase tracking-wider text-[#183D33]">
+                  {tierLabel}
+                </span>
+                <span className="text-xs text-[#6B736D] font-medium">
+                  / {gift.brandOrArtisan}
+                </span>
+              </div>
 
-                <div className="text-right flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-1">
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 mb-3">
+                <h4 className="text-lg font-semibold text-[#161A18] tracking-normal leading-snug flex-1">
+                  {gift.title}
+                </h4>
+
+                <div className="text-right flex items-baseline justify-between sm:justify-end gap-1.5 shrink-0">
                   <span className="font-sans font-semibold text-2xl text-[#183D33] tabular-nums">
                     ${gift.estimatedPriceUsd.toLocaleString()}
                   </span>
@@ -84,7 +88,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
               {/* Qloo Provenance Anchor Badge (Warm Mint & Jade) */}
               <div className="mb-3">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-[#C8DCD1] bg-[#EDF4F0] text-xs font-medium text-[#1E4D3E]">
-                  <Sparkles className="w-3.5 h-3.5 text-[#1E4D3E]" />
+                  <Shield className="w-3.5 h-3.5 text-[#1E4D3E]" />
                   <span>Qloo Provenance Anchor: {gift.qlooCorrelationAnchor}</span>
                 </div>
               </div>

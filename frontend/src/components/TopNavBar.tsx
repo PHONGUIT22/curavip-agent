@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, SplitSquareVertical, Download, Zap } from 'lucide-react';
+import { Compass, SplitSquareVertical, Download, Zap } from 'lucide-react';
 import type { ExecutionMode, ExecutiveDossier } from '../types';
 
 interface TopNavBarProps {
@@ -55,7 +55,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
               }`}
               title="Ground curation in Qloo Cultural Taste Graph"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Compass className="w-3.5 h-3.5" />
               <span>Qloo Grounded</span>
             </button>
 
