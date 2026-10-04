@@ -17,35 +17,35 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
   };
 
   return (
-    <div className="border border-stone-800 bg-[#0B0B10] p-5">
+    <div className="border border-[#E5E0D6] bg-white rounded-sm p-6 shadow-sm">
       {/* Header with Export Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-4 border-b border-stone-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-[#EBE6DD]">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-sans font-medium tracking-widest uppercase text-champagne-400">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
               Archival Curation
             </span>
-            <span className="text-[9px] font-sans font-medium px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300 uppercase">
+            <span className="text-xs font-medium px-2.5 py-0.5 border border-[#E5E0D6] bg-[#FAF8F5] text-[#6B736D] rounded-sm uppercase tracking-wide">
               3 Tier Proposals
             </span>
           </div>
-          <h3 className="text-xl font-medium text-white tracking-tight">
+          <h3 className="text-2xl font-semibold text-[#161A18] tracking-tight">
             Curated Executive Artifacts
           </h3>
         </div>
 
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 px-3 py-1.5 border border-stone-800 bg-[#070709] hover:border-champagne-500/50 text-champagne-400 text-xs font-sans font-medium uppercase tracking-wider transition-colors"
+          className="flex items-center gap-2 px-4 py-2 border border-[#E5E0D6] bg-[#FAF8F5] hover:border-[#183D33] text-[#183D33] text-xs font-semibold uppercase tracking-wider transition-colors rounded-sm shadow-sm"
           title="Export 1-page presentation for committee sign-off"
         >
-          <Download className="w-3.5 h-3.5" />
+          <Download className="w-4 h-4 text-[#183D33]" />
           <span>Export Ledger (PDF)</span>
         </button>
       </div>
 
       {/* 3 Tier Proposals with 1px Ledger Borders */}
-      <div className="divide-y divide-stone-800 border border-stone-800 bg-[#070709]">
+      <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-sm">
         {gifts.map((gift) => {
           const tierLabel =
             gift.tier === 'signature'
@@ -55,49 +55,49 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
               : 'Discreet Proposal';
 
           return (
-            <div key={gift.id} className="p-4 transition-colors hover:bg-[#0E0E16]">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
+            <div key={gift.id} className="p-5.5 transition-colors hover:bg-[#FAF8F5]">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2.5">
                 <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[10px] font-sans font-medium uppercase tracking-wider text-champagne-400">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#183D33]">
                       {tierLabel}
                     </span>
-                    <span className="text-[10px] text-stone-500 font-sans font-medium">
+                    <span className="text-xs text-[#6B736D] font-medium">
                       / {gift.brandOrArtisan}
                     </span>
                   </div>
-                  <h4 className="text-base font-semibold text-white tracking-normal">
+                  <h4 className="text-lg font-semibold text-[#161A18] tracking-normal">
                     {gift.title}
                   </h4>
                 </div>
 
                 <div className="text-right flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-start gap-1">
-                  <span className="font-sans font-semibold text-sm text-champagne-400">
+                  <span className="font-sans font-semibold text-2xl text-[#183D33] tabular-nums">
                     ${gift.estimatedPriceUsd.toLocaleString()}
                   </span>
-                  <span className="text-[9px] font-sans font-medium uppercase text-stone-500">
+                  <span className="text-xs font-semibold uppercase text-[#6B736D]">
                     USD Est.
                   </span>
                 </div>
               </div>
 
-              {/* Qloo Provenance Anchor Badge */}
-              <div className="mb-2">
-                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[2px] border border-champagne-500/20 bg-neutral-900/60 text-xs font-sans font-medium text-champagne-300">
-                  <Sparkles className="w-3 h-3 text-champagne-400" />
+              {/* Qloo Provenance Anchor Badge (Warm Mint & Jade) */}
+              <div className="mb-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-[#C8DCD1] bg-[#EDF4F0] text-xs font-medium text-[#1E4D3E]">
+                  <Sparkles className="w-3.5 h-3.5 text-[#1E4D3E]" />
                   <span>Qloo Provenance Anchor: {gift.qlooCorrelationAnchor}</span>
                 </div>
               </div>
 
               {/* Cultural Rationale */}
-              <p className="font-sans text-sm text-neutral-300 leading-relaxed font-normal mb-2">
+              <p className="font-sans text-base text-[#323835] leading-relaxed font-normal mb-3">
                 {gift.culturalRationale}
               </p>
 
               {/* Materials / Guardrail notes */}
               {gift.materials && gift.materials.length > 0 && (
-                <div className="flex items-center gap-1.5 text-[10px] font-sans font-medium text-stone-400">
-                  <Tag className="w-3 h-3 text-stone-500" />
+                <div className="flex items-center gap-2 text-xs font-medium text-[#6B736D]">
+                  <Tag className="w-3.5 h-3.5 text-[#8C938E]" />
                   <span>Verified Materials: {gift.materials.join(', ')}</span>
                 </div>
               )}

@@ -14,14 +14,14 @@ export const AmbientGlow: React.FC<AmbientGlowProps> = ({ state = 'idle' }) => {
       <div
         className={`w-full h-full transition-colors duration-300 ${
           state === 'error'
-            ? 'bg-crimsonAlert'
+            ? 'bg-[#C53030]'
             : state === 'complete'
-            ? 'bg-emeraldStatus'
+            ? 'bg-[#10B981]'
             : state === 'reasoning'
-            ? 'bg-champagne-500 animate-pulse'
+            ? 'bg-[#183D33] animate-pulse'
             : state === 'listening'
-            ? 'bg-champagne-400'
-            : 'bg-stone-800'
+            ? 'bg-[#1D5A4A]'
+            : 'bg-[#E5E0D6]'
         }`}
       />
     </div>

@@ -7,40 +7,63 @@ const config: Config = {
     './src/screens/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
         sans: ["'Google Sans'", "'Google Sans Text'", 'system-ui', 'sans-serif'],
       },
       colors: {
+        canvas: '#F8F6F0',
+        pine: {
+          900: '#0F2620',
+          800: '#14342B', // Deep Pine / Forest Green for Sidebar
+          700: '#183D33', // Deep Pine action buttons & headers
+          600: '#224F43', // Hover state
+          500: '#1D5A4A', // Jade / Emerald accent
+          200: '#C8DCD1',
+          100: '#EDF4F0', // Pale mint hover / soft badge
+          50: '#F4F9F6',
+        },
+        ink: {
+          900: '#161A18', // Primary deep ink text
+          700: '#323835', // Body charcoal text
+          500: '#6B736D', // Muted warm grey metadata
+          400: '#8C938E', // Placeholder
+          200: '#E5E0D6', // Warm hairline border
+          100: '#EBE6DD', // Divider hairline
+        },
+        warmBeige: {
+          canvas: '#F8F6F0',
+          surface: '#FAF8F5',
+          subtle: '#F4F1EA',
+          border: '#E5E0D6',
+          borderLight: '#EBE6DD',
+          card: '#FFFFFF',
+        },
+        amberAccent: {
+          DEFAULT: '#9A7228',
+          light: '#FBF5E8',
+          border: '#E8D5AF',
+        },
+        emeraldStatus: '#1D5A4A',
+        crimsonAlert: '#C53030',
+        amberCaution: '#B45309',
+        // Retain legacy aliases for backward safety
         obsidian: {
-          900: '#070709', // Deepest root canvas
-          800: '#0D0D12', // Surface header, docks, modal backdrop
-          700: '#16161F', // Card surface
-          600: '#22222E', // Hover & input states
+          900: '#F8F6F0',
+          800: '#FAF8F5',
+          700: '#FFFFFF',
+          600: '#F4F1EA',
         },
         champagne: {
-          400: '#E5C478', // Subtle highlight & secondary gold
-          500: '#D4AF37', // Brand Champagne Gold
-          600: '#AA8A22', // Deep gold border & active pressed state
-        },
-        emeraldStatus: '#10B981', // Compliance passed, live Qloo verified
-        crimsonAlert: '#EF4444',  // Taboo violation, budget breach
-        amberCaution: '#F59E0B',  // Offline fallback, advisory note
-        glass: {
-          fill: 'rgba(22, 22, 31, 0.75)',
-          border: 'rgba(255, 255, 255, 0.06)',
-          specular: 'rgba(255, 255, 255, 0.12)',
+          400: '#9A7228',
+          500: '#183D33',
+          600: '#14342B',
         },
       },
       boxShadow: {
-        'luxury-card': '0 12px 36px -8px rgba(0, 0, 0, 0.85)',
-        'luxury-glow': '0 0 25px rgba(212, 175, 55, 0.25)',
-        'champagne-glow': '0 0 28px rgba(212, 175, 55, 0.35)',
-        'champagne-glow-lg': '0 0 45px rgba(212, 175, 55, 0.55)',
-        'emerald-glow': '0 0 25px rgba(16, 185, 129, 0.35)',
-        'crimson-glow': '0 0 25px rgba(239, 68, 68, 0.35)',
+        'warm-card': '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+        'warm-hover': '0 4px 12px rgba(20, 52, 43, 0.06)',
       },
       animation: {
         'champagne-pulse': 'champagnePulse 2.8s ease-in-out infinite',

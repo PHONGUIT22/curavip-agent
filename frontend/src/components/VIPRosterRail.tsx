@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { User, ShieldAlert, MapPin } from 'lucide-react';
+import { User, MapPin } from 'lucide-react';
 import type { VIPProfile } from '../types';
 
 interface VIPRosterRailProps {
@@ -16,23 +16,23 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
   onSelectVip,
 }) => {
   return (
-    <aside className="w-full lg:w-72 flex-shrink-0">
-      <div className="border border-stone-800 bg-[#0B0B10]">
-        {/* Terminal Section Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-stone-800 bg-[#070709]">
+    <aside className="w-full lg:w-80 flex-shrink-0">
+      <div className="border border-[#E5E0D6] bg-white rounded-sm shadow-sm overflow-hidden">
+        {/* Section Header */}
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#EBE6DD] bg-[#FAF8F5]">
           <div className="flex items-center gap-2">
-            <User className="w-3.5 h-3.5 text-champagne-400" />
-            <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-stone-200">
+            <User className="w-4 h-4 text-[#183D33]" />
+            <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-[#161A18]">
               Principal Roster
             </h3>
           </div>
-          <span className="text-[10px] font-sans font-medium px-1.5 py-0.5 border border-stone-800 text-stone-400">
+          <span className="text-xs font-medium px-2 py-0.5 border border-[#E5E0D6] bg-white text-[#6B736D] rounded-sm">
             {profiles.length} Active
           </span>
         </div>
 
         {/* Directory List with 1px Hairline Dividers */}
-        <div className="divide-y divide-stone-800">
+        <div className="divide-y divide-[#EBE6DD]">
           {profiles.map((vip) => {
             const isSelected = vip.id === selectedVipId;
             const hasTaboos = vip.taboos.alcohol || (vip.taboos.dietary && vip.taboos.dietary.length > 0);
@@ -42,50 +42,50 @@ export const VIPRosterRail: React.FC<VIPRosterRailProps> = ({
                 key={vip.id}
                 type="button"
                 onClick={() => onSelectVip(vip)}
-                className={`w-full text-left p-4 transition-colors ${
+                className={`w-full text-left p-4.5 transition-all ${
                   isSelected
-                    ? 'bg-[#12121A] border-l-2 border-l-champagne-500'
-                    : 'bg-[#0B0B10] hover:bg-[#0E0E16]'
+                    ? 'bg-[#F4F1EA] border-l-4 border-l-[#183D33]'
+                    : 'bg-white hover:bg-[#FAF8F5]'
                 }`}
               >
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <h4 className="font-sans text-sm font-semibold text-stone-100 tracking-tight">
+                <div className="flex items-start justify-between gap-2 mb-1.5">
+                  <h4 className="font-sans text-base font-semibold text-[#161A18] tracking-tight">
                     {vip.fullName}
                   </h4>
-                  <span className="font-sans font-semibold text-xs text-champagne-400">
+                  <span className="font-sans font-semibold text-base text-[#183D33] tabular-nums">
                     ${vip.budgetLimitUsd}
                   </span>
                 </div>
 
-                <p className="text-[11px] text-stone-400 font-sans mb-2">
-                  {vip.role} / {vip.organization}
+                <p className="text-sm text-[#6B736D] font-sans mb-2.5 leading-snug">
+                  {vip.role} · {vip.organization}
                 </p>
 
-                <div className="flex items-center justify-between gap-2 text-[10px] font-sans font-medium text-stone-400 mb-2">
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-stone-500" />
+                <div className="flex items-center justify-between gap-2 text-xs font-medium text-[#6B736D] mb-3">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#8C938E]" />
                     <span>{vip.city}</span>
                   </div>
 
                   {hasTaboos && (
-                    <span className="text-[9px] px-1 py-0.2 border border-amberCaution/30 text-amberCaution uppercase">
+                    <span className="text-xs font-semibold px-2 py-0.5 border border-[#FDE68A] bg-[#FFFBEB] text-[#B45309] rounded-sm uppercase tracking-wide">
                       Taboo Guard
                     </span>
                   )}
                 </div>
 
                 {/* Explicit Interests Ledger Tags */}
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   {vip.explicitInterests.slice(0, 3).map((interest, idx) => (
                     <span
                       key={idx}
-                      className="text-[9px] font-sans font-medium uppercase px-1.5 py-0.5 border border-stone-800 bg-[#070709] text-stone-300"
+                      className="text-xs font-medium uppercase px-2 py-1 border border-[#E5E0D6] bg-[#FAF8F5] text-[#323835] rounded-sm"
                     >
                       {interest}
                     </span>
                   ))}
                   {vip.explicitInterests.length > 3 && (
-                    <span className="text-[9px] font-sans font-medium px-1 py-0.5 text-stone-500">
+                    <span className="text-xs font-medium px-1.5 py-1 text-[#6B736D]">
                       +{vip.explicitInterests.length - 3}
                     </span>
                   )}

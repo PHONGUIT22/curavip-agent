@@ -21,80 +21,80 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
   const groundedVip = grounded.dossier.vipProfile;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 md:p-6 overflow-y-auto">
-      <div className="w-full max-w-6xl max-h-[92vh] flex flex-col border border-stone-800 bg-[#070709] shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 overflow-y-auto">
+      <div className="w-full max-w-6xl max-h-[92vh] flex flex-col border border-[#E5E0D6] bg-[#F8F6F0] rounded-sm shadow-2xl overflow-hidden">
         {/* Modal Header */}
-        <div className="px-5 py-3.5 border-b border-stone-800 flex items-center justify-between bg-[#0B0B10]">
+        <div className="px-6 py-4.5 border-b border-[#E5E0D6] flex items-center justify-between bg-white">
           <div>
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px] font-sans font-medium tracking-widest uppercase text-champagne-400">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
                 Competitive Benchmark
               </span>
-              <span className="text-[9px] font-sans font-medium px-1.5 py-0.2 border border-stone-800 bg-[#070709] text-stone-400 uppercase">
+              <span className="text-xs font-medium px-2.5 py-0.5 border border-[#E5E0D6] bg-[#FAF8F5] text-[#6B736D] rounded-sm uppercase tracking-wide">
                 The Grounding Difference
               </span>
             </div>
-            <h2 className="font-sans text-lg font-semibold text-stone-100 tracking-tight">
+            <h2 className="font-sans text-xl font-semibold text-[#161A18] tracking-tight">
               Why Generic LLMs Fail High-Ticket Dealmakers: {groundedVip.fullName}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 border border-stone-800 bg-[#070709] text-stone-400 hover:text-stone-100 hover:border-stone-700 transition-colors"
+            className="p-2 border border-[#E5E0D6] bg-white text-[#6B736D] hover:text-[#161A18] hover:border-[#183D33] rounded-sm transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* 2-Column Split Comparison Body */}
-        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-stone-800 overflow-y-auto p-5 gap-5 bg-[#070709]">
+        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#E5E0D6] overflow-y-auto p-6 gap-6 bg-[#F8F6F0]">
           {/* COLUMN 1: GENERIC LLM BASELINE (UNGROUNDED) */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Column Title */}
-            <div className="p-3 border border-crimsonAlert/30 bg-crimsonAlert/10">
-              <div className="flex items-center gap-2 text-crimsonAlert font-sans text-xs font-semibold uppercase mb-0.5">
-                <Zap className="w-3.5 h-3.5" />
+            <div className="p-4 border border-[#F8B4B4] bg-[#FDF2F2] rounded-sm">
+              <div className="flex items-center gap-2 text-[#C53030] font-sans text-xs font-semibold uppercase mb-1">
+                <Zap className="w-4 h-4" />
                 <span>Generic LLM Baseline (Without Qloo)</span>
               </div>
-              <p className="text-xs text-stone-300 font-sans leading-relaxed">
+              <p className="text-sm text-[#323835] font-sans leading-relaxed">
                 Relies on statistical corporate clichés. Guesswork fails taboo protocols and offers forgettable commodities.
               </p>
             </div>
 
             {/* Compliance Fail Callout */}
-            <div className="p-3 border border-crimsonAlert/30 bg-[#0B0B10]">
-              <div className="flex items-center gap-2 text-xs font-sans text-crimsonAlert font-semibold mb-1">
-                <AlertOctagon className="w-3.5 h-3.5" />
+            <div className="p-4 border border-[#F8B4B4] bg-white rounded-sm shadow-sm">
+              <div className="flex items-center gap-2 text-xs font-sans text-[#C53030] font-semibold uppercase mb-2">
+                <AlertOctagon className="w-4 h-4" />
                 <span>Governance Risk: Taboo & FCPA Violations</span>
               </div>
-              <ul className="text-xs text-stone-300 list-disc list-inside space-y-1 font-sans">
+              <ul className="text-sm text-[#323835] list-disc list-inside space-y-1 font-sans">
                 {generic.dossier.complianceAudit.tabooViolations.length > 0 ? (
                   generic.dossier.complianceAudit.tabooViolations.map((v, i) => (
-                    <li key={i} className="text-crimsonAlert">{v}</li>
+                    <li key={i} className="text-[#C53030] font-medium">{v}</li>
                   ))
                 ) : (
-                  <li className="text-amberCaution">Generic luxury padfolio with unauthorized pigskin/animal material.</li>
+                  <li className="text-[#B45309]">Generic luxury padfolio with unauthorized pigskin/animal material.</li>
                 )}
               </ul>
             </div>
 
             {/* Cliché Gifts */}
             <div>
-              <span className="text-[10px] font-sans font-medium uppercase text-stone-400 tracking-wider block mb-2">
+              <span className="text-xs font-semibold uppercase text-[#6B736D] tracking-wider block mb-2.5">
                 Generic Gift Proposals
               </span>
-              <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
+              <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-sm shadow-sm">
                 {generic.dossier.curatedGifts.map((gift) => (
-                  <div key={gift.id} className="p-3">
-                    <div className="flex justify-between items-start mb-0.5">
-                      <h4 className="font-sans font-semibold text-sm text-stone-200">{gift.title}</h4>
-                      <span className="font-sans font-semibold text-xs text-stone-400">${gift.estimatedPriceUsd}</span>
+                  <div key={gift.id} className="p-4">
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="font-sans font-semibold text-base text-[#161A18]">{gift.title}</h4>
+                      <span className="font-sans font-semibold text-sm text-[#6B736D]">${gift.estimatedPriceUsd}</span>
                     </div>
-                    <span className="text-[9px] font-sans font-medium text-crimsonAlert/90 block mb-1">
+                    <span className="text-xs font-semibold text-[#C53030] block mb-1.5">
                       Anchor: {gift.qlooCorrelationAnchor}
                     </span>
-                    <p className="text-xs text-stone-400 font-sans leading-relaxed">
+                    <p className="text-sm text-[#6B736D] font-sans leading-relaxed">
                       {gift.culturalRationale}
                     </p>
                   </div>
@@ -104,12 +104,12 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Cliché Ice-Breakers */}
             <div>
-              <span className="text-[10px] font-sans font-medium uppercase text-stone-400 tracking-wider block mb-2">
+              <span className="text-xs font-semibold uppercase text-[#6B736D] tracking-wider block mb-2.5">
                 Superficial Conversation Openers
               </span>
-              <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
+              <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-sm shadow-sm">
                 {generic.dossier.iceBreakerScripts.map((script, i) => (
-                  <div key={i} className="p-2.5 text-xs font-sans text-stone-400 leading-relaxed">
+                  <div key={i} className="p-3.5 text-sm font-sans text-[#6B736D] leading-relaxed">
                     {script}
                   </div>
                 ))}
@@ -118,45 +118,45 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
           </div>
 
           {/* COLUMN 2: QLOO GROUNDED CONCIERGE (CURAVIP) */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Column Title */}
-            <div className="p-3 border border-emeraldStatus/30 bg-emeraldStatus/10">
-              <div className="flex items-center gap-2 text-emeraldStatus font-sans text-xs font-semibold uppercase mb-0.5">
-                <Sparkles className="w-3.5 h-3.5 text-champagne-400" />
+            <div className="p-4 border border-[#C8DCD1] bg-[#EDF4F0] rounded-sm">
+              <div className="flex items-center gap-2 text-[#1D5A4A] font-sans text-xs font-semibold uppercase mb-1">
+                <Sparkles className="w-4 h-4 text-[#1D5A4A]" />
                 <span>CuraVIP (Qloo Taste Graph Grounded)</span>
               </div>
-              <p className="text-xs text-stone-200 font-sans leading-relaxed">
+              <p className="text-sm text-[#323835] font-sans leading-relaxed">
                 Anchored in 250M+ cultural entities. Cross-domain inference connects cinema, architecture, and artisan craft.
               </p>
             </div>
 
             {/* Compliance Passed Callout */}
-            <div className="p-3 border border-emeraldStatus/30 bg-[#0B0B10]">
-              <div className="flex items-center gap-2 text-xs font-sans text-emeraldStatus font-semibold mb-1">
-                <CheckCircle2 className="w-3.5 h-3.5" />
+            <div className="p-4 border border-[#C8DCD1] bg-white rounded-sm shadow-sm">
+              <div className="flex items-center gap-2 text-xs font-sans text-[#1D5A4A] font-semibold uppercase mb-1.5">
+                <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
                 <span>100% FCPA & Taboo Compliant Verified</span>
               </div>
-              <p className="text-xs text-stone-300 font-sans">
+              <p className="text-sm text-[#323835] font-sans leading-relaxed">
                 Zero alcohol infractions. Zero dietary violations. Strictly audited under corporate ceiling (${grounded.dossier.complianceAudit.effectiveBudgetCapUsd}).
               </p>
             </div>
 
             {/* Grounded Bespoke Gifts */}
             <div>
-              <span className="text-[10px] font-sans font-medium uppercase text-champagne-400 tracking-wider block mb-2">
+              <span className="text-xs font-semibold uppercase text-[#183D33] tracking-wider block mb-2.5">
                 Grounded Bespoke Artifacts
               </span>
-              <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
+              <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-sm shadow-sm">
                 {grounded.dossier.curatedGifts.map((gift) => (
-                  <div key={gift.id} className="p-3">
-                    <div className="flex justify-between items-start mb-0.5">
-                      <h4 className="font-sans font-semibold text-sm text-champagne-200">{gift.title}</h4>
-                      <span className="font-sans font-semibold text-xs text-champagne-400">${gift.estimatedPriceUsd}</span>
+                  <div key={gift.id} className="p-4">
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="font-sans font-semibold text-base text-[#161A18]">{gift.title}</h4>
+                      <span className="font-sans font-semibold text-sm text-[#183D33] tabular-nums">${gift.estimatedPriceUsd}</span>
                     </div>
-                    <span className="text-[9px] font-sans font-medium text-champagne-400 block mb-1">
+                    <span className="text-xs font-semibold text-[#183D33] block mb-1.5">
                       Anchor: {gift.qlooCorrelationAnchor}
                     </span>
-                    <p className="text-xs text-stone-300 font-sans leading-relaxed">
+                    <p className="text-sm text-[#323835] font-sans leading-relaxed">
                       {gift.culturalRationale}
                     </p>
                   </div>
@@ -166,12 +166,12 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
 
             {/* Grounded Ice-Breakers */}
             <div>
-              <span className="text-[10px] font-sans font-medium uppercase text-champagne-400 tracking-wider block mb-2">
+              <span className="text-xs font-semibold uppercase text-[#183D33] tracking-wider block mb-2.5">
                 Diplomatic Rapport Openings
               </span>
-              <div className="divide-y divide-stone-800 border border-stone-800 bg-[#0B0B10]">
+              <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-sm shadow-sm">
                 {grounded.dossier.iceBreakerScripts.map((script, i) => (
-                  <div key={i} className="p-2.5 text-xs font-sans text-stone-200 leading-relaxed">
+                  <div key={i} className="p-3.5 text-sm font-sans text-[#323835] leading-relaxed">
                     {script}
                   </div>
                 ))}
@@ -181,13 +181,13 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-3 border-t border-stone-800 bg-[#0B0B10] flex items-center justify-between">
-          <span className="text-[11px] text-stone-500 font-sans">
+        <div className="px-6 py-4 border-t border-[#E5E0D6] bg-white flex items-center justify-between">
+          <span className="text-xs text-[#6B736D] font-sans">
             Powered by Qloo Taste Graph Correlation Engine & Model Context Protocol
           </span>
           <button
             onClick={onClose}
-            className="px-3 py-1 border border-champagne-500 bg-champagne-500 text-[#070709] text-xs font-sans font-semibold hover:bg-champagne-400 transition-colors"
+            className="px-4 py-2 border border-[#183D33] bg-[#183D33] text-white text-xs font-semibold uppercase tracking-wide hover:bg-[#224F43] rounded-sm transition-colors shadow-sm"
           >
             Close Benchmark
           </button>

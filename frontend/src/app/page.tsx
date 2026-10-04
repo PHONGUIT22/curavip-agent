@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { AppSidebar } from '../components/AppSidebar';
 import { TopNavBar } from '../components/TopNavBar';
 import { VIPRosterRail } from '../components/VIPRosterRail';
 import { VIPAgentConsole } from '../components/VIPAgentConsole';
@@ -135,45 +136,54 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#070709] text-stone-100 flex flex-col relative pb-16">
-      {/* Top Navigation Bar with Grounding Toggle */}
-      <TopNavBar
-        executionMode={executionMode}
-        onToggleMode={handleToggleMode}
-        onOpenSideBySide={handleOpenSideBySide}
-        onExportPdf={handleExportPdf}
-        activeDossier={activeDossier}
+    <div className="min-h-[100dvh] bg-[#F8F6F0] text-[#161A18] flex flex-row relative selection:bg-[#183D33]/15 selection:text-[#183D33]">
+      {/* Left Deep Pine Sidebar (Inspired by reference mockimage.png) */}
+      <AppSidebar
+        onOpenBenchmark={handleOpenSideBySide}
         qlooLiveStatus={qlooLiveStatus}
       />
 
-      {/* Main Workspace Layout */}
-      <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-8 flex-1 flex flex-col lg:flex-row gap-8">
-        {/* Left Sidebar: VIP Principals Roster */}
-        <VIPRosterRail
-          profiles={profiles}
-          selectedVipId={selectedVip?.id || null}
-          onSelectVip={handleSelectVip}
+      {/* Main Canvas Area */}
+      <div className="flex-1 flex flex-col min-w-0 pb-16">
+        {/* Top Navigation Bar with Grounding Toggle */}
+        <TopNavBar
+          executionMode={executionMode}
+          onToggleMode={handleToggleMode}
+          onOpenSideBySide={handleOpenSideBySide}
+          onExportPdf={handleExportPdf}
+          activeDossier={activeDossier}
+          qlooLiveStatus={qlooLiveStatus}
         />
 
-        {/* Center & Right Column: Agent Console & Rich Dossier Cards */}
-        <div className="flex-1 min-w-0">
-          {/* Executive Chief of Staff Console */}
-          <VIPAgentConsole
-            selectedVip={selectedVip}
-            budgetTier={budgetTier}
-            onSelectTier={handleSelectTier}
-            executionMode={executionMode}
-            onGenerateDossier={handleGenerateFromConsole}
-            isLoading={isLoading}
-            onVoiceStateChange={(listening) =>
-              setGlowState(listening ? 'listening' : 'idle')
-            }
+        {/* Main Workspace Layout */}
+        <main className="max-w-7xl w-full mx-auto px-4 md:px-8 py-8 flex-1 flex flex-col lg:flex-row gap-8">
+          {/* Left Sidebar: VIP Principals Roster */}
+          <VIPRosterRail
+            profiles={profiles}
+            selectedVipId={selectedVip?.id || null}
+            onSelectVip={handleSelectVip}
           />
 
-          {/* Rich Cards Container (Taste Graph, Gifts, Dining, Compliance) */}
-          <RichCardsContainer dossier={activeDossier} />
-        </div>
-      </main>
+          {/* Center & Right Column: Agent Console & Rich Dossier Cards */}
+          <div className="flex-1 min-w-0">
+            {/* Executive Chief of Staff Console */}
+            <VIPAgentConsole
+              selectedVip={selectedVip}
+              budgetTier={budgetTier}
+              onSelectTier={handleSelectTier}
+              executionMode={executionMode}
+              onGenerateDossier={handleGenerateFromConsole}
+              isLoading={isLoading}
+              onVoiceStateChange={(listening) =>
+                setGlowState(listening ? 'listening' : 'idle')
+              }
+            />
+
+            {/* Rich Cards Container (Taste Graph, Gifts, Dining, Compliance) */}
+            <RichCardsContainer dossier={activeDossier} />
+          </div>
+        </main>
+      </div>
 
       {/* Side-by-Side Competitive Benchmark Modal */}
       <SideBySideComparisonView

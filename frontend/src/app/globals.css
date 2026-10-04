@@ -5,47 +5,46 @@
 @tailwind utilities;
 
 :root {
-  --background: #070709;
-  --foreground: #F8F6F0;
+  --background: #F8F6F0;
+  --foreground: #161A18;
 }
 
 body {
-  background: #070709;
-  color: #F8F6F0;
+  background: #F8F6F0;
+  color: #161A18;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
   font-family: 'Google Sans', 'Google Sans Text', system-ui, sans-serif;
 }
 
-/* Crisp Terminal Scrollbar */
+/* Warm Technical Canvas Scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #070709;
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  background: #F8F6F0;
+  border-left: 1px solid #E5E0D6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.3);
-  border-radius: 0;
+  background: #D4CEBF;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.55);
+  background: #B8B09F;
 }
 
-/* Archival Curation Ledger Utilities */
+/* Editorial Ledger Utilities */
 @layer components {
   .luxury-card {
-    background: #0B0B10;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-top: 1px solid rgba(212, 175, 55, 0.35);
-    border-radius: 0px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    background: #FFFFFF;
+    border: 1px solid #E5E0D6;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   }
 
   .luxury-card-interactive {
@@ -53,33 +52,34 @@ body {
   }
 
   .luxury-card-interactive:hover {
-    border-color: rgba(212, 175, 55, 0.45);
-    background-color: #0E0E16;
+    border-color: #183D33;
+    background-color: #FAF8F5;
   }
 
   .luxury-card-selected {
-    border-left: 2px solid #D4AF37 !important;
-    border-color: rgba(212, 175, 55, 0.6) !important;
-    background-color: #11111A !important;
+    border-left: 2px solid #183D33 !important;
+    border-color: #183D33 !important;
+    background-color: #F4F1EA !important;
   }
 
   .glass-panel {
-    background: #0B0B10;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0px;
+    background: #FFFFFF;
+    border: 1px solid #E5E0D6;
+    border-radius: 2px;
   }
 
   .gold-shimmer-btn {
-    background: #C5A880;
-    color: #070709;
+    background: #183D33;
+    color: #FFFFFF;
     font-weight: 600;
-    border-radius: 0px;
-    border: 1px solid #C5A880;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    border-radius: 2px;
+    border: 1px solid #183D33;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
   }
 
   .gold-shimmer-btn:hover {
-    background: #D4AF37;
-    color: #070709;
+    background: #224F43;
+    border-color: #224F43;
+    color: #FFFFFF;
   }
 }

@@ -24,78 +24,79 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   const isGrounded = executionMode === 'qloo_grounded';
 
   return (
-    <header className="sticky top-0 z-30 w-full h-14 bg-[#070709] border-b border-stone-800 px-4 md:px-6 flex items-center">
-      <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-4">
-        {/* Brand Header */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-none border border-champagne-500/40 bg-[#0B0B10] flex items-center justify-center">
-            <span className="font-sans font-bold text-sm text-champagne-400">CV</span>
-          </div>
-          <div className="flex items-baseline gap-2.5">
-            <h1 className="font-sans text-base font-semibold tracking-[0.2em] text-stone-100">
-              CURAVIP
-            </h1>
-            <span className="hidden sm:inline-block font-sans text-[10px] tracking-widest text-neutral-400 uppercase font-medium">
-              FAMILY OFFICE CONCIERGE
+    <header className="w-full bg-[#F8F6F0] border-b border-[#E5E0D6] px-6 py-4.5">
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* Editorial Sub-Header Breadcrumb & Title */}
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#6B736D]">
+              01 / Executive Concierge
+            </span>
+            <span className="text-[#C2C8C4] text-xs">·</span>
+            <span className="text-xs font-medium text-[#183D33] uppercase tracking-wide">
+              Family Office Terminal
             </span>
           </div>
+          <h1 className="text-xl md:text-2xl font-semibold text-[#161A18] tracking-tight">
+            Autonomous Cultural Intelligence & VIP Concierge
+          </h1>
         </div>
 
-        {/* Center / Right Action Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Grounding Toggle */}
-          <div className="flex items-center border border-stone-800 bg-[#0B0B10]">
+        {/* Action Controls & Mode Switcher */}
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          {/* Grounding Engine Segmented Toggle */}
+          <div className="flex items-center p-1 rounded-sm border border-[#E5E0D6] bg-[#FAF8F5]">
             <button
               onClick={() => onToggleMode('qloo_grounded')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider transition-colors font-medium ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase tracking-wide transition-all rounded-sm ${
                 isGrounded
-                  ? 'bg-champagne-500 text-[#070709] font-bold'
-                  : 'text-stone-400 hover:text-stone-200'
+                  ? 'bg-[#183D33] text-white font-semibold shadow-sm'
+                  : 'text-[#6B736D] hover:text-[#161A18] font-medium'
               }`}
               title="Ground curation in Qloo Cultural Taste Graph"
             >
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="w-3.5 h-3.5" />
               <span>Qloo Grounded</span>
             </button>
 
             <button
               onClick={() => onToggleMode('generic_llm')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider transition-colors border-l border-stone-800 font-medium ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase tracking-wide transition-all rounded-sm ${
                 !isGrounded
-                  ? 'bg-crimsonAlert/20 text-crimsonAlert font-bold'
-                  : 'text-stone-400 hover:text-stone-200'
+                  ? 'bg-[#C53030] text-white font-semibold shadow-sm'
+                  : 'text-[#6B736D] hover:text-[#161A18] font-medium'
               }`}
               title="Switch to ungrounded generic baseline LLM"
             >
-              <Zap className="w-3 h-3" />
+              <Zap className="w-3.5 h-3.5" />
               <span>Generic LLM</span>
             </button>
           </div>
 
-          {/* Side-by-Side Comparison Trigger */}
+          {/* Benchmark Button */}
           <button
             onClick={onOpenSideBySide}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider font-medium border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
+            className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide border border-[#E5E0D6] bg-white text-[#161A18] hover:border-[#183D33] hover:text-[#183D33] transition-colors rounded-sm shadow-sm"
           >
-            <SplitSquareVertical className="w-3 h-3 text-champagne-400" />
-            <span className="hidden sm:inline">Benchmark</span>
+            <SplitSquareVertical className="w-3.5 h-3.5 text-[#183D33]" />
+            <span>Benchmark</span>
           </button>
 
-          {/* Export PDF Button if Active Dossier Exists */}
+          {/* Export PDF Button (Solid Dark Pine button matching mockimage) */}
           {activeDossier && (
             <button
               onClick={onExportPdf}
-              className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-sans uppercase tracking-wider font-medium border border-stone-800 bg-[#0B0B10] text-stone-300 hover:border-champagne-500/50 hover:text-champagne-400 transition-colors"
+              className="flex items-center gap-2 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide bg-[#183D33] text-white hover:bg-[#224F43] transition-colors rounded-sm shadow-sm"
               title="Export 1-Page Archival PDF Summary"
             >
-              <Download className="w-3 h-3 text-champagne-400" />
-              <span className="hidden md:inline">PDF</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Export Ledger</span>
             </button>
           )}
 
           {/* System Provenance Stamp */}
-          <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-sans font-medium px-2 py-1 border border-stone-800 bg-[#0B0B10] text-stone-400">
-            <span className="w-1.5 h-1.5 rounded-none bg-emeraldStatus" />
+          <div className="hidden xl:flex items-center gap-2 text-xs font-medium px-2.5 py-1.5 border border-[#C8DCD1] bg-[#EDF4F0] text-[#1D5A4A] rounded-sm">
+            <span className="w-2 h-2 rounded-full bg-[#10B981]" />
             <span>{qlooLiveStatus ? 'QLOO LIVE API' : 'QLOO TASTE GRAPH'}</span>
           </div>
         </div>
