@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { vipDossierRepo } from '../database/vipDossierRepo.js';
 import { seedDemoData } from '../database/seedDemoData.js';
 import { qlooClient } from '../services/qlooClient.js';
+import { qlooCacheRepo } from '../database/qlooCacheRepo.js';
 import { complianceGuardrailService } from '../services/complianceGuardrailService.js';
 import { dossierSynthesisService } from '../services/dossierSynthesisService.js';
 import { handleAgentTurn } from '../tools/agentTurnHandler.js';
@@ -32,9 +33,19 @@ apiRouter.get('/health', (req: Request, res: Response) => {
     version: '1.0.0',
     qlooConfigured: envConfig.qlooConfigured,
     bedrockConfigured: envConfig.bedrockConfigured,
+    cache: qlooCacheRepo.stats(),
     mcpEndpoint: `http://localhost:${envConfig.PORT}/sse`,
     timestamp: new Date().toISOString(),
   });
+});
+
+apiRouter.get('/cache/stats', (req: Request, res: Response) => {
+  res.json({ success: true, ...qlooCacheRepo.stats() });
+});
+
+apiRouter.post('/cache/clear', (req: Request, res: Response) => {
+  qlooCacheRepo.cleanExpired();
+  res.json({ success: true, message: 'Expired cache entries pruned', stats: qlooCacheRepo.stats() });
 });
 
 apiRouter.post('/seed', (req: Request, res: Response) => {
@@ -122,7 +133,8 @@ async function generateGenericLLMDossier(
 async function generateGroundedDossier(
   profile: VIPProfile,
   tier: BudgetTier,
-  meetingBrief?: string
+  meetingBrief?: string,
+  onProgress?: (step: AgentTraceStep) => void
 ): Promise<{ dossier: ExecutiveDossier; trace: AgentTraceStep[] }> {
   const trace: AgentTraceStep[] = [];
 
@@ -132,7 +144,7 @@ async function generateGroundedDossier(
     ? profile.explicitInterests
     : ['Minimalist design', 'Bespoke craft', 'Contemporary art'];
 
-  trace.push({
+  const step1: AgentTraceStep = {
     id: `step_deconstruct_${Date.now()}`,
     phase: 'deconstruct',
     tool: 'profile_analyzer',
@@ -141,12 +153,14 @@ async function generateGroundedDossier(
     durationMs: Date.now() - deconstructStart,
     status: 'ok',
     source: 'local',
-  });
+  };
+  trace.push(step1);
+  onProgress?.(step1);
 
   // Step 2: Query Qloo Taste Graph
   const graphStart = Date.now();
   const tasteGraph = await qlooClient.fetchTasteGraph(seedInterests, profile.city);
-  trace.push({
+  const step2: AgentTraceStep = {
     id: `step_graph_${Date.now()}`,
     phase: 'query_graph',
     tool: 'explore_cultural_taste',
@@ -155,7 +169,9 @@ async function generateGroundedDossier(
     durationMs: Date.now() - graphStart,
     status: 'ok',
     source: tasteGraph.source === 'qloo_live' ? 'qloo_live' : 'curated_fallback',
-  });
+  };
+  trace.push(step2);
+  onProgress?.(step2);
 
   // Step 3: Dynamic Proposal Synthesis (LLM / Qloo Grounded)
   const curateStart = Date.now();
@@ -168,7 +184,7 @@ async function generateGroundedDossier(
     meetingBrief
   );
 
-  trace.push({
+  const step3: AgentTraceStep = {
     id: `step_curate_${Date.now()}`,
     phase: 'curate',
     tool: 'curate_proposals',
@@ -177,7 +193,9 @@ async function generateGroundedDossier(
     durationMs: Date.now() - curateStart,
     status: 'ok',
     source: synthesis.agentEngine === 'bedrock_claude' ? 'bedrock' : (tasteGraph.source === 'qloo_live' ? 'qloo_live' : 'local'),
-  });
+  };
+  trace.push(step3);
+  onProgress?.(step3);
 
   // Step 4: Compliance & Taboo Audit
   const auditStart = Date.now();
@@ -188,7 +206,7 @@ async function generateGroundedDossier(
     tier
   );
 
-  trace.push({
+  const step4: AgentTraceStep = {
     id: `step_audit_${Date.now()}`,
     phase: 'audit',
     tool: 'compliance_guardrail',
@@ -199,7 +217,9 @@ async function generateGroundedDossier(
     durationMs: Date.now() - auditStart,
     status: complianceAudit.isCompliant ? 'ok' : 'blocked',
     source: 'local',
-  });
+  };
+  trace.push(step4);
+  onProgress?.(step4);
 
   const dossier: ExecutiveDossier = {
     vipProfile: profile,
@@ -265,6 +285,86 @@ apiRouter.post('/dossier/generate', async (req: Request, res: Response) => {
     res.status(500).json({ success: false, error: msg });
   }
 });
+
+// Real-Time Server-Sent Events (SSE) Streaming Endpoint for Agent Reasoning ticks
+async function handleDossierStream(req: Request, res: Response): Promise<void> {
+  const vipId = (req.body?.vipId || req.query?.vipId || 'vip_marcus_vance') as string;
+  const mode = (req.body?.mode || req.query?.mode || 'qloo_grounded') as string;
+  const budgetTier = (req.body?.budgetTier || req.query?.budgetTier || 'executive_500') as BudgetTier;
+  const meetingBrief = (req.body?.meetingBrief || req.query?.meetingBrief || undefined) as string | undefined;
+
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders?.();
+
+  const sendEvent = (event: string, payload: unknown) => {
+    if (res.writableEnded || res.destroyed) return;
+    res.write(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`);
+    (res as any).flush?.();
+  };
+
+  try {
+    const profile = vipDossierRepo.getProfile(vipId);
+    if (!profile) {
+      sendEvent('error', { type: 'error', error: `VIP Profile '${vipId}' not found.` });
+      res.end();
+      return;
+    }
+
+    if (mode === 'generic_llm') {
+      const genericDossier = await generateGenericLLMDossier(profile, budgetTier, meetingBrief);
+      const record = vipDossierRepo.saveDossier(profile.id, genericDossier);
+      const genericStep: AgentTraceStep = {
+        id: `trace_generic_${Date.now()}`,
+        phase: 'curate',
+        tool: 'generic_llm_baseline',
+        title: 'Generate Generic Corporate Baseline',
+        detail: 'Generated standard corporate gifting and dining without Qloo cultural grounding.',
+        durationMs: 45,
+        status: 'ok',
+        source: 'local',
+      };
+      sendEvent('progress', { type: 'progress', step: genericStep });
+      sendEvent('complete', {
+        type: 'complete',
+        success: true,
+        recordId: record.id,
+        dossier: genericDossier,
+        trace: [genericStep],
+      });
+      res.end();
+      return;
+    }
+
+    const { dossier, trace } = await generateGroundedDossier(
+      profile,
+      budgetTier,
+      meetingBrief,
+      (step) => {
+        sendEvent('progress', { type: 'progress', step });
+      }
+    );
+
+    const record = vipDossierRepo.saveDossier(profile.id, dossier);
+    sendEvent('complete', {
+      type: 'complete',
+      success: true,
+      recordId: record.id,
+      dossier,
+      trace,
+    });
+    res.end();
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    sendEvent('error', { type: 'error', error: msg });
+    res.end();
+  }
+}
+
+apiRouter.post('/dossier/generate-stream', handleDossierStream);
+apiRouter.get('/dossier/generate-stream', handleDossierStream);
 
 // Side-by-Side comparison endpoint (The Judge-Winning Feature)
 apiRouter.post('/dossier/compare', async (req: Request, res: Response) => {

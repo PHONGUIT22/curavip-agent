@@ -59,34 +59,74 @@ const SCHEMA_SQL = `
     FOREIGN KEY (vip_id) REFERENCES vip_profiles(id) ON DELETE CASCADE
   );
 
+  CREATE TABLE IF NOT EXISTS qloo_cache (
+    cache_key TEXT PRIMARY KEY NOT NULL,
+    response_json TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL
+  );
+
   CREATE INDEX IF NOT EXISTS idx_dossier_vip_created ON dossier_records(vip_id, created_at DESC);
   CREATE INDEX IF NOT EXISTS idx_history_vip ON curation_history(vip_id, awarded_at DESC);
   CREATE INDEX IF NOT EXISTS idx_orders_vip ON reservation_orders(vip_id, created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_qloo_cache_expires ON qloo_cache(expires_at);
 `;
 
 /**
- * Opens the SQLite database (file-backed in runtime, in-memory under Vitest) and applies the schema.
+ * Opens the SQLite database (file-backed in runtime, in-memory under Vitest/read-only environments) and applies schema.
  */
 export function initDB(): DatabaseSync {
   if (dbInstance) return dbInstance;
 
-  const dbPath = resolveDatabasePath();
-  if (dbPath !== ':memory:') {
-    fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  let dbPath = resolveDatabasePath();
+  let isMemory = dbPath === ':memory:';
+
+  if (!isMemory) {
+    try {
+      const dbDir = path.dirname(dbPath);
+      fs.mkdirSync(dbDir, { recursive: true });
+
+      // Probe write permissions to avoid crashing on read-only cloud filesystems
+      const testProbe = path.join(dbDir, `.probe_${Date.now()}`);
+      fs.writeFileSync(testProbe, 'ok');
+      fs.unlinkSync(testProbe);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(
+        `[SQLite] Notice: Persistent directory for '${dbPath}' is unwritable (${msg}). Falling back to ephemeral in-memory vault.`
+      );
+      dbPath = ':memory:';
+      isMemory = true;
+    }
   }
 
-  const db = new DatabaseSync(dbPath);
-  if (dbPath !== ':memory:') {
-    db.exec('PRAGMA journal_mode = WAL;');
-    db.exec('PRAGMA synchronous = NORMAL;');
+  let db: DatabaseSync;
+  try {
+    db = new DatabaseSync(dbPath);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[SQLite] DatabaseSync failed at '${dbPath}' (${msg}). Initializing in-memory fallback.`);
+    dbPath = ':memory:';
+    isMemory = true;
+    db = new DatabaseSync(':memory:');
   }
+
+  if (!isMemory) {
+    try {
+      db.exec('PRAGMA journal_mode = WAL;');
+      db.exec('PRAGMA synchronous = NORMAL;');
+    } catch {
+      // Ignore pragma failures on non-standard cloud environments
+    }
+  }
+
   db.exec('PRAGMA foreign_keys = ON;');
   db.exec(SCHEMA_SQL);
 
   dbInstance = db;
   resolvedPath = dbPath;
   if (!process.env.VITEST) {
-    console.log(`[SQLite] CuraVIP vault ready at ${dbPath === ':memory:' ? 'in-memory' : dbPath}`);
+    console.log(`[SQLite] CuraVIP vault ready at ${isMemory ? 'in-memory' : dbPath}`);
   }
   return db;
 }

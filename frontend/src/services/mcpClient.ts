@@ -151,6 +151,88 @@ export const mcpClient = {
     }
   },
 
+  /**
+   * Real-Time SSE Stream for Reasoning Pipeline.
+   * Streams each reasoning tick (Deconstruct -> Qloo Insights -> Curate -> Audit)
+   * into onStep callback as they happen.
+   */
+  async generateDossierStream(
+    request: DossierRequest,
+    onStep?: (step: AgentTraceStep) => void
+  ): Promise<DossierResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/dossier/generate-stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error(`SSE stream failed with status ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let finalResult: DossierResponse | null = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const blocks = buffer.split('\n\n');
+        buffer = blocks.pop() || '';
+
+        for (const block of blocks) {
+          const trimmedBlock = block.trim();
+          if (!trimmedBlock) continue;
+
+          let dataStr = '';
+          for (const line of trimmedBlock.split('\n')) {
+            if (line.startsWith('data:')) {
+              dataStr = line.replace('data:', '').trim();
+            }
+          }
+
+          if (dataStr) {
+            try {
+              const parsed = JSON.parse(dataStr);
+              if (parsed.type === 'progress' && parsed.step) {
+                onStep?.(parsed.step);
+              } else if (parsed.type === 'complete') {
+                finalResult = {
+                  recordId: parsed.recordId,
+                  dossier: parsed.dossier,
+                  trace: parsed.trace,
+                };
+              } else if (parsed.type === 'error') {
+                throw new Error(parsed.error || 'Stream error');
+              }
+            } catch (pErr) {
+              if (pErr instanceof Error && pErr.message !== 'Unexpected end of JSON input') {
+                throw pErr;
+              }
+            }
+          }
+        }
+      }
+
+      if (finalResult) {
+        return finalResult;
+      }
+
+      // If stream ended without a complete event, fallback to standard generateDossier
+      return await this.generateDossier(request);
+    } catch (err) {
+      logFallbackNotice('generateDossierStream', err);
+      return this.generateDossier(request);
+    }
+  },
+
   async compareDossiers(
     vipId: string,
     budgetTier: BudgetTier = 'executive_500',

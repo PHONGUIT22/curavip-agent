@@ -55,14 +55,28 @@ export default function Home() {
     ) => {
       setIsLoading(true);
       setGlowState('reasoning');
+      setActiveTrace([]);
 
       try {
-        const response = await mcpClient.generateDossier({
-          vipId,
-          budgetTier: tier,
-          mode,
-          meetingBrief: brief,
-        });
+        const response = await mcpClient.generateDossierStream(
+          {
+            vipId,
+            budgetTier: tier,
+            mode,
+            meetingBrief: brief,
+          },
+          (step) => {
+            setActiveTrace((prev) => {
+              const idx = prev.findIndex((s) => s.id === step.id);
+              if (idx >= 0) {
+                const next = [...prev];
+                next[idx] = step;
+                return next;
+              }
+              return [...prev, step];
+            });
+          }
+        );
 
         setActiveDossier(response.dossier);
         if (response.trace) {

@@ -1,5 +1,6 @@
 import { envConfig, isRealSecret } from '../config/env.js';
 import type { CulturalCategory, CulturalEntity, CulturalTasteGraph } from '../types/index.js';
+import { qlooCacheRepo } from '../database/qlooCacheRepo.js';
 import {
   buildFallbackTasteGraph,
   expandCuratedCorrelations,
@@ -116,12 +117,18 @@ export class QlooClient {
     const trimmed = query.trim();
     if (!trimmed) return [];
 
+    const cacheKey = `qloo:search:${type || 'all'}:${trimmed.toLowerCase()}`;
+    const cached = qlooCacheRepo.get<CulturalEntity[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     if (!this.isConfigured) {
       const match = resolveCuratedSeed(trimmed);
       const cat = (type && ['music', 'film', 'dining', 'fashion', 'literature', 'architecture'].includes(type)
         ? type
         : guessCategory(trimmed)) as CulturalCategory;
-      return match
+      const res = match
         ? [match]
         : [
             {
@@ -132,6 +139,8 @@ export class QlooClient {
               metadata: { source: 'curated_fallback' },
             },
           ];
+      qlooCacheRepo.set(cacheKey, res, 86400);
+      return res;
     }
 
     try {
@@ -167,7 +176,9 @@ export class QlooClient {
           `[QlooClient] searchEntities returned ${response.status}. Deferring to curated fallback.`
         );
         const fallback = resolveCuratedSeed(trimmed);
-        return fallback ? [fallback] : [];
+        const res = fallback ? [fallback] : [];
+        if (res.length > 0) qlooCacheRepo.set(cacheKey, res, 3600);
+        return res;
       }
 
       const data = (await response.json()) as any;
@@ -176,10 +187,12 @@ export class QlooClient {
 
       if (!Array.isArray(rawList) || rawList.length === 0) {
         const fallback = resolveCuratedSeed(trimmed);
-        return fallback ? [fallback] : [];
+        const res = fallback ? [fallback] : [];
+        if (res.length > 0) qlooCacheRepo.set(cacheKey, res, 3600);
+        return res;
       }
 
-      return rawList.map((item) => {
+      const results = rawList.map((item) => {
         const rawType = item.type || item.category || (Array.isArray(item.types) ? item.types[0] : undefined);
         const cat = mapQlooCategory(rawType, item.name || trimmed);
         const id = item.urn || item.id || `urn:entity:${rawType || 'entity'}:${slugify(item.name || trimmed)}`;
@@ -197,11 +210,18 @@ export class QlooClient {
           },
         };
       });
+
+      if (results.length > 0) {
+        qlooCacheRepo.set(cacheKey, results, 86400);
+      }
+      return results;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.warn(`[QlooClient] Live search failed (${msg}). Using curated graph.`);
       const fallback = resolveCuratedSeed(trimmed);
-      return fallback ? [fallback] : [];
+      const res = fallback ? [fallback] : [];
+      if (res.length > 0) qlooCacheRepo.set(cacheKey, res, 3600);
+      return res;
     }
   }
 
@@ -219,8 +239,23 @@ export class QlooClient {
   ): Promise<CulturalEntity[]> {
     if (!seedInterests || seedInterests.length === 0) return [];
 
+    const sortedSeeds = [...seedInterests].map((s) => s.trim().toLowerCase()).sort().join('|');
+    const sortedCats = [...targetCategories].map((c) => c.trim().toLowerCase()).sort().join('|');
+    const locKey = (location || 'none').trim().toLowerCase();
+    const correlationCacheKey = `qloo:correlate:${sortedSeeds}:${sortedCats}:${locKey}`;
+
+    const cachedCorrelation = qlooCacheRepo.get<CulturalEntity[]>(correlationCacheKey);
+    if (cachedCorrelation) {
+      console.log(`[QlooCache HIT] Correlations for [${seedInterests.join(', ')}] (<5ms)`);
+      return cachedCorrelation;
+    }
+
     if (!this.isConfigured) {
-      return expandCuratedCorrelations(seedInterests, targetCategories);
+      const fallback = expandCuratedCorrelations(seedInterests, targetCategories);
+      if (fallback.length > 0) {
+        qlooCacheRepo.set(correlationCacheKey, fallback, 86400);
+      }
+      return fallback;
     }
 
     try {
@@ -240,7 +275,9 @@ export class QlooClient {
       // If no valid entity URNs could be resolved from seeds, fallback to curated correlation
       if (entityUrns.length === 0) {
         console.warn('[QlooClient] No entity URNs resolved for seeds. Falling back to curated correlation.');
-        return expandCuratedCorrelations(seedInterests, targetCategories);
+        const fallback = expandCuratedCorrelations(seedInterests, targetCategories);
+        if (fallback.length > 0) qlooCacheRepo.set(correlationCacheKey, fallback, 3600);
+        return fallback;
       }
 
       // Step 2: Define valid Qloo filter types mapped to internal cultural categories
@@ -261,6 +298,12 @@ export class QlooClient {
 
       // Step 3: Promise.allSettled GET requests in parallel
       const fetchPromises = activeConfigs.map(async ({ filterType, category }) => {
+        const insightsCacheKey = `qloo:insights:${filterType}:${[...entityUrns].sort().join(',')}:${locKey}`;
+        const cachedInsight = qlooCacheRepo.get<CulturalEntity[]>(insightsCacheKey);
+        if (cachedInsight) {
+          return cachedInsight;
+        }
+
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
 
@@ -297,7 +340,7 @@ export class QlooClient {
 
           if (!Array.isArray(rawList)) return [];
 
-          return rawList.map((item): CulturalEntity => {
+          const mappedList = rawList.map((item): CulturalEntity => {
             const urn = item.urn || item.id || `urn:entity:${filterType.split(':').pop()}:${slugify(item.name || 'entity')}`;
             return {
               id: urn,
@@ -312,6 +355,11 @@ export class QlooClient {
               },
             };
           });
+
+          if (mappedList.length > 0) {
+            qlooCacheRepo.set(insightsCacheKey, mappedList, 86400);
+          }
+          return mappedList;
         } catch (err) {
           clearTimeout(timeout);
           console.warn(`[QlooClient] Insights fetch error for ${filterType}:`, err);
@@ -330,14 +378,19 @@ export class QlooClient {
 
       if (combined.length === 0) {
         console.warn('[QlooClient] Live insights returned 0 entities. Deferring to curated correlations.');
-        return expandCuratedCorrelations(seedInterests, targetCategories);
+        const fallback = expandCuratedCorrelations(seedInterests, targetCategories);
+        if (fallback.length > 0) qlooCacheRepo.set(correlationCacheKey, fallback, 3600);
+        return fallback;
       }
 
+      qlooCacheRepo.set(correlationCacheKey, combined, 86400);
       return combined;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.warn(`[QlooClient] Live cross-domain query failed (${msg}). Falling back to curated correlations.`);
-      return expandCuratedCorrelations(seedInterests, targetCategories);
+      const fallback = expandCuratedCorrelations(seedInterests, targetCategories);
+      if (fallback.length > 0) qlooCacheRepo.set(correlationCacheKey, fallback, 3600);
+      return fallback;
     }
   }
 
@@ -345,8 +398,20 @@ export class QlooClient {
    * Synthesize a full CulturalTasteGraph for a VIP profile.
    */
   public async fetchTasteGraph(seedInterests: string[], location?: string): Promise<CulturalTasteGraph> {
+    const sortedSeeds = [...seedInterests].map((s) => s.trim().toLowerCase()).sort().join('|');
+    const locKey = (location || 'none').trim().toLowerCase();
+    const tasteGraphKey = `qloo:tastegraph:${sortedSeeds}:${locKey}`;
+
+    const cachedGraph = qlooCacheRepo.get<CulturalTasteGraph>(tasteGraphKey);
+    if (cachedGraph) {
+      console.log(`[QlooCache HIT] TasteGraph for [${seedInterests.join(', ')}] (<5ms)`);
+      return cachedGraph;
+    }
+
     if (!this.isConfigured) {
-      return buildFallbackTasteGraph(seedInterests);
+      const fallback = buildFallbackTasteGraph(seedInterests);
+      qlooCacheRepo.set(tasteGraphKey, fallback, 86400);
+      return fallback;
     }
 
     try {
@@ -373,14 +438,16 @@ export class QlooClient {
       );
 
       if (expandedEntities.length === 0) {
-        return buildFallbackTasteGraph(seedInterests);
+        const fallback = buildFallbackTasteGraph(seedInterests);
+        qlooCacheRepo.set(tasteGraphKey, fallback, 3600);
+        return fallback;
       }
 
       // Derive themes from expanded entities or curated fallback themes
       const fallbackGraph = buildFallbackTasteGraph(seedInterests);
       const crossDomainThemes = fallbackGraph.crossDomainThemes;
 
-      return {
+      const result: CulturalTasteGraph = {
         seedInterests,
         resolvedSeeds,
         expandedEntities,
@@ -389,8 +456,12 @@ export class QlooClient {
           ? 'qloo_live'
           : 'curated_fallback',
       };
+      qlooCacheRepo.set(tasteGraphKey, result, 86400);
+      return result;
     } catch {
-      return buildFallbackTasteGraph(seedInterests);
+      const fallback = buildFallbackTasteGraph(seedInterests);
+      qlooCacheRepo.set(tasteGraphKey, fallback, 3600);
+      return fallback;
     }
   }
 }
