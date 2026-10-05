@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Compass, MessageSquareQuote, Layers } from 'lucide-react';
+import React, { useState } from 'react';
+import { Compass, MessageSquareQuote, Layers, Share2, Sparkles } from 'lucide-react';
+import { soundService } from '../../services/soundService';
+import { InteractiveTasteNetworkGraph } from '../InteractiveTasteNetworkGraph';
 import type { CulturalTasteGraph, VIPProfile } from '../../types';
 
 interface TasteDossierCardProps {
@@ -26,6 +28,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   vipProfile,
   iceBreakerScripts,
 }) => {
+  const [viewMode, setViewMode] = useState<'graph' | 'matrix'>('graph');
   const isGrounded = tasteGraph.source !== 'none';
   const entities = tasteGraph.expandedEntities || [];
 
@@ -68,7 +71,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   return (
     <div className="border border-[#183D33]/15 bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
       {/* Ledger Section Header */}
-      <div className="flex items-start justify-between gap-4 pb-4 mb-5 border-b border-[#EBE6DD]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-5 border-b border-[#EBE6DD]">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
@@ -92,62 +95,110 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           </h3>
         </div>
 
-        <div className="w-9 h-9 border border-[#E5E0D6] bg-[#FAF8F5] rounded-lg flex items-center justify-center text-[#183D33]">
-          <Compass className="w-4 h-4" />
+        <div className="flex items-center gap-2.5">
+          {/* View Mode Toggle */}
+          <div className="flex items-center p-1 rounded-xl border border-[#E5E0D6] bg-[#FAF8F5]">
+            <button
+              type="button"
+              onClick={() => {
+                soundService.playToggleClick();
+                setViewMode('graph');
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+                viewMode === 'graph'
+                  ? 'bg-[#183D33] text-white shadow-2xs'
+                  : 'text-[#6B736D] hover:text-[#161A18]'
+              }`}
+              title="Interactive Network Graph View"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Network Graph</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                soundService.playToggleClick();
+                setViewMode('matrix');
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+                viewMode === 'matrix'
+                  ? 'bg-[#183D33] text-white shadow-2xs'
+                  : 'text-[#6B736D] hover:text-[#161A18]'
+              }`}
+              title="Structured Entity Matrix View"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Matrix View</span>
+            </button>
+          </div>
+
+          <div className="w-9 h-9 border border-[#E5E0D6] bg-[#FAF8F5] rounded-lg flex items-center justify-center text-[#183D33]">
+            <Compass className="w-4 h-4" />
+          </div>
         </div>
       </div>
 
-      {/* 3 Crisp Ledger Points (Anti-Slop: Structured Ledger Points) */}
-      <div className="border border-[#E5E0D6] bg-[#FAF8F5] p-5 mb-6 rounded-xl shadow-2xs">
-        <div className="flex items-center gap-2 mb-2.5 text-[#183D33] text-xs font-semibold uppercase tracking-wider">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#183D33]" />
-          <span>Synthesized Cross-Domain Theme</span>
+      {/* Dynamic View Body: Network Graph vs Matrix */}
+      {viewMode === 'graph' ? (
+        <div className="mb-6">
+          <InteractiveTasteNetworkGraph tasteGraph={tasteGraph} vipProfile={vipProfile} />
         </div>
-        <div className="space-y-2 font-sans text-sm">
-          {ledgerPoints.map((pt, idx) => (
-            <div key={idx} className="flex items-baseline gap-2.5 text-[#161A18]">
-              <span className="text-[#183D33] font-bold">•</span>
-              <span className="font-semibold text-[#6B736D]">{pt.label}:</span>
-              <span className="text-[#161A18] font-normal">{pt.value}</span>
+      ) : (
+        <>
+          {/* 3 Crisp Ledger Points (Anti-Slop: Structured Ledger Points) */}
+          <div className="border border-[#E5E0D6] bg-[#FAF8F5] p-5 mb-6 rounded-xl shadow-2xs">
+            <div className="flex items-center gap-2 mb-2.5 text-[#183D33] text-xs font-semibold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#183D33]" />
+              <span>Synthesized Cross-Domain Theme</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Cultural Entity Nodes Grid */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3 text-xs font-semibold uppercase text-[#6B736D] tracking-wider">
-          <Layers className="w-4 h-4 text-[#183D33]" />
-          <span>Correlated Taste Nodes</span>
-        </div>
-
-        {entities.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {entities.map((entity) => (
-              <div
-                key={entity.id}
-                className="flex items-center justify-between p-3.5 border border-[#E5E0D6] bg-[#FAF8F5] hover:bg-white hover:border-[#183D33]/40 rounded-xl transition-all shadow-2xs"
-              >
-                <div className="min-w-0 pr-2">
-                  <span className="font-sans text-xs text-[#183D33] font-semibold tracking-wide block mb-0.5">
-                    {getCategoryLabel(entity.category)}
-                  </span>
-                  <span className="font-sans text-xs font-semibold text-[#161A18] line-clamp-2 leading-relaxed block">
-                    {entity.name}
-                  </span>
+            <div className="space-y-2 font-sans text-sm">
+              {ledgerPoints.map((pt, idx) => (
+                <div key={idx} className="flex items-baseline gap-2.5 text-[#161A18]">
+                  <span className="text-[#183D33] font-bold">•</span>
+                  <span className="font-semibold text-[#6B736D]">{pt.label}:</span>
+                  <span className="text-[#161A18] font-normal">{pt.value}</span>
                 </div>
-                <span className="font-sans tabular-nums text-sm font-semibold text-[#183D33] flex-shrink-0">
-                  {Math.round(entity.affinityScore * 100)}%
-                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Cultural Entity Nodes Grid */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-3 text-xs font-semibold uppercase text-[#6B736D] tracking-wider">
+              <Layers className="w-4 h-4 text-[#183D33]" />
+              <span>Correlated Taste Nodes</span>
+            </div>
+
+            {entities.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {entities.map((entity) => (
+                  <div
+                    key={entity.id}
+                    className="flex items-center justify-between p-3.5 border border-[#E5E0D6] bg-[#FAF8F5] hover:bg-white hover:border-[#183D33]/40 rounded-xl transition-all shadow-2xs"
+                  >
+                    <div className="min-w-0 pr-2">
+                      <span className="font-sans text-xs text-[#183D33] font-semibold tracking-wide block mb-0.5">
+                        {getCategoryLabel(entity.category)}
+                      </span>
+                      <span className="font-sans text-xs font-semibold text-[#161A18] line-clamp-2 leading-relaxed block">
+                        {entity.name}
+                      </span>
+                    </div>
+                    <span className="font-sans tabular-nums text-sm font-semibold text-[#183D33] flex-shrink-0">
+                      {Math.round(entity.affinityScore * 100)}%
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="p-4 border border-[#E5E0D6] bg-[#FAF8F5] rounded-xl text-center text-sm font-medium text-[#6B736D]">
+                No correlated nodes surfaced in ungrounded baseline mode.
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="p-4 border border-[#E5E0D6] bg-[#FAF8F5] rounded-xl text-center text-sm font-medium text-[#6B736D]">
-            No correlated nodes surfaced in ungrounded baseline mode.
-          </div>
-        )}
-      </div>
+        </>
+      )}
 
       {/* Strategic Conversational Openings (Diplomatic Ice-Breakers) */}
       <div>
