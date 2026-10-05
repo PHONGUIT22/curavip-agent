@@ -149,9 +149,15 @@ export default function Home() {
     }
   };
 
-  const handleGenerateFromConsole = async (brief: string) => {
-    if (!selectedVip) return;
-    await fetchDossier(selectedVip.id, budgetTier, executionMode, brief);
+  const handleGenerateFromConsole = async (
+    brief: string,
+    overrideVipId?: string,
+    overrideTier?: BudgetTier
+  ) => {
+    const targetVipId = overrideVipId || selectedVip?.id;
+    if (!targetVipId) return;
+    const targetTier = overrideTier || budgetTier;
+    await fetchDossier(targetVipId, targetTier, executionMode, brief);
     // Tự động cuộn xuống phần kết quả
     setTimeout(() => {
       scrollToSection('dossier-results', 'dossier');
@@ -258,6 +264,8 @@ export default function Home() {
                 onGenerateDossier={handleGenerateFromConsole}
                 isLoading={isLoading}
                 activeDossier={activeDossier}
+                profiles={profiles}
+                onSelectVip={handleSelectVip}
                 onDossierUpdated={(newDossier) => {
                   setActiveDossier(newDossier);
                   setTimeout(() => {

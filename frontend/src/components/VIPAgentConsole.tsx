@@ -16,9 +16,11 @@ import {
   Compass,
   CheckCircle2,
   AlertTriangle,
+  Sparkles,
 } from 'lucide-react';
 import { speechService } from '../services/speechService';
 import { mcpClient } from '../services/mcpClient';
+import { soundService } from '../services/soundService';
 import type { AgentTraceStep, BudgetTier, ExecutionMode, ExecutiveDossier, VIPProfile } from '../types';
 
 interface ConsoleMessage {
@@ -35,14 +37,63 @@ interface VIPAgentConsoleProps {
   budgetTier: BudgetTier;
   onSelectTier: (tier: BudgetTier) => void;
   executionMode: ExecutionMode;
-  onGenerateDossier: (brief: string) => Promise<void>;
+  onGenerateDossier: (brief: string, overrideVipId?: string, overrideTier?: BudgetTier) => Promise<void>;
   isLoading: boolean;
   onVoiceStateChange?: (isListening: boolean) => void;
   traceSteps?: AgentTraceStep[];
   onAddTraceStep?: (step: AgentTraceStep) => void;
   onDossierUpdated?: (dossier: ExecutiveDossier, diffHighlights?: string[]) => void;
   activeDossier?: ExecutiveDossier | null;
+  profiles?: VIPProfile[];
+  onSelectVip?: (vip: VIPProfile) => void;
 }
+
+interface JudgeScenarioPreset {
+  id: string;
+  badge: string;
+  title: string;
+  subtitle: string;
+  vipId: string;
+  tier: BudgetTier;
+  tierLabel: string;
+  brief: string;
+}
+
+const JUDGE_SCENARIOS: JudgeScenarioPreset[] = [
+  {
+    id: 'preset_marcus',
+    badge: '🏛️ Wall St M&A Dinner',
+    title: 'Wall St M&A Dinner',
+    subtitle: 'Marcus Vance • Series B Closing',
+    vipId: 'vip_marcus_vance',
+    tier: 'executive_500',
+    tierLabel: '$500 Cap',
+    brief:
+      'High-stakes closing dinner for $40M Series B. Seeking discreet brutalist architectural salon, zero shellfish, $500 compliance cap.',
+  },
+  {
+    id: 'preset_tariq',
+    badge: '🇸🇦 Sovereign Wealth Tech Accord',
+    title: 'Sovereign Wealth Tech Accord',
+    subtitle: 'Tariq Al-Mansoor • Sovereign AI',
+    vipId: 'vip_tariq_al_mansoor',
+    tier: 'unlimited_vip',
+    tierLabel: '$1,500 Cap',
+    brief:
+      'Bilateral sovereign AI summit in London. Strict Halal & 100% Zero-Alcohol protocol, horology & Dieter Rams aesthetic, $1,500 budget.',
+  },
+  {
+    id: 'preset_elena',
+    badge: '🍷 Milan Fashion Partnership',
+    title: 'Milan Fashion Partnership',
+    subtitle: 'Elena Rostova • Haute Couture',
+    vipId: 'vip_elena_rostova',
+    tier: 'standard_200',
+    tierLabel: '$200 Cap',
+    brief:
+      'Haute-couture launch party. Avant-garde jazz vinyl, biodynamic natural wine pairing, strict $200 corporate anti-bribery cap.',
+  },
+];
 
 const SUGGESTED_COMMANDS = [
   'Dị ứng nấm truffle, đổi nhà hàng ngay',
@@ -64,6 +115,8 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   onAddTraceStep,
   onDossierUpdated,
   activeDossier,
+  profiles,
+  onSelectVip,
 }) => {
   const [activeMode, setActiveMode] = useState<'briefing' | 'turn'>('briefing');
   const [meetingBrief, setMeetingBrief] = useState('');
@@ -74,6 +127,22 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   const [isTraceExpanded, setIsTraceExpanded] = useState(true);
   const [messages, setMessages] = useState<ConsoleMessage[]>([]);
   const [synthesizedSuccess, setSynthesizedSuccess] = useState(false);
+
+  const handleSelectPreset = async (preset: JudgeScenarioPreset) => {
+    soundService.playMechanicalClick();
+    setMeetingBrief(preset.brief);
+    onSelectTier(preset.tier);
+    setSynthesizedSuccess(false);
+
+    if (profiles && onSelectVip) {
+      const target = profiles.find((p) => p.id === preset.vipId);
+      if (target) {
+        onSelectVip(target);
+      }
+    }
+
+    await onGenerateDossier(preset.brief, preset.vipId, preset.tier);
+  };
 
   // Default suggested brief when selecting a principal
   useEffect(() => {
@@ -364,6 +433,50 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         {/* MODE 1: Full Dossier Synthesis */}
         {activeMode === 'briefing' && (
           <form onSubmit={handleGenerateSubmit} className="space-y-4">
+            {/* Judge Quick Scenarios (1-Click Evaluation Presets) */}
+            <div className="space-y-2 mb-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#183D33]">
+                  <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>Judge Quick Scenarios (1-Click Evaluation)</span>
+                </div>
+                <span className="text-[11px] text-[#6B736D] hidden sm:inline">
+                  Tự động chọn VIP, nạp brief & chạy synthesis
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                {JUDGE_SCENARIOS.map((preset) => {
+                  const isSelected = selectedVip?.id === preset.vipId;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => handleSelectPreset(preset)}
+                      disabled={isLoading}
+                      className={`w-full text-left p-3 rounded-xl border transition-all flex flex-col justify-between group ${
+                        isSelected
+                          ? 'bg-[#F4F1EA] border-[#183D33] shadow-xs ring-1 ring-[#183D33]/25'
+                          : 'bg-[#FAF8F5] border-[#E5E0D6] hover:bg-white hover:border-[#183D33]/40 hover:shadow-xs'
+                      } ${isLoading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      <div className="flex items-center justify-between gap-1 w-full mb-1">
+                        <span className="font-semibold text-xs text-[#161A18] truncate group-hover:text-[#183D33]">
+                          {preset.badge}
+                        </span>
+                        <span className="font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-[#183D33]/8 text-[#183D33] border border-[#183D33]/15 flex-shrink-0">
+                          {preset.tierLabel}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#6B736D] line-clamp-1 leading-snug">
+                        {preset.subtitle}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="relative">
               <textarea
                 value={meetingBrief}
