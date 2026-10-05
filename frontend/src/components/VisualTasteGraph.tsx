@@ -84,9 +84,9 @@ export function VisualTasteGraph({ tasteGraph, vipProfile }: VisualTasteGraphPro
       const rationale =
         (entity.metadata?.culturalRationale as string) ||
         (entity.metadata?.notes as string) ||
-        `Độ tương đồng đa miền (Cross-domain correlation) đạt ${Math.round(
+        `Cross-domain cultural correlation reaches ${Math.round(
           affinity * 100
-        )}% với seed "${centerTitle}". Phản ánh gu thẩm mỹ cấu trúc, vật liệu tự nhiên và nhịp điệu tĩnh lặng.`;
+        )}% with anchor "${centerTitle}", reflecting shared latent factors of structural harmony, natural material authenticity, and understated elegance.`;
 
       return {
         id: entity.id || `sat_${idx}`,
@@ -163,7 +163,7 @@ export function VisualTasteGraph({ tasteGraph, vipProfile }: VisualTasteGraphPro
 
         <div className="flex items-center gap-1.5 text-[11px] text-[#6B736D]">
           <Info className="w-3.5 h-3.5 text-[#183D33]" />
-          <span>Click hoặc hover vào node để xem cơ sở đối sánh chéo miền</span>
+          <span>Click or hover any node to inspect cross-domain correlation rationale</span>
         </div>
       </div>
 
@@ -388,7 +388,7 @@ export function VisualTasteGraph({ tasteGraph, vipProfile }: VisualTasteGraphPro
       ) : (
         <div className="mt-2 p-2.5 rounded-xl bg-[#F4F1EA]/60 border border-[#E5E0D6] text-center text-xs text-[#6B736D] font-sans">
           <span>
-            Di chuột hoặc nhấp vào bất kỳ thực thể vệ tinh nào trên đồ thị để mở thẻ phân tích thị hiếu chéo miền.
+            Hover or click any satellite entity on the network graph to inspect cross-domain taste analytics.
           </span>
         </div>
       )}

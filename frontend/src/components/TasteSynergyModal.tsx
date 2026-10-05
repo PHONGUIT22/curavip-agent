@@ -512,7 +512,7 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
                     affinityScore={analysis.bilateralGift.qlooScore / 100}
                     anchor="Synergy Artifact"
                     itemTitle={analysis.bilateralGift.title}
-                    explanation={`Qloo Cross-Domain Overlap: Phản ánh ${analysis.bilateralGift.qlooScore}% độ tương đồng văn hóa giữa ${vip1.fullName} và ${vip2.fullName}.`}
+                    explanation={`Qloo Cross-Domain Overlap: Reflects ${analysis.bilateralGift.qlooScore}% cultural concordance between ${vip1.fullName} and ${vip2.fullName}.`}
                   />
                 </div>
 
@@ -555,7 +555,7 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
                     affinityScore={analysis.diplomaticDining.qlooScore / 100}
                     anchor="Culinary Neutrality"
                     itemTitle={analysis.diplomaticDining.venueName}
-                    explanation={`Qloo Cross-Domain Overlap: Không gian ẩm thực trung lập đạt ${analysis.diplomaticDining.qlooScore}% độ hài lòng theo gu thẩm mỹ của cả hai bên.`}
+                    explanation={`Qloo Cross-Domain Overlap: Neutral culinary salon scoring ${analysis.diplomaticDining.qlooScore}% bilateral aesthetic alignment across both principals.`}
                   />
                 </div>
 

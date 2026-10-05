@@ -43,7 +43,7 @@ export const QlooTelemetryBadge: React.FC<QlooTelemetryBadgeProps> = ({ isLive =
             ? 'border-[#C8DCD1] bg-[#EDF4F0] hover:bg-[#E3EEE8] text-[#1D5A4A]'
             : 'border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800'
         }`}
-        title="Xem trực tiếp thông số hạ tầng Qloo Taste Graph 250M+"
+        title="View live Qloo 250M+ Taste Graph infrastructure telemetry"
       >
         {/* Pulse Dot */}
         {isLive ? (

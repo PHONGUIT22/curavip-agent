@@ -27,7 +27,7 @@ export const QlooAffinityBadge: React.FC<QlooAffinityBadgeProps> = ({
 
   const defaultExplanation =
     explanation ||
-    `Dữ liệu Qloo Cross-Domain: Khách hàng có xu hướng đam mê ${anchor} có ${percentage}% độ tương đồng văn hóa với gu thẩm mỹ và kỹ nghệ chế tác của ${itemTitle}.`;
+    `Qloo Cross-Domain Intelligence: Principals with an affinity for ${anchor} exhibit a ${percentage}% cultural concordance with the aesthetic ethos and bespoke craftsmanship of ${itemTitle}.`;
 
   return (
     <div className="relative inline-block text-left">
@@ -37,7 +37,7 @@ export const QlooAffinityBadge: React.FC<QlooAffinityBadgeProps> = ({
         onClick={() => setIsOpen((prev) => !prev)}
         onMouseEnter={() => setIsOpen(true)}
         className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-[#2D7360]/30 bg-[#EDF4F0] hover:bg-[#E2EFE7] text-[#1D5A4A] text-[11px] font-semibold tracking-wide transition-all shadow-2xs"
-        title="Bấm để xem phân tích Taste Graph bảo chứng"
+        title="Click to view verified Qloo Taste Graph rationale"
       >
         <Sparkles className="w-3 h-3 text-[#1D5A4A] group-hover:rotate-12 transition-transform" />
         <span>Qloo Affinity: {percentage}%</span>

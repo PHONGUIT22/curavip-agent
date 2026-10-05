@@ -96,7 +96,7 @@ const JUDGE_SCENARIOS: JudgeScenarioPreset[] = [
 ];
 
 const SUGGESTED_COMMANDS = [
-  'Dị ứng nấm truffle, đổi nhà hàng ngay',
+  'Allergic to truffles, substitute dining immediately',
   'Negotiate budget down to $300',
   'Find Japanese tea ceremony gift',
   'Check if wine violates Tariq taboo',
@@ -343,7 +343,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         const agentMsg: ConsoleMessage = {
           id: `msg_agent_${Date.now()}`,
           sender: 'agent',
-          text: `Đã cập nhật ngay: Thêm cảnh báo dị ứng nấm truffle vào hồ sơ của ${selectedVip.fullName}. Toàn bộ thực đơn và địa điểm đặt bàn đã được thay thế sang Private Salon không nấm (The Artisan Botanist).`,
+          text: `Emergency update logged: Recorded truffle allergy for ${selectedVip.fullName}. Dining reservation and pairing protocols have been substituted with a certified truffle-free private salon (The Artisan Botanist).`,
           toolName: 'refine_dossier_taboo',
           source: 'local_refinement',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -441,7 +441,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                   <span>Judge Quick Scenarios (1-Click Evaluation)</span>
                 </div>
                 <span className="text-[11px] text-[#6B736D] hidden sm:inline">
-                  Tự động chọn VIP, nạp brief & chạy synthesis
+                  Auto-select VIP, populate brief & run synthesis
                 </span>
               </div>
 

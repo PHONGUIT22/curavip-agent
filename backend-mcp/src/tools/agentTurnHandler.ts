@@ -271,7 +271,7 @@ export async function handleAgentTurn(request: AgentTurnRequest): Promise<AgentT
       action: 'substituted_dining',
       diffPill: `[UPDATED: Truffle-Free Menu Substituted]`,
     };
-    offlineSpeech = `Đã cập nhật ngay: Thêm cảnh báo dị ứng nấm truffle vào hồ sơ của ${profile?.fullName || 'Marcus Vance'}. Toàn bộ thực đơn và địa điểm đặt bàn đã được thay thế sang Private Salon không nấm (The Artisan Botanist).`;
+    offlineSpeech = `Emergency update logged: Recorded truffle allergy for ${profile?.fullName || 'Marcus Vance'}. Dining reservation and pairing protocols have been substituted with a certified truffle-free private salon (The Artisan Botanist).`;
 
     const duration = Date.now() - startTime;
     return {

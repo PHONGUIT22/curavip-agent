@@ -310,7 +310,7 @@ export const mcpClient = {
           toolName: 'refine_dossier_taboo',
           toolArgs: { allergen: 'truffle', vipId },
           toolResult: { action: 'substituted_dining', allergen: 'truffle' },
-          speechResponse: `Đã cập nhật ngay: Thêm cảnh báo dị ứng nấm truffle vào hồ sơ của ${profile.fullName}. Toàn bộ thực đơn và địa điểm đặt bàn đã được thay thế sang Private Salon không nấm (The Artisan Botanist).`,
+          speechResponse: `Emergency update logged: Recorded truffle allergy for ${profile.fullName}. Dining reservation and pairing protocols have been substituted with a certified truffle-free private salon (The Artisan Botanist).`,
           offlineFallbackUsed: true,
           updatedDossier,
           diffHighlights: [
@@ -336,7 +336,7 @@ export const mcpClient = {
         toolName: 'explore_cultural_taste',
         toolArgs: { query, vipId },
         toolResult: { entitiesFound: profile.explicitInterests.length },
-        speechResponse: `Đã phân tích yêu cầu cho ${profile.fullName}. Các khuyến nghị văn hóa và hồ sơ thẩm mỹ đang được cập nhật tối ưu theo ngân sách ${budgetTier}.`,
+        speechResponse: `Processed briefing for ${profile.fullName}. Cultural recommendations and aesthetic ledger are synchronized against ${budgetTier} tier standards.`,
         offlineFallbackUsed: true,
         traceStep: {
           id: `trace_turn_${Date.now()}`,

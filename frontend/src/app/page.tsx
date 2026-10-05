@@ -158,7 +158,7 @@ export default function Home() {
     if (!targetVipId) return;
     const targetTier = overrideTier || budgetTier;
     await fetchDossier(targetVipId, targetTier, executionMode, brief);
-    // Tự động cuộn xuống phần kết quả
+    // Auto-scroll down to results section
     setTimeout(() => {
       scrollToSection('dossier-results', 'dossier');
     }, 200);

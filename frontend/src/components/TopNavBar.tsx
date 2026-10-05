@@ -138,7 +138,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
                 ? 'border-[#C8DCD1] bg-[#EDF4F0] text-[#1D5A4A]'
                 : 'border-[#E5E0D6] bg-white text-[#8C938E] hover:text-[#161A18]'
             }`}
-            title={isMuted ? 'Muted: Bấm để bật âm thanh phản hồi haptic' : 'Bật âm: Bấm để tắt'}
+            title={isMuted ? 'Muted: Click to enable audio feedback' : 'Unmuted: Click to mute'}
           >
             {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
           </button>

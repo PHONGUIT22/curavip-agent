@@ -96,7 +96,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5">
-          {/* View Mode Toggle: [ Đồ thị Taste Graph (Interactive Graph) ] ⇄ [ Danh sách Thẻ (List View) ] */}
+          {/* View Mode Toggle: [ Interactive Taste Graph ] ⇄ [ Ledger Cards (List View) ] */}
           <div className="flex items-center p-1 rounded-xl border border-[#E5E0D6] bg-[#FAF8F5]">
             <button
               type="button"
@@ -109,10 +109,10 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
               }`}
-              title="Đồ thị Taste Graph (Interactive Graph)"
+              title="Interactive Taste Graph"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>Đồ thị Taste Graph</span>
+              <span>Taste Graph</span>
             </button>
 
             <button
@@ -126,10 +126,10 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
               }`}
-              title="Danh sách Thẻ (List View)"
+              title="Ledger Cards (List View)"
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Danh sách Thẻ</span>
+              <span>List View</span>
             </button>
           </div>
 

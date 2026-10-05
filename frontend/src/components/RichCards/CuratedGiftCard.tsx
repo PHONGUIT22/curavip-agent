@@ -123,7 +123,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                     });
                   }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#183D33] hover:bg-[#224F43] text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-2xs"
-                  title="Ủy thác chế tác qua xưởng thủ công độc lập"
+                  title="Commission bespoke craft via independent atelier"
                 >
                   <PackageCheck className="w-3.5 h-3.5 text-emerald-300" />
                   <span>Commission via Atelier</span>
@@ -143,7 +143,7 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                     });
                   }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#6B736D] hover:text-[#183D33] hover:bg-[#FAF8F5] rounded-lg transition-colors border border-transparent hover:border-[#E5E0D6]"
-                  title="Gửi tóm tắt quà tặng qua WhatsApp / Signal"
+                  title="Dispatch gift briefing via WhatsApp / Signal"
                 >
                   <Share2 className="w-3.5 h-3.5" />
                   <span>WhatsApp / Signal</span>
