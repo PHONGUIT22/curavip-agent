@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Compass, SplitSquareVertical, Download, Zap, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { soundService } from '../services/soundService';
+import { QlooTelemetryBadge } from './QlooTelemetryBadge';
 import type { ExecutionMode, ExecutiveDossier } from '../types';
 
 interface TopNavBarProps {
@@ -142,10 +143,9 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
             {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
           </button>
 
-          {/* System Provenance Stamp */}
-          <div className="hidden xl:flex items-center gap-2 text-xs font-medium px-3 py-1 border border-[#C8DCD1] bg-[#EDF4F0] text-[#1D5A4A] rounded-full">
-            <span className="w-2 h-2 rounded-full bg-[#10B981]" />
-            <span>{qlooLiveStatus ? 'QLOO LIVE API' : 'QLOO TASTE GRAPH'}</span>
+          {/* Live Qloo Telemetry & Health Indicator */}
+          <div className="hidden sm:block">
+            <QlooTelemetryBadge isLive={qlooLiveStatus} />
           </div>
         </div>
       </div>

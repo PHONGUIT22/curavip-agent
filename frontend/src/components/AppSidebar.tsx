@@ -114,9 +114,18 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         <div className="w-9 h-9 rounded-xl bg-[#0E251F] border border-[#1E4D3E] flex items-center justify-center text-[#DDEBE3] font-semibold text-xs tracking-wider shadow-2xs">
           CV
         </div>
-        <span className="text-[10px] tracking-widest text-[#8BA89B] uppercase font-semibold">
-          {qlooLiveStatus ? 'LIVE' : 'LOCAL'}
-        </span>
+        <div
+          className="flex flex-col items-center cursor-pointer group"
+          title="Qloo Taste Graph: 250M+ Entities · 14ms Latency (v2/insights)"
+        >
+          <div className="relative w-2 h-2 mb-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10B981]"></span>
+          </div>
+          <span className="text-[9px] font-mono tracking-wider text-[#A3E5D0] font-semibold">
+            250M+
+          </span>
+        </div>
       </div>
     </aside>
   );
