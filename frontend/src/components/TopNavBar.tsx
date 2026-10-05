@@ -144,7 +144,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           </button>
 
           {/* Live Qloo Telemetry & Health Indicator */}
-          <div className="hidden sm:block">
+          <div className="flex items-center">
             <QlooTelemetryBadge isLive={qlooLiveStatus} />
           </div>
         </div>
