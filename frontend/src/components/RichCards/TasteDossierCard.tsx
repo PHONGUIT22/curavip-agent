@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Compass, MessageSquareQuote, Layers, Share2, Sparkles } from 'lucide-react';
 import { soundService } from '../../services/soundService';
-import { InteractiveTasteNetworkGraph } from '../InteractiveTasteNetworkGraph';
+import { VisualTasteGraph } from '../VisualTasteGraph';
 import type { CulturalTasteGraph, VIPProfile } from '../../types';
 
 interface TasteDossierCardProps {
@@ -28,7 +28,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   vipProfile,
   iceBreakerScripts,
 }) => {
-  const [viewMode, setViewMode] = useState<'graph' | 'matrix'>('graph');
+  const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph');
   const isGrounded = tasteGraph.source !== 'none';
   const entities = tasteGraph.expandedEntities || [];
 
@@ -96,7 +96,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5">
-          {/* View Mode Toggle */}
+          {/* View Mode Toggle: [ Đồ thị Taste Graph (Interactive Graph) ] ⇄ [ Danh sách Thẻ (List View) ] */}
           <div className="flex items-center p-1 rounded-xl border border-[#E5E0D6] bg-[#FAF8F5]">
             <button
               type="button"
@@ -109,27 +109,27 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
               }`}
-              title="Interactive Network Graph View"
+              title="Đồ thị Taste Graph (Interactive Graph)"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span>Network Graph</span>
+              <span>Đồ thị Taste Graph</span>
             </button>
 
             <button
               type="button"
               onClick={() => {
                 soundService.playToggleClick();
-                setViewMode('matrix');
+                setViewMode('list');
               }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
-                viewMode === 'matrix'
+                viewMode === 'list'
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
               }`}
-              title="Structured Entity Matrix View"
+              title="Danh sách Thẻ (List View)"
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Matrix View</span>
+              <span>Danh sách Thẻ</span>
             </button>
           </div>
 
@@ -139,10 +139,10 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
         </div>
       </div>
 
-      {/* Dynamic View Body: Network Graph vs Matrix */}
+      {/* Dynamic View Body: Visual Taste Graph vs Matrix/List */}
       {viewMode === 'graph' ? (
         <div className="mb-6">
-          <InteractiveTasteNetworkGraph tasteGraph={tasteGraph} vipProfile={vipProfile} />
+          <VisualTasteGraph tasteGraph={tasteGraph} vipProfile={vipProfile} />
         </div>
       ) : (
         <>
