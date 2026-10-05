@@ -78,10 +78,10 @@ Ref Code: ${refCode}`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fade-slide">
-      <div className="w-full max-w-lg bg-[#F8F6F0] border border-[#183D33]/20 rounded-3xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fade-slide">
+      <div className="w-full max-w-lg bg-[#F8F6F0] border border-[#183D33]/20 rounded-3xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[94vh] sm:max-h-[88vh]">
         {/* Header */}
-        <div className="px-6 py-4.5 bg-white border-b border-[#E5E0D6] flex items-center justify-between">
+        <div className="px-5 sm:px-6 py-4 bg-white border-b border-[#E5E0D6] flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-[#183D33] text-white flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-emerald-300" />
@@ -110,7 +110,7 @@ Ref Code: ${refCode}`;
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-5">
+        <div className="p-5 sm:p-6 space-y-4 sm:space-y-5 flex-1 min-h-0 overflow-y-auto">
           {/* Status banner */}
           <div className="p-4 rounded-2xl bg-[#EDF4F0] border border-[#C8DCD1] text-[#1D5A4A] flex items-start gap-3">
             <CheckCircle2 className="w-5 h-5 text-[#10B981] shrink-0 mt-0.5" />
@@ -186,7 +186,7 @@ Ref Code: ${refCode}`;
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-white border-t border-[#E5E0D6] flex flex-wrap items-center justify-between gap-3">
+        <div className="px-5 sm:px-6 py-3.5 sm:py-4 bg-white border-t border-[#E5E0D6] flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
           <div className="flex items-center gap-2">
             <button
               type="button"

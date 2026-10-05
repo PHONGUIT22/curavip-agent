@@ -21,10 +21,10 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
   const groundedVip = grounded.dossier.vipProfile;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 overflow-y-auto">
-      <div className="w-full max-w-6xl max-h-[92vh] flex flex-col border border-[#E5E0D6]/80 bg-[#F8F6F0] rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 md:p-8 overflow-y-auto">
+      <div className="w-full max-w-6xl max-h-[94vh] sm:max-h-[88vh] flex flex-col border border-[#E5E0D6]/80 bg-[#F8F6F0] rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto">
         {/* Modal Header */}
-        <div className="px-6 py-4 sm:py-5 border-b border-[#E5E0D6] flex items-center justify-between bg-white">
+        <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-b border-[#E5E0D6] flex items-center justify-between bg-white flex-shrink-0">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
@@ -48,7 +48,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
         </div>
 
         {/* Executive Benchmark Metrics Counters */}
-        <div className="bg-[#FAF8F5] border-b border-[#E5E0D6] px-6 py-3.5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="bg-[#FAF8F5] border-b border-[#E5E0D6] px-5 sm:px-6 py-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-shrink-0">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
             <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 flex-shrink-0">
               <TrendingDown className="w-5 h-5" />
@@ -90,7 +90,7 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
         </div>
 
         {/* 2-Column Split Comparison Body */}
-        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#E5E0D6] overflow-y-auto p-6 gap-6 bg-[#F8F6F0]">
+        <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#E5E0D6] overflow-y-auto p-4 sm:p-6 gap-6 bg-[#F8F6F0]">
           {/* COLUMN 1: GENERIC LLM BASELINE (UNGROUNDED) */}
           <div className="space-y-5">
             {/* Column Title */}

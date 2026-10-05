@@ -323,24 +323,24 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#0E1F1A]/80 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white border border-[#183D33]/20 rounded-3xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-4xl bg-white border border-[#183D33]/20 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto flex flex-col max-h-[94vh] sm:max-h-[88vh]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#14342B] via-[#183D33] to-[#1E4D40] text-white p-6 sm:p-7 flex items-center justify-between border-b border-[#2D7360]/40 flex-shrink-0">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner text-[#BCE6D6]">
-              <Users2 className="w-6 h-6" />
+        <div className="bg-gradient-to-r from-[#14342B] via-[#183D33] to-[#1E4D40] text-white p-4 sm:p-6 flex items-center justify-between border-b border-[#2D7360]/40 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner text-[#BCE6D6] flex-shrink-0">
+              <Users2 className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-semibold uppercase tracking-widest text-[#8BA89B]">
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-2xs sm:text-xs font-semibold uppercase tracking-widest text-[#8BA89B]">
                   Qloo Cross-Domain Intelligence
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#245D4E] text-[#DDEBE3] text-2xs font-semibold tracking-wider">
+                <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#245D4E] text-[#DDEBE3] text-2xs font-semibold tracking-wider">
                   <Sparkles className="w-3 h-3 text-[#A3E5D0]" />
                   TASTE SYNERGY ENGINE
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-white tracking-tight">
+              <h2 className="text-lg sm:text-2xl font-serif font-bold text-white tracking-tight">
                 Diplomatic Meeting & Bilateral Collab Matcher
               </h2>
             </div>
@@ -352,7 +352,7 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
               soundService.playMechanicalClick();
               onClose();
             }}
-            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-[#DDEBE3] hover:text-white flex items-center justify-center transition-colors"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/20 text-[#DDEBE3] hover:text-white flex items-center justify-center transition-colors flex-shrink-0"
             title="Close Synergy Modal"
           >
             <X className="w-5 h-5" />
@@ -360,7 +360,7 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
         </div>
 
         {/* Scrollable Body */}
-        <div className="p-6 sm:p-7 overflow-y-auto space-y-6">
+        <div className="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto space-y-5">
           {/* Dual VIP Selection Bar */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-2xl bg-[#FAF8F5] border border-[#EBE6DD]">
             {/* VIP 1 Selector */}
@@ -586,7 +586,7 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="p-5 sm:p-6 bg-[#FAF8F5] border-t border-[#EBE6DD] flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+        <div className="p-4 sm:p-5 bg-[#FAF8F5] border-t border-[#EBE6DD] flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
           <div className="text-xs text-[#6B736D] hidden sm:block">
             Cross-Domain Taste Engine active · Qloo-grounded bilateral inference
           </div>
