@@ -106,6 +106,19 @@ export const qlooCacheRepo = {
   },
 
   /**
+   * Clears all cache entries from memory and SQLite.
+   */
+  clear(): void {
+    memoryCache.clear();
+    try {
+      const db = getDatabase();
+      db.prepare('DELETE FROM qloo_cache').run();
+    } catch {
+      // Ignored
+    }
+  },
+
+  /**
    * Diagnostic statistics for Qloo telemetry.
    */
   stats(): { memoryEntries: number; sqliteEntries: number } {

@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { qlooTasteExplorerTool } from '../src/tools/qlooTasteExplorer.js';
 import { qlooClient } from '../src/services/qlooClient.js';
 import { matchClusters, expandCuratedCorrelations, resolveCuratedSeed } from '../src/services/curatedTasteGraph.js';
+import { qlooCacheRepo } from '../src/database/qlooCacheRepo.js';
 
 describe('Qloo Taste Explorer & Cultural Graph', () => {
   it('correctly matches cluster for Christopher Nolan and Brutalism', () => {
@@ -57,11 +58,13 @@ describe('Qloo Taste Explorer & Cultural Graph', () => {
 
     beforeEach(() => {
       process.env.QLOO_API_KEY = 'test_qloo_live_key_12345';
+      qlooCacheRepo.clear();
     });
 
     afterEach(() => {
       global.fetch = originalFetch;
       process.env.QLOO_API_KEY = originalKey;
+      qlooCacheRepo.clear();
     });
 
     it('calls GET /search with X-Api-Key and parses entity URN', async () => {
@@ -86,7 +89,7 @@ describe('Qloo Taste Explorer & Cultural Graph', () => {
 
       const entities = await qlooClient.searchEntities('Interstellar', 'film');
       expect(calls.length).toBe(1);
-      expect(calls[0].url).toContain('/search?query=Interstellar&types=movie');
+      expect(calls[0].url).toContain('/search?query=Interstellar&types=urn%3Aentity%3Amovie');
       expect(calls[0].options.method).toBe('GET');
       expect(calls[0].options.headers['X-Api-Key']).toBe('test_qloo_live_key_12345');
       expect(entities[0].id).toBe('urn:entity:movie:interstellar_2014');

@@ -9,8 +9,11 @@ import {
   slugify,
 } from './curatedTasteGraph.js';
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export interface QlooEntityResponse {
   id?: string;
+  entity_id?: string;
   name?: string;
   title?: string;
   category?: string;
@@ -147,15 +150,15 @@ export class QlooClient {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
 
-      // Map broad category name to Qloo search types if passed as CulturalCategory
-      let typesParam = 'movie,artist,place,brand,book';
+      // Map category name to valid Qloo entity URN types
+      let typesParam = 'urn:entity:movie,urn:entity:artist,urn:entity:place,urn:entity:brand,urn:entity:book';
       if (type) {
-        if (type === 'music') typesParam = 'artist';
-        else if (type === 'film') typesParam = 'movie';
-        else if (type === 'dining') typesParam = 'place';
-        else if (type === 'fashion') typesParam = 'brand';
-        else if (type === 'literature') typesParam = 'book';
-        else typesParam = String(type);
+        if (type === 'music') typesParam = 'urn:entity:artist';
+        else if (type === 'film') typesParam = 'urn:entity:movie';
+        else if (type === 'dining') typesParam = 'urn:entity:place';
+        else if (type === 'fashion') typesParam = 'urn:entity:brand';
+        else if (type === 'literature') typesParam = 'urn:entity:book';
+        else typesParam = String(type).startsWith('urn:entity:') ? String(type) : `urn:entity:${type}`;
       }
 
       const endpoint = `${this.rootBaseUrl}/search?query=${encodeURIComponent(trimmed)}&types=${encodeURIComponent(typesParam)}`;
@@ -192,19 +195,19 @@ export class QlooClient {
         return res;
       }
 
-      const results = rawList.map((item) => {
+      const results = rawList.map((item: any) => {
         const rawType = item.type || item.category || (Array.isArray(item.types) ? item.types[0] : undefined);
         const cat = mapQlooCategory(rawType, item.name || trimmed);
-        const id = item.urn || item.id || `urn:entity:${rawType || 'entity'}:${slugify(item.name || trimmed)}`;
-
+        const entityId = item.entity_id || item.id || item.urn || `urn:entity:${rawType || 'entity'}:${slugify(item.name || trimmed)}`;
         return {
-          id,
+          id: entityId,
           name: item.name || item.title || trimmed,
           category: cat,
           affinityScore: Number(item.score ?? item.popularity ?? item.affinity ?? 0.95),
           metadata: {
             ...item.properties,
-            urn: id,
+            entityId,
+            urn: item.urn || entityId,
             type: rawType,
             source: 'qloo_live',
           },
@@ -296,28 +299,26 @@ export class QlooClient {
 
       const apiKey = process.env.QLOO_API_KEY!.trim();
 
-      // Step 3: Promise.allSettled GET requests in parallel
-      const fetchPromises = activeConfigs.map(async ({ filterType, category }) => {
+      // Fetch insights sequentially with 220ms delay to stay strictly under the 5 req/s rate limit
+      const combined: CulturalEntity[] = [];
+      for (const { filterType, category } of activeConfigs) {
         const insightsCacheKey = `qloo:insights:${filterType}:${[...entityUrns].sort().join(',')}:${locKey}`;
         const cachedInsight = qlooCacheRepo.get<CulturalEntity[]>(insightsCacheKey);
         if (cachedInsight) {
-          return cachedInsight;
+          combined.push(...cachedInsight);
+          continue;
         }
-
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
-
         try {
           const url = new URL(`${this.rootBaseUrl}/v2/insights`);
           for (const urn of entityUrns) {
             url.searchParams.append('signal.interests.entities', urn);
           }
           url.searchParams.set('filter.type', filterType);
-
           if (location && filterType === 'urn:entity:place') {
             url.searchParams.set('location', location);
           }
-
           const response = await fetch(url.toString(), {
             method: 'GET',
             headers: {
@@ -326,54 +327,35 @@ export class QlooClient {
             },
             signal: controller.signal,
           });
-
           clearTimeout(timeout);
-
           if (!response.ok) {
             console.warn(`[QlooClient] Insights ${filterType} failed with status ${response.status}`);
-            return [];
+          } else {
+            const data = (await response.json()) as any;
+            const rawList: any[] = data.results || data.data || data.entities || (Array.isArray(data) ? data : []);
+            if (Array.isArray(rawList) && rawList.length > 0) {
+              const mapped = rawList.map((item: any): CulturalEntity => ({
+                id: item.entity_id || item.urn || item.id || `urn:entity:${filterType.split(':').pop()}:${slugify(item.name || 'entity')}`,
+                name: item.name || item.title || 'Cultural Entity',
+                category,
+                affinityScore: Number(item.query?.affinity ?? item.score ?? item.affinity ?? item.popularity ?? 0.92),
+                metadata: {
+                  ...item.properties,
+                  type: filterType,
+                  source: 'qloo_live',
+                },
+              }));
+              qlooCacheRepo.set(insightsCacheKey, mapped, 86400);
+              combined.push(...mapped);
+              console.log(`[QlooClient LIVE] ✓ Retrieved ${mapped.length} entities for ${filterType}`);
+            }
           }
-
-          const data = (await response.json()) as any;
-          const rawList: QlooEntityResponse[] =
-            data.results || data.data || data.entities || (Array.isArray(data) ? data : []);
-
-          if (!Array.isArray(rawList)) return [];
-
-          const mappedList = rawList.map((item): CulturalEntity => {
-            const urn = item.urn || item.id || `urn:entity:${filterType.split(':').pop()}:${slugify(item.name || 'entity')}`;
-            return {
-              id: urn,
-              name: item.name || item.title || 'Cultural Entity',
-              category,
-              affinityScore: Number(item.score ?? item.affinity ?? item.popularity ?? 0.88),
-              metadata: {
-                ...item.properties,
-                urn,
-                type: filterType,
-                source: 'qloo_live',
-              },
-            };
-          });
-
-          if (mappedList.length > 0) {
-            qlooCacheRepo.set(insightsCacheKey, mappedList, 86400);
-          }
-          return mappedList;
         } catch (err) {
           clearTimeout(timeout);
           console.warn(`[QlooClient] Insights fetch error for ${filterType}:`, err);
-          return [];
         }
-      });
-
-      const settled = await Promise.allSettled(fetchPromises);
-      const combined: CulturalEntity[] = [];
-
-      for (const res of settled) {
-        if (res.status === 'fulfilled' && Array.isArray(res.value)) {
-          combined.push(...res.value);
-        }
+        // Pacing delay to avoid HTTP 429 Too Many Requests
+        await sleep(220);
       }
 
       if (combined.length === 0) {
