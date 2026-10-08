@@ -273,7 +273,8 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         text,
         selectedVip.id,
         budgetTier,
-        executionMode
+        executionMode,
+        selectedVip
       );
 
       const agentMsg: ConsoleMessage = {

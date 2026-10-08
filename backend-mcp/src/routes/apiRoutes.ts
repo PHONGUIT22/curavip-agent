@@ -421,13 +421,13 @@ apiRouter.post('/dossier/compare', async (req: Request, res: Response) => {
 
 apiRouter.post('/agent/turn', async (req: Request, res: Response) => {
   try {
-    const { query, vipId, budgetTier, mode, context } = req.body || {};
+    const { query, vipId, budgetTier, mode, context, vipProfile } = req.body || {};
     if (!query || typeof query !== 'string') {
       res.status(400).json({ success: false, error: 'Query string is required' });
       return;
     }
 
-    const result = await handleAgentTurn({ query, vipId, budgetTier, mode, context });
+    const result = await handleAgentTurn({ query, vipId, budgetTier, mode, context, vipProfile });
     res.json({ ...result });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);

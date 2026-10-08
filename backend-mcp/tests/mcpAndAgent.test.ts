@@ -76,6 +76,32 @@ describe('CuraVIP Database, Tools & Agent Suite', () => {
     expect(response.speechResponse).toBeDefined();
     expect(response.toolName).toBe('explore_cultural_taste');
     expect(response.toolResult).toBeDefined();
+    expect(response.speechResponse).toContain('Marcus Vance');
+  });
+
+  it('dynamically binds Hayao Miyazaki and tea ceremony directive in handleAgentTurn', async () => {
+    const response = await handleAgentTurn({
+      query: 'Find Japanese tea ceremony gift',
+      vipId: 'vip_hayao_miyazaki',
+      budgetTier: 'executive_500',
+    });
+
+    expect(response.success).toBe(true);
+    expect(response.speechResponse).toContain('Hayao Miyazaki');
+    expect(response.speechResponse).toContain('Identified bespoke Japanese tea ceremony commission');
+    expect(response.speechResponse).toContain('$500');
+    expect(response.toolName).toBe('curate_tea_commission');
+  });
+
+  it('dynamically handles budget negotiation for active VIP in handleAgentTurn', async () => {
+    const response = await handleAgentTurn({
+      query: 'Negotiate budget down to $300',
+      vipId: 'vip_hayao_miyazaki',
+      budgetTier: 'executive_500',
+    });
+
+    expect(response.success).toBe(true);
+    expect(response.speechResponse).toBe('Adjusted financial allocation for Hayao Miyazaki to $300. Re-curating cultural ledger accordingly.');
   });
 
   it('redacts sensitive PII and intercepts FCPA bribery attempts in guardrail', () => {

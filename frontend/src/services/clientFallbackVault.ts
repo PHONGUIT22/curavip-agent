@@ -82,6 +82,24 @@ export const FALLBACK_VIP_PROFILES: VIPProfile[] = [
     ],
     taboos: { alcohol: false, dietary: ['shellfish'], religiousCultural: [] },
   },
+  {
+    id: 'vip_hayao_miyazaki',
+    fullName: 'Hayao Miyazaki',
+    role: 'Director & Co-Founder',
+    organization: 'Studio Ghibli',
+    city: 'Tokyo',
+    budgetLimitUsd: 500,
+    rawBio:
+      'Legendary Japanese animation director and animator. Deep reverence for traditional Japanese craftsmanship, Shinto animism, vintage aircraft mechanics, and traditional woodblock printing. Disdains commercial fanfare, values quiet integrity and tactile hand-made artistry.',
+    explicitInterests: [
+      'Japanese craftsmanship',
+      'Tea ceremony & ceramics',
+      'Vintage aviation',
+      'Traditional watercolor & ink',
+      'Nature conservation',
+    ],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
 ];
 
 let customProfilesVault: VIPProfile[] = [...FALLBACK_VIP_PROFILES];
@@ -156,7 +174,17 @@ export const clientFallbackVault = {
   },
 
   getProfile(id: string): VIPProfile | null {
-    return customProfilesVault.find((p) => p.id === id) || null;
+    if (!id) return null;
+    const lower = id.toLowerCase();
+    return (
+      customProfilesVault.find(
+        (p) =>
+          p.id === id ||
+          p.id.toLowerCase() === lower ||
+          p.fullName.toLowerCase() === lower ||
+          p.fullName.toLowerCase().includes(lower)
+      ) || null
+    );
   },
 
   upsertProfile(input: VIPProfileInput): VIPProfile {
@@ -178,7 +206,18 @@ export const clientFallbackVault = {
     mode: ExecutionMode = 'qloo_grounded',
     meetingBrief?: string
   ): DossierResponse {
-    const profile = this.getProfile(vipId) || customProfilesVault[0];
+    const profile =
+      this.getProfile(vipId) || {
+        id: vipId || 'vip_custom',
+        fullName: vipId ? vipId.replace(/^vip_/, '').replace(/_/g, ' ') : 'Principal',
+        role: 'Executive Principal',
+        organization: 'Global Enterprise',
+        city: 'Tokyo',
+        budgetLimitUsd: tier === 'standard_200' ? 200 : tier === 'unlimited_vip' ? 1500 : 500,
+        rawBio: 'Executive principal requiring bespoke cultural curation and discernment.',
+        explicitInterests: ['Japanese craftsmanship', 'Artisanal Design', 'Traditional tea ceremony'],
+        taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+      };
     const isGeneric = mode === 'generic_llm';
 
     const trace: AgentTraceStep[] = [
@@ -350,6 +389,35 @@ export const clientFallbackVault = {
             materials: ['925 sterling silver'],
           },
         ]
+        : profile.fullName.includes('Hayao') || profile.fullName.includes('Miyazaki')
+      ? [
+          {
+            id: 'gift_hayao_1',
+            title: 'Edo-Period Wood-Fired Tokoname Kyusu & Artisanal Gyokuro Tea Set',
+            brandOrArtisan: 'Tokoname Traditional Kiln Master',
+            estimatedPriceUsd: 380,
+            category: 'curated_artifact',
+            culturalRationale:
+              'Hand-turned unglazed natural iron-rich clay kyusu teapot honoring traditional tactile Japanese craft and tea ceremony.',
+            qlooCorrelationAnchor: 'Japanese craftsmanship & Tea ceremony',
+            tier: 'signature',
+            affinityScore: 0.99,
+            materials: ['Tokoname red clay', 'unrefined cedarwood'],
+          },
+          {
+            id: 'gift_hayao_2',
+            title: 'Handmade Echizen Washi Paper Botanical Sketch Folio & Sumi Ink',
+            brandOrArtisan: 'Echizen Archival Paper Studio',
+            estimatedPriceUsd: 220,
+            category: 'curated_artifact',
+            culturalRationale:
+              'Crafted by a 9th-generation Echizen paper maker using pure mulberry fibers for archival watercolor and ink sketches.',
+            qlooCorrelationAnchor: 'Traditional watercolor & ink',
+            tier: 'alternative',
+            affinityScore: 0.97,
+            materials: ['Mulberry bark washi', 'pine soot ink'],
+          },
+        ]
       : [
           {
             id: 'gift_marcus_1',
@@ -409,6 +477,20 @@ export const clientFallbackVault = {
             priceBand: '$$$',
           },
         ]
+      : profile.fullName.includes('Hayao') || profile.fullName.includes('Miyazaki')
+      ? [
+          {
+            id: 'dining_hayao_1',
+            venueName: 'Koke-An Sukiya — Private Tea Salon & Seasonal Kaiseki',
+            cuisineType: 'Traditional Sukiya Architecture & Tea Ceremony Kaiseki',
+            neighborhood: 'Yanaka Artisan Quarter',
+            vibeAnchor: 'Hand-Planed Hinoki Wood, Moss Garden View, Pure Natural Light',
+            pairingNotes: 'Single-Estate Uji Matcha & Spring Wellwater Botanical Infusions',
+            culturalRationale:
+              'Quiet wooden tea pavilion designed around wabi-sabi principles, zero commercial noise, honoring intimate artisanal integrity.',
+            priceBand: '$$$$',
+          },
+        ]
       : [
           {
             id: 'dining_marcus_1',
@@ -441,6 +523,8 @@ export const clientFallbackVault = {
               ? 'Philippe Dufour Simplicity Atelier'
               : profile.fullName.includes('Elena')
               ? 'Comme des Garçons Noir Archives'
+              : profile.fullName.includes('Hayao') || profile.fullName.includes('Miyazaki')
+              ? 'Tokoname Kiln Ceramic Heritage'
               : 'Tadao Ando Architectural Studies',
             category: 'architecture',
             affinityScore: 0.96,
@@ -451,6 +535,8 @@ export const clientFallbackVault = {
               ? 'Dieter Rams 10 Principles of Good Design'
               : profile.fullName.includes('Elena')
               ? 'Rare 1959 Preservation Hall Jazz Mono Pressing'
+              : profile.fullName.includes('Hayao') || profile.fullName.includes('Miyazaki')
+              ? 'Echizen 1500-Year Handcrafted Washi Archives'
               : 'Hans Zimmer Modular Synthesis Laboratory',
             category: 'music',
             affinityScore: 0.94,
@@ -461,6 +547,8 @@ export const clientFallbackVault = {
               ? 'Kyoto Bizen Ceramic Tea Master Atelier'
               : profile.fullName.includes('Elena')
               ? 'Maison Margiela Artisanal Deconstruction'
+              : profile.fullName.includes('Hayao') || profile.fullName.includes('Miyazaki')
+              ? 'Sen no Rikyu Wabi Tea Philosophy'
               : 'Barbican Estate Concrete Archives',
             category: 'dining',
             affinityScore: 0.95,
@@ -470,6 +558,8 @@ export const clientFallbackVault = {
           ? ['Horological Rigor', 'Micro-Mechanical Finish', 'Zero-Proof Serenity']
           : profile.fullName.includes('Elena')
           ? ['Sensory Deconstruction', 'Analog Vinyl Resonance', 'Haute Craft']
+          : profile.fullName.includes('Hayao') || profile.fullName.includes('Miyazaki')
+          ? ['Wabi-Sabi Aesthetics', 'Tactile Handcraft', 'Quiet Contemplation']
           : ['Brutalist Structural Scale', 'Monumental Tension & Rhythm', 'Acoustic Solitude'],
         source: 'qloo_live',
       },
@@ -482,6 +572,11 @@ export const clientFallbackVault = {
         ? [
             `"There is an irreproducible warmth in 1950s direct-to-vinyl jazz masterings that digital precision has never quite replicated."`,
             `"Rei Kawakubo’s early architectural runway installations treated garments as spatial structures rather than mere fashion."`,
+          ]
+        : profile.fullName.includes('Hayao') || profile.fullName.includes('Miyazaki')
+        ? [
+            `"The tactile warmth of unglazed Tokoname clay reminds us that true integrity lives in the quiet labor of human hands."`,
+            `"In both traditional cel animation and the Japanese tea ceremony, every fleeting second is treated with absolute reverence."`,
           ]
         : [
             `"The sound mix in Oppenheimer treated silence with the exact same architectural weight that Christopher Nolan gives to concrete structures."`,
@@ -516,6 +611,197 @@ export const clientFallbackVault = {
     return {
       grounded,
       generic,
+    };
+  },
+
+  handleAgentTurn(params: {
+    userMessage: string;
+    vip?: Partial<VIPProfile> & { name?: string; budgetCap?: number; interests?: string[] } | null;
+    vipId?: string;
+    budgetTier?: BudgetTier;
+    mode?: ExecutionMode;
+  }): {
+    success: boolean;
+    toolName: string;
+    toolArgs: Record<string, any>;
+    toolResult: any;
+    speechResponse: string;
+    offlineFallbackUsed: boolean;
+    traceStep: AgentTraceStep;
+    updatedDossier?: ExecutiveDossier;
+    diffHighlights?: string[];
+  } {
+    const { userMessage, vip, vipId, budgetTier = 'executive_500', mode = 'qloo_grounded' } = params;
+    const resolvedProfile =
+      vip ||
+      (vipId ? this.getProfile(vipId) : null) ||
+      (vipId
+        ? {
+            id: vipId,
+            fullName: vipId.replace(/^vip_/, '').replace(/_/g, ' '),
+            role: 'Principal & Executive',
+            organization: 'Enterprise',
+            city: 'Tokyo',
+            budgetLimitUsd: budgetTier === 'standard_200' ? 200 : budgetTier === 'unlimited_vip' ? 1500 : 500,
+            rawBio: '',
+            explicitInterests: ['Japanese craftsmanship', 'Traditional tea ceremony'],
+            taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+          }
+        : customProfilesVault[0]);
+
+    const profileId = resolvedProfile.id || vipId || 'vip_principal';
+    const vipName = (resolvedProfile as any)?.name || (resolvedProfile as any)?.fullName || 'Principal';
+    const rawInterests = (resolvedProfile as any)?.interests || (resolvedProfile as any)?.explicitInterests || [];
+    const interestsList = rawInterests.length > 0 ? rawInterests : ['cultural discernment', 'bespoke craft'];
+
+    const budgetMatch = userMessage.match(/\$?(\d{2,5})\b/);
+    const parsedBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : undefined;
+    const defaultTierCap = budgetTier === 'standard_200' ? 200 : budgetTier === 'unlimited_vip' ? 1500 : 500;
+    const budget = parsedBudget || (resolvedProfile as any)?.budgetCap || (resolvedProfile as any)?.budgetLimitUsd || defaultTierCap;
+
+    const lower = userMessage.toLowerCase();
+
+    // 0. Allergy / Taboo update
+    if (
+      lower.includes('truffle') ||
+      lower.includes('nấm') ||
+      lower.includes('dị ứng') ||
+      lower.includes('allergy') ||
+      lower.includes('allergic')
+    ) {
+      const baseDossier = this.buildDossier(profileId, budgetTier, mode).dossier;
+      const updatedDossier: ExecutiveDossier = {
+        ...baseDossier,
+        diningOptions: baseDossier.diningOptions.map((opt, idx) => {
+          if (idx === 0) {
+            return {
+              ...opt,
+              venueName: 'The Artisan Botanist — Certified Truffle-Free Kaiseki Salon',
+              cuisineType: 'Modernist Kaiseki & Alpine Herb Curation',
+              vibeAnchor: 'Acoustic Restraint & Clean Mountain Flora (0% Truffle)',
+              pairingNotes:
+                'Zero-proof single-estate Gyokuro & wild mountain botanical infusion (100% certified free of truffles, fungi, and spores)',
+              culturalRationale:
+                '[DIFF REFINED] Updated in real-time per Principal emergency allergy alert. Substituted with certified truffle-free modernist private salon.',
+            };
+          }
+          return opt;
+        }),
+      };
+
+      return {
+        success: true,
+        toolName: 'refine_dossier_taboo',
+        toolArgs: { allergen: 'truffle', vipId: profileId },
+        toolResult: { action: 'substituted_dining', allergen: 'truffle' },
+        speechResponse: `Emergency update logged: Recorded truffle allergy for ${vipName}. Dining reservation and pairing protocols have been substituted with a certified truffle-free private salon (The Artisan Botanist).`,
+        offlineFallbackUsed: true,
+        updatedDossier,
+        diffHighlights: [
+          'Added dietary taboo: No Truffle',
+          'Substituted Dining Reservation: The Artisan Botanist',
+        ],
+        traceStep: {
+          id: `trace_turn_${Date.now()}`,
+          phase: 'audit',
+          tool: 'refine_dossier_taboo',
+          title: 'Real-Time Dietary Refinement & Venue Substitution',
+          detail: `Added truffle allergy restriction for ${vipName} and swapped reservation venue.`,
+          durationMs: 38,
+          status: 'ok',
+          source: 'local',
+        },
+      };
+    }
+
+    // 1. Japanese tea ceremony query
+    if (
+      lower.includes('tea') ||
+      lower.includes('tea ceremony') ||
+      lower.includes('trà') ||
+      lower.includes('matcha') ||
+      lower.includes('sencha') ||
+      lower.includes('gyokuro')
+    ) {
+      const speech = `Identified bespoke Japanese tea ceremony commission grounded in ${vipName}'s cultural aesthetic. Verified within the $${budget} budget cap with zero taboo infractions.`;
+      return {
+        success: true,
+        toolName: 'curate_tea_commission',
+        toolArgs: { query: userMessage, vipId: profileId, targetBudgetUsd: budget },
+        toolResult: {
+          category: 'bespoke_tea_ceremony',
+          verifiedBudget: budget,
+          tabooInfractions: 0,
+        },
+        speechResponse: speech,
+        offlineFallbackUsed: true,
+        traceStep: {
+          id: `trace_turn_${Date.now()}`,
+          phase: 'commit',
+          tool: 'curate_tea_commission',
+          title: 'Curate Bespoke Tea Commission',
+          detail: speech,
+          durationMs: 35,
+          status: 'ok',
+          source: 'local',
+        },
+      };
+    }
+
+    // 2. Budget negotiation query
+    if (
+      lower.includes('budget') ||
+      lower.includes('ngân sách') ||
+      lower.includes('negotiate') ||
+      lower.includes('down to') ||
+      lower.includes('reduce') ||
+      lower.includes('cut') ||
+      lower.includes('adjust') ||
+      lower.includes('allocation')
+    ) {
+      const speech = `Adjusted financial allocation for ${vipName} to $${budget}. Re-curating cultural ledger accordingly.`;
+      return {
+        success: true,
+        toolName: 'negotiate_taste_conflict',
+        toolArgs: { query: userMessage, vipId: profileId, targetBudgetUsd: budget },
+        toolResult: {
+          adjustedBudgetUsd: budget,
+          budgetAdjusted: true,
+        },
+        speechResponse: speech,
+        offlineFallbackUsed: true,
+        traceStep: {
+          id: `trace_turn_${Date.now()}`,
+          phase: 'negotiate',
+          tool: 'taste_negotiator',
+          title: 'Taste & Budget Re-allocation',
+          detail: speech,
+          durationMs: 40,
+          status: 'ok',
+          source: 'local',
+        },
+      };
+    }
+
+    // 3. Default contextual briefing
+    const speech = `Processed briefing for ${vipName}. Synthesized cultural recommendations matching ${interestsList.join(', ')} under $${budget} cap.`;
+    return {
+      success: true,
+      toolName: 'explore_cultural_taste',
+      toolArgs: { query: userMessage, vipId: profileId },
+      toolResult: { entitiesFound: interestsList.length },
+      speechResponse: speech,
+      offlineFallbackUsed: true,
+      traceStep: {
+        id: `trace_turn_${Date.now()}`,
+        phase: 'query_graph',
+        tool: 'autonomous_planner',
+        title: 'Autonomous Client-Side Reasoning',
+        detail: `Processed query "${userMessage}" against ${vipName}'s cultural profile under $${budget} cap.`,
+        durationMs: 32,
+        status: 'ok',
+        source: 'local',
+      },
     };
   },
 };

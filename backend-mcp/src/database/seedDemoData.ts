@@ -55,6 +55,24 @@ export const DEMO_VIP_PROFILES: ReadonlyArray<VIPProfileInput & { id: string }> 
     explicitInterests: ['New Orleans jazz', 'Natural wine', 'Avant-garde fashion', 'Comme des Garçons', 'Maison Margiela'],
     taboos: { alcohol: false, dietary: ['shellfish'], religiousCultural: [] },
   },
+  {
+    id: 'vip_hayao_miyazaki',
+    fullName: 'Hayao Miyazaki',
+    role: 'Director & Co-Founder',
+    organization: 'Studio Ghibli',
+    city: 'Tokyo',
+    budgetLimitUsd: 500,
+    rawBio:
+      'Legendary Japanese animation director and animator. Deep reverence for traditional Japanese craftsmanship, Shinto animism, vintage aircraft mechanics, and traditional woodblock printing. Disdains commercial fanfare, values quiet integrity and tactile hand-made artistry.',
+    explicitInterests: [
+      'Japanese craftsmanship',
+      'Tea ceremony & ceramics',
+      'Vintage aviation',
+      'Traditional watercolor & ink',
+      'Nature conservation',
+    ],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
 ];
 
 /**

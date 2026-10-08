@@ -259,7 +259,8 @@ export const mcpClient = {
     query: string,
     vipId: string,
     budgetTier: BudgetTier = 'executive_500',
-    mode: ExecutionMode = 'qloo_grounded'
+    mode: ExecutionMode = 'qloo_grounded',
+    vipProfile?: VIPProfile | (Partial<VIPProfile> & { name?: string; budgetCap?: number; interests?: string[] })
   ): Promise<{
     success: boolean;
     toolName: string | null;
@@ -274,82 +275,20 @@ export const mcpClient = {
     try {
       const res = await fetchWithTimeout(`${API_BASE_URL}/api/agent/turn`, {
         method: 'POST',
-        body: JSON.stringify({ query, vipId, budgetTier, mode }),
+        body: JSON.stringify({ query, vipId, budgetTier, mode, vipProfile }),
       });
       if (!res.ok) throw new Error(`Agent turn failed: ${res.status}`);
       return await res.json();
     } catch (err) {
       logFallbackNotice('executeAgentTurn', err);
 
-      const profile = clientFallbackVault.getProfile(vipId) || clientFallbackVault.getProfiles()[0];
-      const lower = query.toLowerCase();
-
-      // Check if user is reporting a taboo or allergy (e.g. truffle / mushroom)
-      if (lower.includes('truffle') || lower.includes('nấm') || lower.includes('dị ứng')) {
-        const baseDossier = clientFallbackVault.buildDossier(vipId, budgetTier, mode).dossier;
-        const updatedDossier: ExecutiveDossier = {
-          ...baseDossier,
-          diningOptions: baseDossier.diningOptions.map((opt, idx) => {
-            if (idx === 0) {
-              return {
-                ...opt,
-                venueName: 'The Artisan Botanist — Certified Truffle-Free Kaiseki Salon',
-                cuisineType: 'Modernist Kaiseki & Alpine Herb Curation',
-                vibeAnchor: 'Acoustic Restraint & Clean Mountain Flora (0% Truffle)',
-                pairingNotes:
-                  'Zero-proof single-estate Gyokuro & wild mountain botanical infusion (100% certified free of truffles, fungi, and spores)',
-                culturalRationale:
-                  '[DIFF REFINED] Updated in real-time per Principal emergency allergy alert. Substituted with certified truffle-free modernist private salon.',
-              };
-            }
-            return opt;
-          }),
-        };
-
-        return {
-          success: true,
-          toolName: 'refine_dossier_taboo',
-          toolArgs: { allergen: 'truffle', vipId },
-          toolResult: { action: 'substituted_dining', allergen: 'truffle' },
-          speechResponse: `Emergency update logged: Recorded truffle allergy for ${profile.fullName}. Dining reservation and pairing protocols have been substituted with a certified truffle-free private salon (The Artisan Botanist).`,
-          offlineFallbackUsed: true,
-          updatedDossier,
-          diffHighlights: [
-            'Added dietary taboo: No Truffle',
-            'Substituted Dining Reservation: The Artisan Botanist',
-          ],
-          traceStep: {
-            id: `trace_turn_${Date.now()}`,
-            phase: 'audit',
-            tool: 'refine_dossier_taboo',
-            title: 'Real-Time Dietary Refinement & Venue Substitution',
-            detail: `Added truffle allergy restriction for ${profile.fullName} and swapped reservation venue.`,
-            durationMs: 38,
-            status: 'ok',
-            source: 'local',
-          },
-        };
-      }
-
-      // Default autonomous response
-      return {
-        success: true,
-        toolName: 'explore_cultural_taste',
-        toolArgs: { query, vipId },
-        toolResult: { entitiesFound: profile.explicitInterests.length },
-        speechResponse: `Processed briefing for ${profile.fullName}. Cultural recommendations and aesthetic ledger are synchronized against ${budgetTier} tier standards.`,
-        offlineFallbackUsed: true,
-        traceStep: {
-          id: `trace_turn_${Date.now()}`,
-          phase: 'query_graph',
-          tool: 'autonomous_planner',
-          title: 'Autonomous Client-Side Reasoning',
-          detail: `Processed query "${query}" against Qloo Taste Graph cultural seeds.`,
-          durationMs: 32,
-          status: 'ok',
-          source: 'local',
-        },
-      };
+      return clientFallbackVault.handleAgentTurn({
+        userMessage: query,
+        vip: vipProfile,
+        vipId,
+        budgetTier,
+        mode,
+      });
     }
   },
 
