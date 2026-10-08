@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Install dependencies and build TypeScript
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY tsconfig.json ./
 COPY src/ ./src/
@@ -26,8 +26,7 @@ ENV DB_PATH=/app/data/curavip.db
 RUN mkdir -p /app/data && chown -R node:node /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
-
+RUN npm install --omit=dev
 # Copy compiled JavaScript output
 COPY --from=builder /app/dist ./dist
 
