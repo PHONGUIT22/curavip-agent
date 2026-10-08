@@ -53,6 +53,12 @@ const PORT = envConfig.PORT;
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
+// Normalize consecutive slashes (e.g., //api -> /api) to prevent 404 in Express 5
+app.use((req, res, next) => {
+  req.url = req.url.replace(/\/{2,}/g, '/');
+  next();
+});
+
 // 1. INITIALIZE DATABASE SCHEMA & SYSTEM TABLES
 initDB();
 seedDemoData();

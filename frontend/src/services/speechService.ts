@@ -4,10 +4,11 @@
  * 2. Web Speech API (window.speechSynthesis) - Resilient browser fallback
  */
 
-const API_BASE_URL =
+const RAW_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.NEXT_PUBLIC_MCP_URL ||
   'http://localhost:3001';
+const API_BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 export interface SpeechOptions {
   rate?: number;

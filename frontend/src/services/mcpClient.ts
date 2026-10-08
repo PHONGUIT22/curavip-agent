@@ -14,10 +14,11 @@ import type {
 } from '../types';
 import { clientFallbackVault } from './clientFallbackVault';
 
-const API_BASE_URL =
+const RAW_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.NEXT_PUBLIC_MCP_URL ||
   'http://localhost:3001';
+const API_BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 /** 5-second graceful timeout threshold to defeat backend cold-starts */
 const DEFAULT_TIMEOUT_MS = 5000;
