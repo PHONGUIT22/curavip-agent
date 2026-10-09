@@ -58,7 +58,7 @@ const TOUR_STEPS = [
     description:
       'CuraVIP does not just talk—it executes. Click "Book Table" on any dining card, download a real RFC-5545 .ICS calendar invite, or export the 1-Page Executive PDF Ledger.',
     targetId: 'dossier-results',
-    actionText: 'Scroll to Action Dispatch',
+    actionText: 'Export Archival PDF',
   },
 ];
 
@@ -73,23 +73,47 @@ export const GuidedJudgeTour: React.FC<GuidedJudgeTourProps> = ({
 
   const currentStep = TOUR_STEPS[currentStepIndex];
 
+  const highlightTargetSection = (targetId: string) => {
+    if (typeof document === 'undefined') return;
+    const el = document.getElementById(targetId);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const highlightClasses = [
+      'ring-4',
+      'ring-[#183D33]/40',
+      'shadow-2xl',
+      'transition-all',
+      'duration-700',
+    ];
+
+    el.classList.add(...highlightClasses);
+
+    setTimeout(() => {
+      el.classList.remove(...highlightClasses);
+    }, 3000);
+  };
+
+  const navigateToStep = (index: number) => {
+    setCurrentStepIndex(index);
+    const targetId = TOUR_STEPS[index].targetId;
+    if (onNavigateSection) {
+      onNavigateSection(targetId);
+    }
+    highlightTargetSection(targetId);
+  };
+
   const handleStartTour = () => {
     soundService.playMechanicalClick();
-    setCurrentStepIndex(0);
     setIsOpen(true);
-    if (onNavigateSection) {
-      onNavigateSection(TOUR_STEPS[0].targetId);
-    }
+    navigateToStep(0);
   };
 
   const handleNext = () => {
     soundService.playMechanicalClick();
     if (currentStepIndex < TOUR_STEPS.length - 1) {
-      const nextIndex = currentStepIndex + 1;
-      setCurrentStepIndex(nextIndex);
-      if (onNavigateSection) {
-        onNavigateSection(TOUR_STEPS[nextIndex].targetId);
-      }
+      navigateToStep(currentStepIndex + 1);
     } else {
       soundService.playSuccessChime();
       setIsOpen(false);
@@ -99,11 +123,7 @@ export const GuidedJudgeTour: React.FC<GuidedJudgeTourProps> = ({
   const handlePrev = () => {
     soundService.playMechanicalClick();
     if (currentStepIndex > 0) {
-      const prevIndex = currentStepIndex - 1;
-      setCurrentStepIndex(prevIndex);
-      if (onNavigateSection) {
-        onNavigateSection(TOUR_STEPS[prevIndex].targetId);
-      }
+      navigateToStep(currentStepIndex - 1);
     }
   };
 
@@ -111,12 +131,24 @@ export const GuidedJudgeTour: React.FC<GuidedJudgeTourProps> = ({
     soundService.playMechanicalClick();
     if (currentStepIndex === 0) {
       onNavigateSection?.('roster-section');
+      highlightTargetSection('roster-section');
     } else if (currentStepIndex === 1) {
       onNavigateSection?.('dossier-results');
+      highlightTargetSection('dossier-results');
     } else if (currentStepIndex === 2) {
-      onOpenSynergy?.();
+      if (onOpenSynergy) {
+        onOpenSynergy();
+      } else {
+        onNavigateSection?.('console-section');
+        highlightTargetSection('console-section');
+      }
     } else if (currentStepIndex === 3) {
-      onNavigateSection?.('dossier-results');
+      if (onExportPdf) {
+        onExportPdf();
+      } else {
+        onNavigateSection?.('dossier-results');
+        highlightTargetSection('dossier-results');
+      }
     }
   };
 
@@ -165,6 +197,20 @@ export const GuidedJudgeTour: React.FC<GuidedJudgeTourProps> = ({
             </button>
           </div>
 
+          {/* Card Top Smooth Progress Track (4 Steps) */}
+          <div className="w-full bg-[#0F2822] h-1.5 flex gap-1 px-2 py-0.5">
+            {TOUR_STEPS.map((step, idx) => (
+              <div
+                key={step.step}
+                className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${
+                  idx <= currentStepIndex
+                    ? 'bg-[#A3E5D0] shadow-[0_0_8px_rgba(163,229,208,0.7)]'
+                    : 'bg-[#2D7360]/40'
+                }`}
+              />
+            ))}
+          </div>
+
           {/* Card Content */}
           <div className="p-5 space-y-3.5 bg-gradient-to-b from-white to-[#FAF8F5]">
             {/* Step Progress Indicators */}
@@ -172,7 +218,7 @@ export const GuidedJudgeTour: React.FC<GuidedJudgeTourProps> = ({
               {TOUR_STEPS.map((step, idx) => (
                 <div
                   key={step.step}
-                  className={`h-1.5 rounded-full transition-all ${
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
                     idx === currentStepIndex
                       ? 'bg-[#183D33]'
                       : idx < currentStepIndex
@@ -196,10 +242,16 @@ export const GuidedJudgeTour: React.FC<GuidedJudgeTourProps> = ({
               <button
                 type="button"
                 onClick={handleExecuteStepAction}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#D5CEC2] text-xs font-semibold text-[#183D33] hover:bg-[#EDE8DE] transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#D5CEC2] text-xs font-semibold text-[#183D33] hover:bg-[#EDE8DE] transition-colors active:scale-95 shadow-2xs"
               >
+                {currentStepIndex === 2 ? (
+                  <Users className="w-3.5 h-3.5 text-[#183D33]" />
+                ) : currentStepIndex === 3 ? (
+                  <Download className="w-3.5 h-3.5 text-[#183D33]" />
+                ) : (
+                  <ArrowRight className="w-3.5 h-3.5 text-[#183D33]" />
+                )}
                 <span>{currentStep.actionText}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#183D33]" />
               </button>
 
               {currentStepIndex === 2 && onOpenBenchmark && (
@@ -209,24 +261,25 @@ export const GuidedJudgeTour: React.FC<GuidedJudgeTourProps> = ({
                     soundService.playMechanicalClick();
                     onOpenBenchmark();
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#D5CEC2] text-xs font-semibold text-[#183D33] hover:bg-[#EDE8DE] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#D5CEC2] text-xs font-semibold text-[#183D33] hover:bg-[#EDE8DE] transition-colors active:scale-95 shadow-2xs"
                 >
                   <SplitSquareVertical className="w-3.5 h-3.5" />
                   <span>Open Benchmark</span>
                 </button>
               )}
 
-              {currentStepIndex === 3 && onExportPdf && (
+              {currentStepIndex === 3 && (
                 <button
                   type="button"
                   onClick={() => {
                     soundService.playMechanicalClick();
-                    onExportPdf();
+                    onNavigateSection?.('dossier-results');
+                    highlightTargetSection('dossier-results');
                   }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#D5CEC2] text-xs font-semibold text-[#183D33] hover:bg-[#EDE8DE] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#D5CEC2] text-xs font-semibold text-[#183D33] hover:bg-[#EDE8DE] transition-colors active:scale-95 shadow-2xs"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Export PDF</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#183D33]" />
+                  <span>Scroll to Dossier Cards</span>
                 </button>
               )}
             </div>

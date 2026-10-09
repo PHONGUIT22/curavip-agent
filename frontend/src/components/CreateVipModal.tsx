@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, UserPlus, Compass, Plus, Check } from 'lucide-react';
+import { X, UserPlus, Compass, Plus, Check, Zap, Sparkles } from 'lucide-react';
+import { soundService } from '../services/soundService';
 import type { VIPProfileInput } from '../types';
 
 interface CreateVipModalProps {
@@ -10,6 +11,70 @@ interface CreateVipModalProps {
   onSubmit: (newVip: VIPProfileInput) => Promise<void>;
   isLoading?: boolean;
 }
+
+interface PresetProfile {
+  chipLabel: string;
+  fullName: string;
+  role: string;
+  organization: string;
+  city: string;
+  passions: string[];
+  noAlcohol: boolean;
+  dietaryTaboos: string[];
+  budget: 200 | 500 | 1500 | number;
+  bio: string;
+}
+
+const PRESET_PROFILES: PresetProfile[] = [
+  {
+    chipLabel: '⚡ Mike Diolosa (Qloo CTO)',
+    fullName: 'Mike Diolosa',
+    role: 'Chief Technology Officer',
+    organization: 'Qloo Culture AI',
+    city: 'New York',
+    passions: ['Jazz', 'Natural Wine', 'Mid-century Modern', 'Contemporary art'],
+    noAlcohol: false,
+    dietaryTaboos: [],
+    budget: 500,
+    bio: 'Leading cultural AI and latent taste graph infrastructure.',
+  },
+  {
+    chipLabel: '⚡ Jason Calacanis',
+    fullName: 'Jason Calacanis',
+    role: 'Angel Investor & Host',
+    organization: 'All-In Podcast / LAUNCH',
+    city: 'Silicon Valley',
+    passions: ['Specialty Espresso', 'Mechanical watches', 'Contemporary art', 'Electric vehicles'],
+    noAlcohol: false,
+    dietaryTaboos: [],
+    budget: 1500,
+    bio: 'Silicon valley angel investor and podcast host.',
+  },
+  {
+    chipLabel: '⚡ Kengo Kuma',
+    fullName: 'Kengo Kuma',
+    role: 'Principal Architect',
+    organization: 'Kengo Kuma & Associates',
+    city: 'Tokyo',
+    passions: ['Modernist architecture', 'Japanese Woodcraft', 'Tea ceremony', 'Ceramics'],
+    noAlcohol: true,
+    dietaryTaboos: [],
+    budget: 500,
+    bio: 'Master Japanese architect specializing in natural wood and stone.',
+  },
+  {
+    chipLabel: '⚡ Sovereign AI MD',
+    fullName: 'Dr. Tariq Al-Hassan',
+    role: 'Managing Director',
+    organization: 'Sovereign AI Venture Fund',
+    city: 'Riyadh',
+    passions: ['Independent watchmaking', 'Bespoke Oud', 'Falconry', 'Minimalist design'],
+    noAlcohol: true,
+    dietaryTaboos: ['halal'],
+    budget: 1500,
+    bio: 'Sovereign fund principal investing in foundational AI.',
+  },
+];
 
 const SUGGESTED_PASSIONS = [
   'Jazz',
@@ -60,6 +125,30 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
     setDietaryTaboos((prev) =>
       prev.includes(taboo) ? prev.filter((t) => t !== taboo) : [...prev, taboo]
     );
+  };
+
+  const applyPreset = (preset: PresetProfile) => {
+    soundService.playMechanicalClick();
+    setFullName(preset.fullName);
+    setRole(preset.role);
+    setOrganization(preset.organization);
+    setCity(preset.city);
+    setPassions([...preset.passions]);
+    setNoAlcohol(preset.noAlcohol);
+    setDietaryTaboos([...preset.dietaryTaboos]);
+    setRawBio(preset.bio);
+    if (preset.budget === 200 || preset.budget === 500 || preset.budget === 1500) {
+      setBudgetTierChoice(String(preset.budget) as '200' | '500' | '1500');
+    } else {
+      setBudgetTierChoice('custom');
+      setCustomBudget(String(preset.budget));
+    }
+  };
+
+  const handleRandomFill = () => {
+    soundService.playMechanicalClick();
+    const randomIndex = Math.floor(Math.random() * PRESET_PROFILES.length);
+    applyPreset(PRESET_PROFILES[randomIndex]);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,6 +210,38 @@ export const CreateVipModal: React.FC<CreateVipModalProps> = ({
           >
             <X className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* 1-Click Judge Presets Quick-Select */}
+        <div className="px-6 py-3 bg-[#FAF8F5] border-b border-[#EBE6DD]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#183D33] flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-[#967432]" />
+              1-Click Evaluation Presets
+            </span>
+            <span className="text-[10px] text-[#6B736D]">
+              Click to autofill executive parameters
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {PRESET_PROFILES.map((preset) => (
+              <button
+                key={preset.fullName}
+                type="button"
+                onClick={() => applyPreset(preset)}
+                className="text-xs px-3 py-1.5 rounded-lg border border-[#D5CEBF] bg-white text-[#161A18] hover:border-[#183D33] hover:bg-[#183D33] hover:text-white transition-all font-medium shadow-2xs flex items-center gap-1 active:scale-95"
+              >
+                <span>{preset.chipLabel}</span>
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={handleRandomFill}
+              className="text-xs px-3 py-1.5 rounded-lg border border-dashed border-[#967432] bg-[#FAF8F5] text-[#967432] hover:bg-[#967432] hover:text-white transition-all font-medium flex items-center gap-1.5 active:scale-95"
+            >
+              <span>🎲 Random Fill</span>
+            </button>
+          </div>
         </div>
 
         {/* Form Body */}
