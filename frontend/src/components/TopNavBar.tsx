@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Compass, SplitSquareVertical, Download, Zap, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { soundService } from '../services/soundService';
 import { QlooTelemetryBadge } from './QlooTelemetryBadge';
+import { CuraVIPLogo } from './CuraVIPLogo';
 import type { ExecutionMode, ExecutiveDossier } from '../types';
 
 interface TopNavBarProps {
@@ -31,9 +32,11 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   return (
     <header className="w-full bg-[#F8F6F0] border-b border-[#E5E0D6] px-6 py-4">
       <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Editorial Sub-Header Breadcrumb & Title */}
-        <div>
-          <div className="flex items-center gap-2 mb-1">
+        {/* Editorial Brand Crest & Header */}
+        <div className="flex items-center gap-4">
+          <CuraVIPLogo size="md" />
+          <div className="hidden lg:block h-8 w-px bg-[#E5E0D6]" />
+          <div className="hidden lg:flex items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#6B736D]">
               01 / Executive Concierge
             </span>
@@ -42,9 +45,6 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
               Family Office Terminal
             </span>
           </div>
-          <h1 className="text-xl md:text-2xl font-semibold text-[#161A18] tracking-tight">
-            Autonomous Cultural Intelligence & VIP Concierge
-          </h1>
         </div>
 
         {/* Action Controls & Mode Switcher */}

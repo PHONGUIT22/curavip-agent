@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: 'CuraVIP - Autonomous Cultural Intelligence & VIP Concierge',
   description:
     'Eradicating Cultural Blindness in Executive Gifting and Relationship Management via Qloo Taste Graph and Model Context Protocol',
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({
