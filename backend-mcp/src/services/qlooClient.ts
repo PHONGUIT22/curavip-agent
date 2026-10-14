@@ -89,6 +89,15 @@ export function mapQlooCategory(rawType?: string, name?: string): CulturalCatego
   return guessCategory(name || '');
 }
 
+export function normalizeSeedToEntity(seed: string): string {
+  const s = seed.toLowerCase();
+  if (s.includes('brutalis') || s.includes('nolan')) return 'Interstellar'; // map sang phim đại diện
+  if (s.includes('zimmer') || s.includes('ambient')) return 'Hans Zimmer';  // map sang nghệ sĩ đại diện
+  if (s.includes('horology') || s.includes('watch')) return 'Patek Philippe'; // map sang thương hiệu đại diện
+  if (s.includes('wine')) return 'Bordeaux';
+  return seed;
+}
+
 export class QlooClient {
   private readonly baseUrl: string;
   private readonly timeoutMs: number;
@@ -151,7 +160,7 @@ export class QlooClient {
       const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
 
       // Map category name to valid Qloo entity URN types
-      let typesParam = 'urn:entity:movie,urn:entity:artist,urn:entity:place,urn:entity:brand,urn:entity:book';
+      let typesParam = 'urn:entity:movie,urn:entity:artist,urn:entity:place,urn:entity:brand,urn:entity:book,urn:entity:person';
       if (type) {
         if (type === 'music') typesParam = 'urn:entity:artist';
         else if (type === 'film') typesParam = 'urn:entity:movie';
@@ -268,16 +277,18 @@ export class QlooClient {
         if (seed.startsWith('urn:entity:')) {
           entityUrns.push(seed);
         } else {
-          const matches = await this.searchEntities(seed);
-          if (matches.length > 0 && matches[0].id) {
+          const querySeed = normalizeSeedToEntity(seed);
+          const matches = await this.searchEntities(querySeed);
+          // CHỈ LẤY ID THẬT TỪ QLOO, BỎ QUA CÁC ID DỰ PHÒNG 'curated:'
+          if (matches.length > 0 && matches[0].id && !matches[0].id.startsWith('curated:')) {
             entityUrns.push(matches[0].id);
           }
         }
       }
 
-      // If no valid entity URNs could be resolved from seeds, fallback to curated correlation
+      // Nếu sau khi lọc mà không có ID Qloo thật nào -> Fallback ngay lập tức (không gọi API để đỡ ăn 400 vô ích)
       if (entityUrns.length === 0) {
-        console.warn('[QlooClient] No entity URNs resolved for seeds. Falling back to curated correlation.');
+        console.log('[QlooClient] No valid external Qloo UUIDs found. Using curated correlation directly.');
         const fallback = expandCuratedCorrelations(seedInterests, targetCategories);
         if (fallback.length > 0) qlooCacheRepo.set(correlationCacheKey, fallback, 3600);
         return fallback;
@@ -399,7 +410,8 @@ export class QlooClient {
     try {
       const resolvedSeeds: CulturalEntity[] = [];
       for (const seed of seedInterests) {
-        const matches = await this.searchEntities(seed);
+        const querySeed = normalizeSeedToEntity(seed);
+        const matches = await this.searchEntities(querySeed);
         if (matches.length > 0) {
           resolvedSeeds.push(matches[0]);
         } else {
