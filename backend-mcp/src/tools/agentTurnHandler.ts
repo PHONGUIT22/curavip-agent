@@ -218,11 +218,21 @@ export async function handleAgentTurn(request: AgentTurnRequest): Promise<AgentT
   const defaultBudget = tier === 'standard_200' ? 200 : tier === 'unlimited_vip' ? 1500 : 500;
   const budget = parsedBudget || (profile as any)?.budgetCap || (profile as any)?.budgetLimitUsd || defaultBudget;
 
-  // 1. Try AWS Bedrock with native tool calling
-  const bedrockDecision = await invokeBedrockWithTools(request.query, {
-    vipProfileId: vipId,
-    explicitInterests: request.context?.seedInterests,
-  });
+  const offlineIntent = resolveOfflineIntent(request.query, vipId, tier, profile);
+
+  // If the query is an explicit VIP directive requiring a specialized tool handler, execute deterministically
+  if (
+    offlineIntent.toolName === 'curate_tea_commission' ||
+    offlineIntent.toolName === 'refine_dossier_taboo' ||
+    offlineIntent.toolName === 'negotiate_taste_conflict'
+  ) {
+    // Handled in step 3 below
+  } else {
+    // 1. Try AWS Bedrock with native tool calling
+    const bedrockDecision = await invokeBedrockWithTools(request.query, {
+      vipProfileId: vipId,
+      explicitInterests: request.context?.seedInterests,
+    });
 
   if (bedrockDecision?.toolCall) {
     const { name, input } = bedrockDecision.toolCall;
@@ -261,20 +271,20 @@ export async function handleAgentTurn(request: AgentTurnRequest): Promise<AgentT
     };
   }
 
-  // 2. Direct Bedrock text response without tools
-  if (bedrockDecision?.textResponse) {
-    return {
-      success: true,
-      toolName: null,
-      toolArgs: null,
-      toolResult: null,
-      speechResponse: bedrockDecision.textResponse,
-      offlineFallbackUsed: false,
-    };
+    // 2. Direct Bedrock text response without tools
+    if (bedrockDecision?.textResponse) {
+      return {
+        success: true,
+        toolName: null,
+        toolArgs: null,
+        toolResult: null,
+        speechResponse: bedrockDecision.textResponse,
+        offlineFallbackUsed: false,
+      };
+    }
   }
 
   // 3. Autonomous Offline Fallback Engine
-  const offlineIntent = resolveOfflineIntent(request.query, vipId, tier, profile);
   let offlineResult: any = null;
   let offlineSpeech = '';
 

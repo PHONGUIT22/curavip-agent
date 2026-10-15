@@ -51,7 +51,7 @@ async function callBedrockSynthesis(prompt: string): Promise<string | null> {
 
     const payload = {
       anthropic_version: 'bedrock-2023-05-31',
-      max_tokens: 1500,
+      max_tokens: 4096,
       temperature: 0.2,
       system: CHIEF_OF_STAFF_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: prompt }],
@@ -89,23 +89,29 @@ async function callBedrockSynthesis(prompt: string): Promise<string | null> {
 async function callGeminiSynthesis(prompt: string): Promise<string | null> {
   const geminiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)?.trim();
   if (!isRealSecret(geminiKey)) return null;
-
+  const model = process.env.GEMINI_MODEL_ID?.trim() || 'gemini-2.5-flash';
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': geminiKey,
+      },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
       }),
-      signal: AbortSignal.timeout(12000),
+      signal: AbortSignal.timeout(15000),
     });
-
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[GeminiSynthesis] Gemini call failed with status ${res.status}`);
+      return null;
+    }
     const data = (await res.json()) as any;
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
-  } catch {
+  } catch (err) {
+    console.warn('[GeminiSynthesis] Error:', err);
     return null;
   }
 }
