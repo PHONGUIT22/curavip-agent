@@ -2,13 +2,13 @@
 
 [![Qloo Agentic Hackathon](https://img.shields.io/badge/Qloo-Agentic_AI_Hackathon-D4AF37?style=for-the-badge&logo=compass)](https://qloo.com)
 [![Protocol: MCP](https://img.shields.io/badge/Protocol-Model_Context_Protocol-6B7280?style=for-the-badge)](https://modelcontextprotocol.io)
-[![Runtime: Node 22](https://img.shields.io/badge/Node.js-22_LTS-339933?style=for-the-badge&logo=nodedotjs)](https://nodejs.org)
-[![Engine: AWS Bedrock Claude](https://img.shields.io/badge/Engine-Claude_3.5_Sonnet-orange?style=for-the-badge&logo=amazon-aws)](https://aws.amazon.com/bedrock)
+[![Primary: Gemini 3.8 Flash](https://img.shields.io/badge/Primary_LLM-Gemini_3.8_Flash-4285F4?style=for-the-badge&logo=google)](https://aistudio.google.com)
+[![Enterprise: AWS Bedrock](https://img.shields.io/badge/Enterprise-AWS_Bedrock_Claude-FF9900?style=for-the-badge&logo=amazon-aws)](https://aws.amazon.com/bedrock)
 [![Frontend: Next.js 15](https://img.shields.io/badge/Frontend-Next.js_15_App_Router-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 > *"Why generic AI fails high-ticket relationship management: The Cultural Blindness problem."*
-> When dealmakers prepare for critical executive dinners or gift high-net-worth principals, generic LLMs recommend clichés—gold Parker pens, generic scotch, or fruit baskets. **CuraVIP** transforms corporate diplomatic advisory by grounding AI decision-making in **Qloo's Cultural Taste Graph** (250M+ entities across taste domains), orchestrating autonomous curation through the **Model Context Protocol (MCP)** and **AWS Bedrock**.
+> When dealmakers prepare for critical executive dinners or gift high-net-worth principals, generic LLMs recommend clichés—gold Parker pens, generic scotch, or fruit baskets. **CuraVIP** transforms corporate diplomatic advisory by grounding AI decision-making in **Qloo's Cultural Taste Graph** (250M+ entities across taste domains), orchestrating autonomous curation through the **Model Context Protocol (MCP)**, **Google Gemini 3.8 Flash** (`@google/genai`), and **AWS Bedrock Claude**.
 
 ---
 
@@ -80,13 +80,15 @@ flowchart TD
 
     subgraph External ["Intelligence Engines"]
         Qloo["Qloo Cultural AI API (250M+ Entities)"]
-        Bedrock["AWS Bedrock (Claude 3.5 Sonnet / Haiku)"]
+        Gemini["Google Gemini 3.8 Flash (Primary via @google/genai)"]
+        Bedrock["AWS Bedrock (Claude Haiku / Sonnet Enterprise Fallback)"]
         Polly["AWS Polly Neural Voice Synthesis"]
     end
 
     Console --> Router
     Toggle --> Router
     Router --> TurnHandler
+    TurnHandler --> Gemini
     TurnHandler --> Bedrock
     TurnHandler --> Tools
     T1 --> Qloo
@@ -125,19 +127,28 @@ cd curavip-agent
 cp .env.example .env
 ```
 
-Configure your `.env` with your Qloo and AWS credentials:
+Configure your `.env` with your Qloo and LLM credentials:
 ```ini
-QLOO_API_KEY=your_qloo_api_key_here
-QLOO_API_URL=https://api.qloo.com/v2
+# 1. Qloo Cultural Taste Graph API (Mandatory)
+QLOO_API_KEY=hack_your_qloo_key_here
+QLOO_API_URL=https://hackathon.api.qloo.com
+QLOO_TIMEOUT_MS=8000
+# 2. Primary LLM: Google Gemini 3.8 Flash (via official @google/genai SDK)
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL_ID=gemini-3.8-flash
+# 3. Enterprise LLM Option: AWS Bedrock Claude
 AWS_REGION=ap-southeast-2
 AWS_ACCESS_KEY_ID=your_aws_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret
 BEDROCK_MODEL_ID=au.anthropic.claude-haiku-4-5-20251001-v1:0
 POLLY_VOICE_ID=Ruth
+# 4. Networking
+PORT=3001
 MCP_PORT=3001
 NEXT_PUBLIC_MCP_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
-*(Note: If `QLOO_API_KEY` is not provided, CuraVIP seamlessly engages its high-fidelity Taste Graph fallback clusters to ensure zero demo interruption).*
+*(Note: If API keys are not provided, CuraVIP seamlessly engages its high-fidelity Taste Graph and Autonomous Rule-Based fallback vault to ensure zero demo interruption).*
 
 ### 2. Install Dependencies
 ```bash
