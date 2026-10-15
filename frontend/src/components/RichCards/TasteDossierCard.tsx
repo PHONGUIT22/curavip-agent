@@ -94,14 +94,14 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   return (
     <div className="border border-[#183D33]/15 bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
       {/* Ledger Section Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 pb-4 mb-4 border-b border-[#EBE6DD]">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 pb-4 mb-4 border-b border-[#EBE6DD]">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33] whitespace-nowrap">
               Archival Taste Graph
             </span>
             <span
-              className={`text-xs font-medium px-2.5 py-0.5 border rounded-full uppercase tracking-wide ${
+              className={`text-xs font-medium px-2.5 py-0.5 border rounded-full uppercase tracking-wide whitespace-nowrap ${
                 isGrounded
                   ? 'border-[#C8DCD1] bg-[#EDF4F0] text-[#1D5A4A]'
                   : 'border-[#E5E0D6] bg-[#FAF8F5] text-[#6B736D]'
@@ -110,7 +110,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
               {isGrounded ? 'Qloo Grounded' : 'Ungrounded Baseline'}
             </span>
           </div>
-          <h3 className="font-sans font-semibold text-lg sm:text-xl text-[#161A18] tracking-tight truncate">
+          <h3 className="font-sans font-semibold text-lg sm:text-xl text-[#161A18] tracking-tight">
             {vipProfile.fullName}{' '}
             <span className="font-sans text-xs sm:text-sm text-[#6B736D] font-normal">
               / Cultural Affinity Ledger
@@ -118,7 +118,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           </h3>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 flex-shrink-0">
           {/* Qloo Vector X-Ray Inspector Toggle Button (Dedicated for CTO Mike Diolosa) */}
           <button
             type="button"
@@ -126,7 +126,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
               soundService.playMechanicalClick();
               setIsXRayOpen(!isXRayOpen);
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold tracking-wide transition-all shadow-2xs ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold tracking-wide transition-all shadow-2xs whitespace-nowrap flex-shrink-0 ${
               isXRayOpen
                 ? 'bg-[#183D33] text-[#D4AF37] border-[#D4AF37]/50 ring-1 ring-[#D4AF37]/30'
                 : 'bg-[#FAF8F5] border-[#D5CEBF] text-[#183D33] hover:border-[#183D33] hover:bg-white'
@@ -138,14 +138,14 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           </button>
 
           {/* View Mode Toggle: [ Interactive Network ] ⇄ [ Visual Graph ] ⇄ [ Ledger Matrix ] */}
-          <div className="flex items-center p-1 rounded-xl border border-[#E5E0D6] bg-[#FAF8F5]">
+          <div className="flex items-center p-1 rounded-xl border border-[#E5E0D6] bg-[#FAF8F5] flex-shrink-0">
             <button
               type="button"
               onClick={() => {
                 soundService.playToggleClick();
                 setViewMode('network');
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${
                 viewMode === 'network'
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
@@ -162,7 +162,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
                 soundService.playToggleClick();
                 setViewMode('graph');
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${
                 viewMode === 'graph'
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
@@ -179,7 +179,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
                 soundService.playToggleClick();
                 setViewMode('list');
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all whitespace-nowrap ${
                 viewMode === 'list'
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
@@ -191,7 +191,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
             </button>
           </div>
 
-          <div className="w-9 h-9 border border-[#E5E0D6] bg-[#FAF8F5] rounded-lg flex items-center justify-center text-[#183D33]">
+          <div className="w-9 h-9 border border-[#E5E0D6] bg-[#FAF8F5] rounded-xl flex items-center justify-center text-[#183D33] flex-shrink-0">
             <Compass className="w-4 h-4" />
           </div>
         </div>

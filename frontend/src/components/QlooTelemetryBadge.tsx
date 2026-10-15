@@ -38,7 +38,7 @@ export const QlooTelemetryBadge: React.FC<QlooTelemetryBadgeProps> = ({ isLive =
           soundService.playMechanicalClick();
           setIsOpen((prev) => !prev);
         }}
-        className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full border transition-all text-xs shadow-2xs cursor-pointer ${
+        className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full border transition-all text-xs shadow-2xs cursor-pointer whitespace-nowrap flex-shrink-0 ${
           isLive
             ? 'border-[#C8DCD1] bg-[#EDF4F0] hover:bg-[#E3EEE8] text-[#1D5A4A]'
             : 'border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-800'
@@ -47,15 +47,15 @@ export const QlooTelemetryBadge: React.FC<QlooTelemetryBadgeProps> = ({ isLive =
       >
         {/* Pulse Dot */}
         {isLive ? (
-          <span className="relative flex h-2.5 w-2.5">
+          <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
           </span>
         ) : (
-          <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
+          <span className="h-2.5 w-2.5 rounded-full bg-amber-500 flex-shrink-0" />
         )}
 
-        <span className="font-semibold tracking-wide font-mono text-[11px]">
+        <span className="font-semibold tracking-wide font-mono text-[11px] whitespace-nowrap">
           {isLive ? 'QLOO GRAPH: ONLINE (v2/insights)' : 'QLOO: CURATED GRAPH'}
         </span>
       </button>

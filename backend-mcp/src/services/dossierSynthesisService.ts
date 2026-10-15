@@ -516,9 +516,14 @@ export const dossierSynthesisService = {
   async synthesizeGeneric(
     profile: VIPProfile,
     tier: BudgetTier,
-    meetingBrief?: string
+    meetingBrief?: string,
+    fastGeneric = false
   ): Promise<SynthesisOutput> {
     const cap = tier === 'standard_200' ? 200 : tier === 'executive_500' ? 500 : (profile.budgetLimitUsd || 1500);
+
+    if (fastGeneric) {
+      return synthesizeDynamicGenericRuleBased(profile, cap, tier, meetingBrief);
+    }
 
     const prompt = buildGenericDossierPrompt({
       profile,
