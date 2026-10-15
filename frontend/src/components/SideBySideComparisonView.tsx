@@ -48,43 +48,85 @@ export const SideBySideComparisonView: React.FC<SideBySideComparisonViewProps> =
         </div>
 
         {/* Executive Benchmark Metrics Counters */}
-        <div className="bg-[#FAF8F5] border-b border-[#E5E0D6] px-5 sm:px-6 py-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-shrink-0">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 flex-shrink-0">
-              <TrendingDown className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg font-bold text-[#161A18] tracking-tight">-87%</span>
-                <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">Eliminated</span>
+        <div className="bg-[#FAF8F5] border-b border-[#E5E0D6] px-5 sm:px-6 py-3.5 flex-shrink-0 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 flex-shrink-0">
+                <TrendingDown className="w-5 h-5" />
               </div>
-              <span className="text-xs text-[#6B736D] font-medium block">Generic Hallucination</span>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-lg font-bold text-[#161A18] tracking-tight">-87%</span>
+                  <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">Eliminated</span>
+                </div>
+                <span className="text-xs text-[#6B736D] font-medium block">Generic Hallucination</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-[#183D33]/10 border border-[#183D33]/20 flex items-center justify-center text-[#183D33] flex-shrink-0">
+                <Target className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-lg font-bold text-[#183D33] tracking-tight">96.4%</span>
+                  <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-[#EDF4F0] text-[#183D33] uppercase">Qloo Verified</span>
+                </div>
+                <span className="text-xs text-[#6B736D] font-medium block">Cultural Relevance</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 flex-shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-lg font-bold text-emerald-700 tracking-tight">100% Pass</span>
+                  <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">0 Violations</span>
+                </div>
+                <span className="text-xs text-[#6B736D] font-medium block">Compliance Guardrail</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#967432]/30 shadow-2xs">
+              <div className="w-10 h-10 rounded-xl bg-[#967432]/10 border border-[#967432]/25 flex items-center justify-center text-[#967432] flex-shrink-0">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-lg font-bold text-[#967432] tracking-tight">$10M–$50M+</span>
+                  <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-[#967432]/15 text-[#967432] uppercase">Protected</span>
+                </div>
+                <span className="text-xs text-[#6B736D] font-medium block">Deal Capital Protected</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-[#183D33]/10 border border-[#183D33]/20 flex items-center justify-center text-[#183D33] flex-shrink-0">
-              <Target className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg font-bold text-[#183D33] tracking-tight">96.4%</span>
-                <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-[#EDF4F0] text-[#183D33] uppercase">Qloo Verified</span>
+          {/* Enterprise ROI & Deal Risk Mitigation Metric Banner (For Jason Calacanis & Dealmakers) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-gradient-to-r from-[#183D33]/10 via-[#FAF8F5] to-[#967432]/15 border border-[#967432]/30 text-[#161A18] shadow-2xs">
+            <div className="flex items-start sm:items-center gap-3 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-[#183D33] text-white flex items-center justify-center flex-shrink-0 font-bold text-sm shadow-xs">
+                ROI
               </div>
-              <span className="text-xs text-[#6B736D] font-medium block">Cultural Relevance</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-[#E5E0D6] shadow-2xs">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 flex-shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg font-bold text-emerald-700 tracking-tight">100% Pass</span>
-                <span className="text-2xs font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 uppercase">0 Violations</span>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#183D33]">
+                    Enterprise ROI & Deal Risk Mitigation: Estimated Deal Capital Protected: $10M–$50M+
+                  </span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#183D33]/10 text-[#183D33] border border-[#183D33]/20">
+                    Venture & M&A Guardrail
+                  </span>
+                </div>
+                <p className="text-xs text-[#323835] leading-relaxed">
+                  Eliminates career-ending cultural taboos (e.g. gifting alcohol or swine-derived leather to sovereign Gulf principals, or violating federal FCPA hospitality caps), safeguarding multi-million dollar closing dinners and strategic partnerships.
+                </p>
               </div>
-              <span className="text-xs text-[#6B736D] font-medium block">Compliance Guardrail</span>
+            </div>
+            <div className="flex-shrink-0 pl-11 sm:pl-0">
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#967432] bg-white px-2.5 py-1 rounded-lg border border-[#967432]/30 shadow-2xs">
+                <span>⚡ Jason Calacanis Metric</span>
+              </span>
             </div>
           </div>
         </div>

@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Compass, MessageSquareQuote, Layers, Share2, Sparkles } from 'lucide-react';
+import { Compass, MessageSquareQuote, Layers, Share2, Sparkles, Activity } from 'lucide-react';
 import { soundService } from '../../services/soundService';
 import { VisualTasteGraph } from '../VisualTasteGraph';
 import { InteractiveTasteNetworkGraph } from '../InteractiveTasteNetworkGraph';
+import { QlooVectorXRayPanel } from '../QlooVectorXRayPanel';
 import type { CulturalTasteGraph, VIPProfile } from '../../types';
 
 interface TasteDossierCardProps {
@@ -30,6 +31,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   iceBreakerScripts,
 }) => {
   const [viewMode, setViewMode] = useState<'network' | 'graph' | 'list'>('network');
+  const [isXRayOpen, setIsXRayOpen] = useState(false);
   const isGrounded = tasteGraph.source !== 'none';
   const entities = tasteGraph.expandedEntities || [];
 
@@ -116,7 +118,25 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           </h3>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Qloo Vector X-Ray Inspector Toggle Button (Dedicated for CTO Mike Diolosa) */}
+          <button
+            type="button"
+            onClick={() => {
+              soundService.playMechanicalClick();
+              setIsXRayOpen(!isXRayOpen);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold tracking-wide transition-all shadow-2xs ${
+              isXRayOpen
+                ? 'bg-[#183D33] text-[#D4AF37] border-[#D4AF37]/50 ring-1 ring-[#D4AF37]/30'
+                : 'bg-[#FAF8F5] border-[#D5CEBF] text-[#183D33] hover:border-[#183D33] hover:bg-white'
+            }`}
+            title="Inspect Qloo Latent Vector Transformation & URN Entity Routing"
+          >
+            <Activity className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>⚡ Qloo Vector X-Ray</span>
+          </button>
+
           {/* View Mode Toggle: [ Interactive Network ] ⇄ [ Visual Graph ] ⇄ [ Ledger Matrix ] */}
           <div className="flex items-center p-1 rounded-xl border border-[#E5E0D6] bg-[#FAF8F5]">
             <button
@@ -176,6 +196,11 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Qloo Vector X-Ray Expandable Inspector (Dedicated for CTO Mike Diolosa) */}
+      {isXRayOpen && (
+        <QlooVectorXRayPanel tasteGraph={tasteGraph} vipProfile={vipProfile} />
+      )}
 
       {/* Dynamic View Body: Interactive Network vs Visual Taste Graph vs Matrix/List */}
       {viewMode === 'network' ? (

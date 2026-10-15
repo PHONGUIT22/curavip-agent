@@ -61,37 +61,70 @@ interface JudgeScenarioPreset {
 
 const JUDGE_SCENARIOS: JudgeScenarioPreset[] = [
   {
-    id: 'preset_marcus',
-    badge: '🏛️ Wall St M&A Dinner',
-    title: 'Wall St M&A Dinner',
-    subtitle: 'Marcus Vance • Series B Closing',
-    vipId: 'vip_marcus_vance',
-    tier: 'executive_500',
-    tierLabel: '$500 Cap',
-    brief:
-      'High-stakes closing dinner for $40M Series B. Seeking discreet brutalist architectural salon, zero shellfish, $500 compliance cap.',
-  },
-  {
-    id: 'preset_tariq',
-    badge: '🇸🇦 Sovereign Wealth Tech Accord',
-    title: 'Sovereign Wealth Tech Accord',
-    subtitle: 'Tariq Al-Mansoor • Sovereign AI',
-    vipId: 'vip_tariq_al_mansoor',
+    id: 'preset_jason',
+    badge: '🚀 Angel Syndicate Dinner',
+    title: 'Angel Syndicate Dinner',
+    subtitle: 'Jason Calacanis • All-In / LAUNCH',
+    vipId: 'vip_jason_calacanis',
     tier: 'unlimited_vip',
     tierLabel: '$1,500 Cap',
     brief:
-      'Bilateral sovereign AI summit in London. Strict Halal & 100% Zero-Alcohol protocol, horology & Dieter Rams aesthetic, $1,500 budget.',
+      'High-stakes founder-investor private dinner in Silicon Valley. Seeking private salon dining with artisanal pour-over coffee experience, bespoke mechanical horology artifact, $1,500 budget cap.',
   },
   {
-    id: 'preset_elena',
-    badge: '🍷 Milan Fashion Partnership',
-    title: 'Milan Fashion Partnership',
-    subtitle: 'Elena Rostova • Haute Couture',
-    vipId: 'vip_elena_rostova',
-    tier: 'standard_200',
-    tierLabel: '$200 Cap',
+    id: 'preset_mike',
+    badge: '⚡ Qloo Cultural AI Summit',
+    title: 'Cultural AI Summit',
+    subtitle: 'Mike Diolosa • Qloo CTO',
+    vipId: 'vip_mike_diolosa',
+    tier: 'executive_500',
+    tierLabel: '$500 Cap',
     brief:
-      'Haute-couture launch party. Avant-garde jazz vinyl, biodynamic natural wine pairing, strict $200 corporate anti-bribery cap.',
+      'Executive cultural AI summit dinner in SoHo NYC. Curate intimate dining with biodynamic wine list, collectible jazz vinyl pressing or acoustic design piece, $500 corporate compliance cap.',
+  },
+  {
+    id: 'preset_todd',
+    badge: '🏆 Sports Heritage Accord',
+    title: 'Sports Heritage Accord',
+    subtitle: 'Todd Boehly • Eldridge / Chelsea FC',
+    vipId: 'vip_todd_boehly',
+    tier: 'unlimited_vip',
+    tierLabel: '$1,500 Cap',
+    brief:
+      'Global sports franchise ownership summit in Beverly Hills. Seeking discreet private club dining, rare sports heritage archival artifact or vintage Bordeaux allocation, $1,500 budget.',
+  },
+  {
+    id: 'preset_nicole',
+    badge: '🎭 Board Governance Dinner',
+    title: 'Board Governance Dinner',
+    subtitle: 'Nicole Seligman • OpenAI Board',
+    vipId: 'vip_nicole_seligman',
+    tier: 'executive_500',
+    tierLabel: '$500 Cap',
+    brief:
+      'Board governance consultation dinner in Manhattan. Looking for Michelin-starred private Kaiseki omakase, rare first-edition modernist book or handcrafted Japanese ceramic, $500 compliance cap.',
+  },
+  {
+    id: 'preset_cedric',
+    badge: '🎩 Philanthropic Honors Gala',
+    title: 'Philanthropic Honors Gala',
+    subtitle: 'Cedric the Entertainer • Host & Actor',
+    vipId: 'vip_cedric_entertainer',
+    tier: 'executive_500',
+    tierLabel: '$500 Cap',
+    brief:
+      'Gala reception and philanthropic honors dinner in St. Louis. Curate private dining with live jazz ambiance, bespoke custom millinery or tailored sartorial accessory, $500 budget.',
+  },
+  {
+    id: 'preset_michael',
+    badge: '🎸 Live Arena Strategy Session',
+    title: 'Live Arena Strategy Session',
+    subtitle: 'Michael Abrams • Live Nation EVP',
+    vipId: 'vip_michael_abrams',
+    tier: 'executive_500',
+    tierLabel: '$500 Cap',
+    brief:
+      'Live entertainment industry strategy dinner in West Hollywood. Seeking acoustically pristine private dining, archival concert pressing or audio engineering art piece, $500 budget limit.',
   },
 ];
 
@@ -135,7 +168,12 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
     setSynthesizedSuccess(false);
 
     if (profiles && onSelectVip) {
-      const target = profiles.find((p) => p.id === preset.vipId);
+      let target = profiles.find((p) => p.id === preset.vipId);
+      if (!target) {
+        target = profiles.find((p) =>
+          preset.subtitle.toLowerCase().includes(p.fullName.toLowerCase())
+        );
+      }
       if (target) {
         onSelectVip(target);
       }
@@ -148,15 +186,42 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
   useEffect(() => {
     setSynthesizedSuccess(false);
     if (selectedVip) {
-      if (selectedVip.id.includes('marcus')) {
+      const id = selectedVip.id.toLowerCase();
+      const name = selectedVip.fullName.toLowerCase();
+
+      if (id.includes('jason') || name.includes('jason')) {
+        setMeetingBrief(
+          'High-stakes founder-investor private dinner in Silicon Valley. Seeking private salon dining with artisanal pour-over coffee experience, bespoke mechanical horology artifact, $1,500 budget cap.'
+        );
+      } else if (id.includes('mike') || name.includes('mike')) {
+        setMeetingBrief(
+          'Executive cultural AI summit dinner in SoHo NYC. Curate intimate dining with biodynamic wine list, collectible jazz vinyl pressing or acoustic design piece, $500 corporate compliance cap.'
+        );
+      } else if (id.includes('todd') || name.includes('todd')) {
+        setMeetingBrief(
+          'Global sports franchise ownership summit in Beverly Hills. Seeking discreet private club dining, rare sports heritage archival artifact or vintage Bordeaux allocation, $1,500 budget.'
+        );
+      } else if (id.includes('nicole') || name.includes('nicole')) {
+        setMeetingBrief(
+          'Board governance consultation dinner in Manhattan. Looking for Michelin-starred private Kaiseki omakase, rare first-edition modernist book or handcrafted Japanese ceramic, $500 compliance cap.'
+        );
+      } else if (id.includes('cedric') || name.includes('cedric')) {
+        setMeetingBrief(
+          'Gala reception and philanthropic honors dinner in St. Louis. Curate private dining with live jazz ambiance, bespoke custom millinery or tailored sartorial accessory, $500 budget.'
+        );
+      } else if (id.includes('michael') || name.includes('michael')) {
+        setMeetingBrief(
+          'Live entertainment industry strategy dinner in West Hollywood. Seeking acoustically pristine private dining, archival concert pressing or audio engineering art piece, $500 budget limit.'
+        );
+      } else if (id.includes('marcus')) {
         setMeetingBrief(
           'Private closing dinner for $40M Series B growth round. Exploring strategic co-syndication with Halcyon Ridge.'
         );
-      } else if (selectedVip.id.includes('tariq')) {
+      } else if (id.includes('tariq')) {
         setMeetingBrief(
           'Bilateral technology summit dinner in London. Discussing European expansion and enterprise compute partnerships.'
         );
-      } else if (selectedVip.id.includes('elena')) {
+      } else if (id.includes('elena')) {
         setMeetingBrief(
           'Creative brand partnership launch dinner. Presenting multi-city fashion campaign concept.'
         );

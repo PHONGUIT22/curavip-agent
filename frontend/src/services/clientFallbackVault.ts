@@ -100,6 +100,78 @@ export const FALLBACK_VIP_PROFILES: VIPProfile[] = [
     ],
     taboos: { alcohol: false, dietary: [], religiousCultural: [] },
   },
+  {
+    id: 'vip_jason_calacanis',
+    fullName: 'Jason Calacanis',
+    role: 'Angel Investor & Host',
+    organization: 'All-In Podcast / LAUNCH',
+    city: 'Silicon Valley',
+    budgetLimitUsd: 1500,
+    rawBio:
+      'Leading Silicon Valley angel investor, co-host of the All-In Podcast and founder of LAUNCH. Passionate about early-stage startup ecosystems, precision pour-over and specialty espresso extractions, independent mechanical horology, and high-stakes poker.',
+    explicitInterests: ['Specialty Espresso', 'Independent watchmaking', 'Contemporary art', 'Poker'],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
+  {
+    id: 'vip_mike_diolosa',
+    fullName: 'Mike Diolosa',
+    role: 'Chief Technology Officer',
+    organization: 'Qloo Culture AI',
+    city: 'New York',
+    budgetLimitUsd: 500,
+    rawBio:
+      'Chief Technology Officer at Qloo, pioneering cultural AI and the world\'s leading latent taste graph infrastructure. Deeply immersed in modal jazz vinyl pressings, low-intervention natural wines, mid-century modern architectural design, and ambient soundscapes.',
+    explicitInterests: ['Jazz vinyl', 'Natural wine', 'Mid-century modern design', 'Ambient soundscapes'],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
+  {
+    id: 'vip_todd_boehly',
+    fullName: 'Todd Boehly',
+    role: 'Chairman & CEO',
+    organization: 'Eldridge / Chelsea FC & LA Dodgers',
+    city: 'Los Angeles',
+    budgetLimitUsd: 1500,
+    rawBio:
+      'Chairman and CEO of Eldridge Industries, co-owner of Premier League club Chelsea FC and MLB champions Los Angeles Dodgers. Reveres championship sports heritage, auteur contemporary cinema (A24), and collectible Premier Grand Cru Classé Bordeaux.',
+    explicitInterests: ['Championship sports heritage', 'Contemporary cinema', 'A24 films', 'Fine Bordeaux'],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
+  {
+    id: 'vip_nicole_seligman',
+    fullName: 'Nicole Seligman',
+    role: 'Board Member & Former President',
+    organization: 'OpenAI Board / Sony Corporation of America',
+    city: 'New York',
+    budgetLimitUsd: 500,
+    rawBio:
+      'OpenAI Board Director and former President of Sony Corporation of America. Devoted patron of classical performing arts, Lincoln Center opera, meditative Kyoto Kaiseki dining traditions, and modernist literature.',
+    explicitInterests: ['Classical performing arts', 'Japanese Kaiseki', 'Modernist literature', 'Opera'],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
+  {
+    id: 'vip_cedric_entertainer',
+    fullName: 'Cedric the Entertainer',
+    role: 'Actor, Comedian & Host',
+    organization: 'A Bird and a Bear Entertainment',
+    city: 'St. Louis',
+    budgetLimitUsd: 500,
+    rawBio:
+      'Acclaimed comedic titan, actor, and host. Passionate about vintage Motown and St. Louis jazz traditions, bespoke Savile Row tailoring, custom artisanal millinery & heritage hats, and civic youth philanthropy.',
+    explicitInterests: ['Classic soul & jazz', 'Bespoke tailoring', 'Heritage hats', 'St. Louis philanthropy'],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
+  {
+    id: 'vip_michael_abrams',
+    fullName: 'Michael Abrams',
+    role: 'EVP of Strategy',
+    organization: 'Live Nation Entertainment',
+    city: 'Los Angeles',
+    budgetLimitUsd: 500,
+    rawBio:
+      'Executive Vice President of Strategy at Live Nation Entertainment. Authority on acoustic amphitheater architecture, legendary rock and orchestral concert tour archives, rare lacquer master vinyl pressings, and high-touch VIP backstage hospitality.',
+    explicitInterests: ['Live acoustic architecture', 'Backstage VIP hospitality', 'Rare vinyl pressings', 'Concert sound engineering'],
+    taboos: { alcohol: false, dietary: [], religiousCultural: [] },
+  },
 ];
 
 let customProfilesVault: VIPProfile[] = [...FALLBACK_VIP_PROFILES];
