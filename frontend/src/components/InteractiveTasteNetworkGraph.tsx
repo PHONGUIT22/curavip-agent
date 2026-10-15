@@ -75,8 +75,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: centerTitle,
           domain: 'seed',
           domainLabel: 'SEED CULTURAL ANCHOR',
-          x: 400,
-          y: 230,
+          x: 430,
+          y: 245,
           affinity: 100,
           rationale: 'Primary seed anchor declared by Principal: Obsession with scale, cinematic physics, and temporal tension.',
           isCenter: true,
@@ -86,8 +86,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Interstellar & Oppenheimer Acoustic Mix',
           domain: 'cinema',
           domainLabel: 'CINEMA / SOUND DESIGN',
-          x: 190,
-          y: 100,
+          x: 210,
+          y: 110,
           affinity: 98,
           rationale: 'Direct Qloo vector correlation: Audiophile sound design where silence carries identical mass to dialogue.',
         },
@@ -96,8 +96,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Tadao Ando & Barbican Brutalism',
           domain: 'architecture',
           domainLabel: 'MONUMENTAL ARCHITECTURE',
-          x: 610,
-          y: 100,
+          x: 650,
+          y: 110,
           affinity: 96,
           rationale: 'Qloo Latent Factor: 96% concordance between Nolan’s monumental framing and board-formed raw concrete surfaces.',
         },
@@ -106,8 +106,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Hans Zimmer Modular Synthesis',
           domain: 'music',
           domainLabel: 'ACOUSTIC MINIMALISM',
-          x: 690,
-          y: 250,
+          x: 730,
+          y: 245,
           affinity: 94,
           rationale: 'Sub-bass ambient frequency structures that create physical vibration rather than melodic distraction.',
         },
@@ -116,8 +116,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'The Monolith Subterranean Salon',
           domain: 'dining',
           domainLabel: 'HOSPITALITY SANCTUARY',
-          x: 580,
-          y: 380,
+          x: 640,
+          y: 395,
           affinity: 96,
           rationale: 'Acoustically isolated private dining salon with raw cast concrete walls and zero ambient small talk.',
         },
@@ -127,7 +127,7 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           domain: 'craft',
           domainLabel: 'BESPOKE MATERIAL CRAFT',
           x: 220,
-          y: 380,
+          y: 395,
           affinity: 97,
           rationale: '14-day wood kiln ash deposits create an elemental tactile skin matching bush-hammered architectural aggregate.',
         },
@@ -136,8 +136,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Peter Zumthor Therme Vals Folio',
           domain: 'literature',
           domainLabel: 'ARCHITECTURAL MONOGRAPH',
-          x: 110,
-          y: 250,
+          x: 130,
+          y: 245,
           affinity: 93,
           rationale: 'Limited slipcase edition analyzing quartzite stone layers and sensory tactile containment.',
         },
@@ -152,8 +152,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: centerTitle,
           domain: 'seed',
           domainLabel: 'SEED CULTURAL ANCHOR',
-          x: 400,
-          y: 230,
+          x: 430,
+          y: 245,
           affinity: 100,
           rationale: 'Primary seed anchor: Fascination with independent Swiss/Japanese watchmakers, hand-finishing, and micro-tolerances.',
           isCenter: true,
@@ -163,8 +163,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Dieter Rams 10 Principles',
           domain: 'architecture',
           domainLabel: 'INDUSTRIAL DESIGN',
-          x: 610,
-          y: 100,
+          x: 650,
+          y: 110,
           affinity: 97,
           rationale: 'Philosophical kinship: "Less, but better" manifests in uncluttered mechanical movements and matte finishes.',
         },
@@ -174,7 +174,7 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           domain: 'craft',
           domainLabel: 'BESPOKE HOROLOGY ATELIER',
           x: 220,
-          y: 380,
+          y: 395,
           affinity: 98,
           rationale: 'Grade 5 aerospace titanium hand-turned in Kyoto with zero corporate branding. Respects religious taboos.',
         },
@@ -183,8 +183,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'The Al-Murabba Pavilion',
           domain: 'dining',
           domainLabel: 'CERTIFIED HALAL KAISEKI',
-          x: 580,
-          y: 380,
+          x: 640,
+          y: 395,
           affinity: 96,
           rationale: 'Private garden salon with dedicated zero-proof tea flights and strict 100% Halal kitchen integrity.',
         },
@@ -193,8 +193,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Mechanical Acoustic Cadence',
           domain: 'music',
           domainLabel: 'HOROLOGICAL FREQUENCY',
-          x: 690,
-          y: 250,
+          x: 730,
+          y: 245,
           affinity: 92,
           rationale: 'Subtle sound of a 21,600 vph balance wheel escapement in an acoustically damped room.',
         },
@@ -203,8 +203,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Philippe Dufour Simplicity Archives',
           domain: 'cinema',
           domainLabel: 'ATELIER MASTERPIECE',
-          x: 190,
-          y: 100,
+          x: 210,
+          y: 110,
           affinity: 96,
           rationale: 'Documentary analysis of handmade anglage and interior angles by Switzerland’s greatest living watchmaker.',
         },
@@ -213,8 +213,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Rams "Less and More" Monograph',
           domain: 'literature',
           domainLabel: 'DESIGN LITERATURE',
-          x: 110,
-          y: 250,
+          x: 130,
+          y: 245,
           affinity: 94,
           rationale: 'Braunschweig Press archival slipcase edition celebrating understated German functionalism.',
         },
@@ -229,8 +229,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: centerTitle,
           domain: 'seed',
           domainLabel: 'SEED CULTURAL ANCHOR',
-          x: 400,
-          y: 230,
+          x: 430,
+          y: 245,
           affinity: 100,
           rationale: 'Primary seed anchor: Analog acoustic richness, direct-to-lacquer pressings, and authentic musical heritage.',
           isCenter: true,
@@ -240,8 +240,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: '1961 Preservation Hall Mono Master',
           domain: 'music',
           domainLabel: 'ANALOG VINYL ARTIFACT',
-          x: 690,
-          y: 250,
+          x: 730,
+          y: 245,
           affinity: 97,
           rationale: 'Rare direct lacquer disc presented in unbleached raw linen sleeve, capturing dynamic micro-room acoustics.',
         },
@@ -250,8 +250,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Comme des Garçons Spatial Form',
           domain: 'architecture',
           domainLabel: 'AVANT-GARDE FASHION ARCHITECTURE',
-          x: 610,
-          y: 100,
+          x: 650,
+          y: 110,
           affinity: 95,
           rationale: 'Garments conceptualized as deconstructed geometric volumes rather than commercial trends.',
         },
@@ -261,7 +261,7 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           domain: 'craft',
           domainLabel: 'SCULPTURAL JEWELRY',
           x: 220,
-          y: 380,
+          y: 395,
           affinity: 94,
           rationale: 'Numbered 07/50 studio piece from Tokyo, avoiding corporate logos while respecting her aesthetic rigor.',
         },
@@ -270,8 +270,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'The Botanist’s Cellar Vault',
           domain: 'dining',
           domainLabel: 'NATURAL WINE & ZERO-SHELLFISH',
-          x: 580,
-          y: 380,
+          x: 640,
+          y: 395,
           affinity: 95,
           rationale: 'Low-intervention skin-contact orange wines paired with wild mountain roots; 100% shellfish-free audited.',
         },
@@ -280,8 +280,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'French New Wave Cinematography',
           domain: 'cinema',
           domainLabel: 'CINEMATIC TEXTURE',
-          x: 190,
-          y: 100,
+          x: 210,
+          y: 110,
           affinity: 92,
           rationale: 'Analog grain, handheld framing, and improvisational rhythm shared with New Orleans modal jazz.',
         },
@@ -290,8 +290,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Margiela Exhibition Catalogue 1989-2009',
           domain: 'literature',
           domainLabel: 'ARCHIVAL MONOGRAPH',
-          x: 110,
-          y: 250,
+          x: 130,
+          y: 245,
           affinity: 93,
           rationale: 'Exhaustive archival survey of white painted textiles and anonymous artisan collective techniques.',
         },
@@ -307,8 +307,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: centerTitle,
           domain: 'seed',
           domainLabel: 'SEED CULTURAL ANCHOR',
-          x: 400,
-          y: 230,
+          x: 430,
+          y: 245,
           affinity: 100,
           rationale: `Primary cultural seed extracted from ${vipProfile.fullName}’s profile dossier.`,
           isCenter: true,
@@ -318,8 +318,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: tasteGraph.expandedEntities[0]?.name || 'Contemporary Spatial Design',
           domain: 'architecture',
           domainLabel: 'CROSS-DOMAIN ARCHITECTURE',
-          x: 610,
-          y: 100,
+          x: 650,
+          y: 110,
           affinity: 96,
           rationale: 'Qloo cross-domain correlation between primary taste vector and spatial design.',
         },
@@ -328,8 +328,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: tasteGraph.expandedEntities[1]?.name || 'Acoustic Soundscapes',
           domain: 'music',
           domainLabel: 'SONIC PALETTE',
-          x: 690,
-          y: 250,
+          x: 730,
+          y: 245,
           affinity: 94,
           rationale: 'Harmonic alignment with declared interests and lifestyle pacing.',
         },
@@ -338,8 +338,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Curated Private Hospitality Salon',
           domain: 'dining',
           domainLabel: 'AUDITED GASTRONOMY',
-          x: 580,
-          y: 380,
+          x: 640,
+          y: 395,
           affinity: 95,
           rationale: 'Private dining venue satisfying all declared taboos and atmosphere anchors.',
         },
@@ -349,7 +349,7 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           domain: 'craft',
           domainLabel: 'HANDCRAFTED PROVENANCE',
           x: 220,
-          y: 380,
+          y: 395,
           affinity: 97,
           rationale: 'Handmade by an independent craft workshop with zero commercial branding.',
         },
@@ -358,8 +358,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Archival Press Monograph',
           domain: 'literature',
           domainLabel: 'SCHOLARLY LITERATURE',
-          x: 110,
-          y: 250,
+          x: 130,
+          y: 245,
           affinity: 92,
           rationale: 'Intellectual publication honoring the principal’s background and career.',
         },
@@ -368,8 +368,8 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           name: 'Visual Art & Cinematic Scale',
           domain: 'cinema',
           domainLabel: 'VISUAL ARTS',
-          x: 190,
-          y: 100,
+          x: 210,
+          y: 110,
           affinity: 93,
           rationale: 'Cultural affinity across cinematic framing and visual arts.',
         },
@@ -430,26 +430,14 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
   }, [nodes, activeDomainFilter]);
 
   return (
-    <div className="border border-[#183D33]/15 bg-white rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all flex flex-col space-y-5">
-      {/* Graph Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#EBE6DD]">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
-              Qloo Cultural Taste Graph
-            </span>
-            <span className="inline-flex items-center gap-1 text-2xs font-semibold px-2 py-0.5 rounded-full bg-[#EDF4F0] border border-[#C8DCD1] text-[#1D5A4A] uppercase">
-              <Sparkles className="w-3 h-3 text-[#10B981]" />
-              250M+ Node Latent Mapping
-            </span>
-          </div>
-          <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#161A18] tracking-tight">
-            Interactive Cross-Domain Taste Network
-          </h3>
-        </div>
-
+    <div className="flex flex-col space-y-4">
+      {/* Sleek Toolbar: Domain Filters + Legend HUD */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2.5 rounded-xl bg-[#FAF8F5] border border-[#EBE6DD]">
         {/* Domain Filter Pills */}
         <div className="flex flex-wrap items-center gap-1.5 text-xs">
+          <span className="text-3xs font-bold uppercase tracking-wider text-[#6B736D] mr-1">
+            Filter:
+          </span>
           {['all', 'architecture', 'cinema', 'music', 'dining', 'fashion'].map((filter) => (
             <button
               key={filter}
@@ -461,12 +449,28 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
               className={`px-2.5 py-1 rounded-lg font-medium uppercase tracking-wider text-2xs transition-all ${
                 activeDomainFilter === filter
                   ? 'bg-[#183D33] text-white shadow-2xs'
-                  : 'bg-[#FAF8F5] text-[#6B736D] hover:bg-[#EBE6DD] border border-[#E5E0D6]'
+                  : 'bg-white text-[#6B736D] hover:bg-[#EBE6DD] border border-[#E5E0D6]'
               }`}
             >
               {filter}
             </button>
           ))}
+        </div>
+
+        {/* Legend Indicators & Hint */}
+        <div className="flex items-center gap-3 text-2xs">
+          <div className="flex items-center gap-1.5 font-medium text-[#183D33]">
+            <span className="w-2 h-2 rounded-full bg-[#183D33]" />
+            <span>Seed Anchor</span>
+          </div>
+          <div className="flex items-center gap-1.5 font-medium text-[#4A524D]">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>Satellite Node</span>
+          </div>
+          <span className="text-[#8C938E] hidden sm:inline">•</span>
+          <span className="text-[#8C938E] text-3xs hidden sm:inline">
+            Click / hover to inspect
+          </span>
         </div>
       </div>
 
@@ -474,7 +478,7 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
       <div className="relative w-full aspect-[16/9] sm:aspect-[2/1] min-h-[340px] max-h-[460px] bg-gradient-to-br from-[#FAF8F5] via-[#F4F1EA] to-[#ECE7DC] rounded-2xl border border-[#E2DDD2] overflow-hidden shadow-inner flex items-center justify-center">
         {/* Latent Factor Orbital Guides */}
         <svg
-          viewBox="0 0 800 460"
+          viewBox="0 0 860 480"
           className="w-full h-full select-none"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -496,11 +500,11 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           </defs>
 
           {/* Background Concentric Orbital Rings */}
-          <circle cx="400" cy="230" r="170" fill="none" stroke="#DCD5C8" strokeWidth="1" strokeDasharray="4 4" />
-          <circle cx="400" cy="230" r="270" fill="none" stroke="#E5E0D6" strokeWidth="1" strokeDasharray="6 6" />
+          <circle cx="430" cy="245" r="180" fill="none" stroke="#DCD5C8" strokeWidth="1" strokeDasharray="4 4" />
+          <circle cx="430" cy="245" r="285" fill="none" stroke="#E5E0D6" strokeWidth="1" strokeDasharray="6 6" />
 
           {/* Latent Factor Vector Pill in orbit */}
-          <g transform="translate(400, 70)">
+          <g transform="translate(430, 45)">
             <rect
               x="-140"
               y="-14"
@@ -566,7 +570,7 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           })}
 
           {/* Center Glow */}
-          <circle cx="400" cy="230" r="80" fill="url(#centerGlow)" />
+          <circle cx="430" cy="245" r="90" fill="url(#centerGlow)" />
 
           {/* Render Nodes */}
           {filteredNodes.map((node) => {
@@ -705,23 +709,6 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
             );
           })}
         </svg>
-
-        {/* Live Legend HUD */}
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm border border-[#E5E0D6] rounded-xl px-3 py-2 text-2xs space-y-1 shadow-2xs">
-          <div className="flex items-center gap-1.5 font-semibold text-[#183D33]">
-            <span className="w-2 h-2 rounded-full bg-[#183D33]" />
-            <span>Seed Principal Anchor</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[#4A524D]">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>Cross-Domain Satellite Node</span>
-          </div>
-        </div>
-
-        {/* Reset/Interact Hint */}
-        <div className="absolute bottom-3 right-3 text-3xs text-[#6B736D] bg-white/80 px-2.5 py-1 rounded-lg border border-[#E5E0D6]">
-          Click or hover any node to inspect Qloo cross-domain rationale
-        </div>
       </div>
 
       {/* Floating Node Inspector Drawer (Active Selection HUD) */}

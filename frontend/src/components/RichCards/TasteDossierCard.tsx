@@ -94,8 +94,8 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   return (
     <div className="border border-[#183D33]/15 bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
       {/* Ledger Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-5 border-b border-[#EBE6DD]">
-        <div>
+      <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 pb-4 mb-4 border-b border-[#EBE6DD]">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-xs font-semibold tracking-widest uppercase text-[#183D33]">
               Archival Taste Graph
@@ -110,9 +110,9 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
               {isGrounded ? 'Qloo Grounded' : 'Ungrounded Baseline'}
             </span>
           </div>
-          <h3 className="font-sans font-semibold text-xl text-[#161A18] tracking-tight">
+          <h3 className="font-sans font-semibold text-lg sm:text-xl text-[#161A18] tracking-tight truncate">
             {vipProfile.fullName}{' '}
-            <span className="font-sans text-sm text-[#6B736D] font-normal">
+            <span className="font-sans text-xs sm:text-sm text-[#6B736D] font-normal">
               / Cultural Affinity Ledger
             </span>
           </h3>
