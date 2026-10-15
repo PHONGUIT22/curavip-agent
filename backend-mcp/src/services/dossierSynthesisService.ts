@@ -1,3 +1,5 @@
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import { envConfig, isRealSecret } from '../config/env.js';
 import {
@@ -84,34 +86,50 @@ async function callBedrockSynthesis(prompt: string): Promise<string | null> {
 }
 
 /**
- * Call Gemini API if GEMINI_API_KEY or GOOGLE_API_KEY is available.
+ * Call Gemini API with Gemini 3.8 Flash as Primary LLM Engine.
+ * Supports both standard Google AI Studio keys and Vertex Express Auth keys (AQ. prefix).
  */
 async function callGeminiSynthesis(prompt: string): Promise<string | null> {
   const geminiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)?.trim();
   if (!isRealSecret(geminiKey)) return null;
-  const model = process.env.GEMINI_MODEL_ID?.trim() || 'gemini-2.5-flash';
+  // Enforce gemini-3.8-flash as the primary default model
+  const model = process.env.GEMINI_MODEL_ID?.trim() || 'gemini-3.8-flash';
+  const startMs = Date.now();
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+    const isVertexExpressKey = geminiKey.startsWith('AQ.');
+    const baseUrl = isVertexExpressKey
+      ? `https://aiplatform.googleapis.com/v1/publishers/google/models/${model}:generateContent`
+      : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+    const url = `${baseUrl}?key=${encodeURIComponent(geminiKey)}`;
+    console.log(`[GeminiSynthesis] Invoking '${model}' (${isVertexExpressKey ? 'Vertex AQ Key' : 'AI Studio Key'})...`);
     const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-goog-api-key': geminiKey,
+        ...(isVertexExpressKey ? {} : { 'x-goog-api-key': geminiKey }),
       },
       body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: CHIEF_OF_STAFF_SYSTEM_PROMPT }],
+        },
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
+        generationConfig: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+        },
       }),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(35000),
     });
     if (!res.ok) {
-      console.warn(`[GeminiSynthesis] Gemini call failed with status ${res.status}`);
+      const errBody = await res.text().catch(() => '');
+      console.warn(`[GeminiSynthesis] HTTP ${res.status} (${Date.now() - startMs}ms): ${errBody.slice(0, 300)}`);
       return null;
     }
     const data = (await res.json()) as any;
+    console.log(`[GeminiSynthesis] ✓ Gemini 3.8 Flash success in ${Date.now() - startMs}ms`);
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
   } catch (err) {
-    console.warn('[GeminiSynthesis] Error:', err);
+    console.warn(`[GeminiSynthesis] Error after ${Date.now() - startMs}ms:`, err);
     return null;
   }
 }
@@ -151,15 +169,18 @@ async function callOpenAISynthesis(prompt: string): Promise<string | null> {
 }
 
 /**
- * Universal LLM dispatch: Bedrock -> Gemini -> OpenAI.
+ * Universal LLM dispatch: Gemini 3.8 Flash (Primary) -> Bedrock -> OpenAI.
  */
 async function invokeAnyLLM(prompt: string): Promise<{ text: string; engine: AgentEngine } | null> {
-  const bedrockResult = await callBedrockSynthesis(prompt);
-  if (bedrockResult) return { text: bedrockResult, engine: 'bedrock_claude' };
-
+  // 1. Primary: Google Gemini 3.8 Flash
   const geminiResult = await callGeminiSynthesis(prompt);
   if (geminiResult) return { text: geminiResult, engine: 'bedrock_claude' };
 
+  // 2. Secondary Fallback: AWS Bedrock Claude
+  const bedrockResult = await callBedrockSynthesis(prompt);
+  if (bedrockResult) return { text: bedrockResult, engine: 'bedrock_claude' };
+
+  // 3. Tertiary Fallback: OpenAI
   const openaiResult = await callOpenAISynthesis(prompt);
   if (openaiResult) return { text: openaiResult, engine: 'bedrock_claude' };
 
