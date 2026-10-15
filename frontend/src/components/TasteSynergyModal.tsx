@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { soundService } from '../services/soundService';
 import { calendarService } from '../services/calendarService';
+import { mcpClient } from '../services/mcpClient';
 import { QlooAffinityBadge } from './QlooAffinityBadge';
 import type { VIPProfile } from '../types';
 
@@ -69,6 +70,8 @@ export const TasteSynergyModal: React.FC<TasteSynergyModalProps> = ({
       'vip_elena_rostova'
   );
   const [copiedBrief, setCopiedBrief] = useState(false);
+  const [liveSynergy, setLiveSynergy] = useState<SynergyAnalysis | null>(null);
+  const [isLoadingSynergy, setIsLoadingSynergy] = useState(false);
 
   // Sync initial selection if modal opens with different VIP
   React.useEffect(() => {
@@ -84,8 +87,34 @@ export const TasteSynergyModal: React.FC<TasteSynergyModalProps> = ({
   const vip1 = useMemo(() => profiles.find((p) => p.id === vip1Id) || profiles[0], [profiles, vip1Id]);
   const vip2 = useMemo(() => profiles.find((p) => p.id === vip2Id) || profiles[1] || profiles[0], [profiles, vip2Id]);
 
+  // Fetch genuine Qloo-correlated bilateral synergy from backend MCP
+  React.useEffect(() => {
+    if (!isOpen || !vip1Id || !vip2Id) return;
+
+    let isMounted = true;
+    setIsLoadingSynergy(true);
+
+    mcpClient
+      .getTasteSynergy(vip1Id, vip2Id)
+      .then((res) => {
+        if (!isMounted) return;
+        setIsLoadingSynergy(false);
+        if (res && res.synergy) {
+          setLiveSynergy(res.synergy);
+        }
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setIsLoadingSynergy(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, vip1Id, vip2Id]);
+
   // Compute Cross-Domain Synergy
-  const analysis: SynergyAnalysis = useMemo(() => {
+  const fallbackAnalysis: SynergyAnalysis = useMemo(() => {
     if (!vip1 || !vip2) {
       return {
         score: 92,
@@ -278,6 +307,8 @@ export const TasteSynergyModal: React.FC<TasteSynergyModalProps> = ({
     };
   }, [vip1, vip2]);
 
+  const analysis: SynergyAnalysis = liveSynergy || fallbackAnalysis;
+
   if (!isOpen) return null;
 
   const handleCopyBrief = () => {
@@ -411,11 +442,23 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
           {/* Interactive Synergy Venn & Overlap Meter */}
           <div className="p-6 rounded-2xl bg-gradient-to-br from-[#F5F2EB] to-[#EFEBE0] border border-[#E2DDD2] flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex-1 space-y-3">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="px-3 py-1 rounded-full bg-[#183D33] text-white text-xs font-bold tracking-wider uppercase">
                   Synergy Concordance
                 </span>
                 <span className="text-xs font-semibold text-[#6B736D]">Cross-Domain Taste Overlap</span>
+                {isLoadingSynergy && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-2xs font-semibold animate-pulse">
+                    <Sparkles className="w-3 h-3 text-emerald-600" />
+                    <span>Resolving Qloo Taste Graph...</span>
+                  </span>
+                )}
+                {liveSynergy && !isLoadingSynergy && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-2xs font-semibold">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <span>Live Qloo Correlated</span>
+                  </span>
+                )}
               </div>
               <h3 className="text-xl font-serif font-bold text-[#161A18]">
                 {vip1.fullName.split(' ')[0]} × {vip2.fullName.split(' ')[0]} Cultural Intersection
@@ -440,13 +483,21 @@ Pairing Protocol: ${analysis.diplomaticDining.pairingNotes}
 
             {/* Score Wheel */}
             <div className="flex-shrink-0 flex flex-col items-center justify-center p-5 bg-white border border-[#E2DDD2] rounded-2xl shadow-sm w-36 h-36">
-              <span className="text-3xl font-serif font-extrabold text-[#183D33] tracking-tight">
-                {analysis.score}%
-              </span>
+              {isLoadingSynergy ? (
+                <span className="text-lg font-serif font-bold text-amber-700 animate-pulse tracking-tight text-center">
+                  Syncing...
+                </span>
+              ) : (
+                <span className="text-3xl font-serif font-extrabold text-[#183D33] tracking-tight">
+                  {analysis.score}%
+                </span>
+              )}
               <span className="text-2xs font-bold uppercase tracking-wider text-[#6B736D] mt-1 text-center">
                 Qloo Mutual Affinity
               </span>
-              <span className="text-3xs text-emerald-800 font-semibold mt-1">High Compatibility</span>
+              <span className="text-3xs text-emerald-800 font-semibold mt-1">
+                {isLoadingSynergy ? 'Calculating...' : 'High Compatibility'}
+              </span>
             </div>
           </div>
 

@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { soundService } from '../services/soundService';
 import { calendarService } from '../services/calendarService';
+import { mcpClient } from '../services/mcpClient';
+import type { BudgetTier } from '../types';
 
 export type ActionModalType = 'book_table' | 'share_briefing' | 'commission_gift' | null;
 
@@ -23,30 +25,96 @@ export interface ActionModalData {
   title: string;
   subtitle?: string;
   vipName?: string;
+  vipId?: string;
   venueOrBrand?: string;
   location?: string;
   notes?: string;
   price?: string;
   pairingNotes?: string;
   refCode?: string;
+  giftId?: string;
+  budgetTier?: BudgetTier;
 }
 
 interface ActionDispatchModalProps {
   data: ActionModalData | null;
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: (confirmedOrder: any) => void;
 }
 
 export const ActionDispatchModal: React.FC<ActionDispatchModalProps> = ({
   data,
   isOpen,
   onClose,
+  onSuccess,
 }) => {
   const [copied, setCopied] = useState(false);
+  const [isCommitting, setIsCommitting] = useState(false);
+  const [confirmedCode, setConfirmedCode] = useState<string | null>(null);
+  const [committedOrder, setCommittedOrder] = useState<any>(null);
+
+  React.useEffect(() => {
+    if (!isOpen || !data) {
+      setConfirmedCode(null);
+      setCommittedOrder(null);
+      setIsCommitting(false);
+      return;
+    }
+
+    if (data.type === 'commission_gift' || data.type === 'book_table') {
+      let isMounted = true;
+      setIsCommitting(true);
+
+      const numericPrice = data.price ? parseInt(data.price.replace(/[^0-9]/g, ''), 10) : 450;
+      const orderPayload: any = {
+        vipId: data.vipId || 'vip_marcus_vance',
+        budgetTier: data.budgetTier || 'executive_500',
+      };
+
+      if (data.type === 'commission_gift') {
+        orderPayload.gift = {
+          id: data.giftId || `gift_${Date.now()}`,
+          title: data.title,
+          brandOrArtisan: data.venueOrBrand || 'Independent Atelier',
+          estimatedPriceUsd: numericPrice || 450,
+          category: 'curated_artifact',
+        };
+      } else {
+        orderPayload.dining = {
+          venueName: data.title,
+          partySize: 2,
+          requestedDate: new Date(Date.now() + 86400000 * 3).toISOString().slice(0, 10),
+          privateRoom: true,
+          notes: data.pairingNotes || data.notes,
+        };
+      }
+
+      mcpClient
+        .commitReservation(orderPayload)
+        .then((res) => {
+          if (!isMounted) return;
+          setIsCommitting(false);
+          if (res && res.order) {
+            setConfirmedCode(res.order.confirmationCode);
+            setCommittedOrder(res.order);
+            onSuccess?.(res.order);
+          }
+        })
+        .catch(() => {
+          if (!isMounted) return;
+          setIsCommitting(false);
+        });
+
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [isOpen, data, onSuccess]);
 
   if (!isOpen || !data) return null;
 
-  const refCode = data.refCode || `CV-MICH-${Math.floor(10000 + Math.random() * 90000)}`;
+  const refCode = confirmedCode || data.refCode || `CV-ORD-${Math.floor(10000 + Math.random() * 90000)}`;
 
   const shareText = `*CuraVIP Executive Concierge Briefing*
 Principal: ${data.vipName || 'VIP Principal'}
@@ -134,10 +202,23 @@ Ref Code: ${refCode}`;
           {/* Details Card */}
           <div className="bg-white rounded-2xl border border-[#EBE6DD] p-4.5 space-y-3 shadow-2xs text-xs">
             <div className="flex justify-between items-center pb-2 border-b border-[#EBE6DD]">
-              <span className="text-[#6B736D] font-medium uppercase tracking-wide">Dispatch Reference</span>
-              <span className="font-mono font-semibold text-[#183D33] bg-[#183D33]/5 px-2 py-0.5 rounded">
-                {refCode}
+              <span className="text-[#6B736D] font-medium uppercase tracking-wide">
+                {committedOrder ? 'MCP Order Reference' : 'Dispatch Reference'}
               </span>
+              <div className="flex items-center gap-2">
+                {isCommitting && (
+                  <span className="text-[10px] text-amber-700 animate-pulse font-sans">Syncing MCP Tool...</span>
+                )}
+                {committedOrder && (
+                  <span className="inline-flex items-center gap-1 text-[10px] text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full font-semibold">
+                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                    <span>commit_curated_reservation</span>
+                  </span>
+                )}
+                <span className="font-mono font-semibold text-[#183D33] bg-[#183D33]/5 px-2 py-0.5 rounded">
+                  {refCode}
+                </span>
+              </div>
             </div>
 
             <div className="flex justify-between items-start">

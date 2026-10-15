@@ -282,7 +282,11 @@ export default function Home() {
 
             {/* Rich Cards Container (Taste Graph, Gifts, Dining, Compliance) */}
             <div id="dossier-results" className="scroll-mt-6">
-              <RichCardsContainer dossier={activeDossier} isLoading={isLoading} />
+              <RichCardsContainer
+                dossier={activeDossier}
+                isLoading={isLoading}
+                onDossierUpdated={(newDossier) => setActiveDossier(newDossier)}
+              />
             </div>
           </div>
         </main>

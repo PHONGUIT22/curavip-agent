@@ -11,9 +11,14 @@ import type { ExecutiveDossier } from '../types';
 interface RichCardsContainerProps {
   dossier: ExecutiveDossier | null;
   isLoading?: boolean;
+  onDossierUpdated?: (dossier: ExecutiveDossier, diffHighlights?: string[]) => void;
 }
 
-export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({ dossier, isLoading = false }) => {
+export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({
+  dossier,
+  isLoading = false,
+  onDossierUpdated,
+}) => {
   if (isLoading) {
     return <EmeraldSkeleton />;
   }
@@ -44,10 +49,17 @@ export const RichCardsContainer: React.FC<RichCardsContainerProps> = ({ dossier,
       />
 
       {/* 2. Curated Gifts with Qloo Provenance Anchors */}
-      <CuratedGiftCard dossier={dossier} />
+      <CuratedGiftCard dossier={dossier} onDossierUpdated={onDossierUpdated} />
 
       {/* 3. Executive Dining Reservations */}
-      <DiningProposalCard diningOptions={dossier.diningOptions} vipName={dossier.vipProfile.fullName} />
+      <DiningProposalCard
+        diningOptions={dossier.diningOptions}
+        vipName={dossier.vipProfile.fullName}
+        vipId={dossier.vipProfile.id}
+        budgetTier={dossier.budgetTier}
+        activeDossier={dossier}
+        onDossierUpdated={onDossierUpdated}
+      />
 
       {/* 4. FCPA & Taboo Compliance Guardrails */}
       <ComplianceAuditCard audit={dossier.complianceAudit} />

@@ -65,20 +65,40 @@ export const ComplianceAuditCard: React.FC<ComplianceAuditCardProps> = ({ audit 
         </div>
       </div>
 
+      {/* Real-time Precedent Confirmation Banner if precedent check is active */}
+      {audit.checks.some((c) => c.id === 'precedent' && (c.detail.includes('Precedent registered') || c.detail.includes('committed'))) && (
+        <div className="p-4 mb-5 border border-amber-300 bg-amber-50/60 rounded-xl flex items-start gap-3 shadow-2xs">
+          <ShieldCheck className="w-5 h-5 text-amber-700 flex-shrink-0 mt-0.5" />
+          <div className="text-xs">
+            <span className="font-semibold uppercase tracking-wider text-amber-900 block mb-0.5">
+              Curation Precedent Recorded in Ledger
+            </span>
+            <p className="text-amber-800 leading-relaxed font-sans">
+              Archival gift / dining commission confirmed via MCP Tool. Future duplicate proposals for this principal are automatically intercepted by policy guardrails.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Audit Checklist Table with Soft Modern Hover Rows */}
       <div className="divide-y divide-[#EBE6DD] border border-[#E5E0D6] bg-white rounded-xl mb-5 overflow-hidden">
         {audit.checks.map((check) => {
           const isPass = check.status === 'pass';
           const isWarn = check.status === 'warn';
+          const isPrecedentLogged = check.id === 'precedent' && (check.detail.includes('Precedent registered') || check.detail.includes('committed'));
 
           return (
             <div
               key={check.id}
-              className="py-3.5 px-4 flex items-start justify-between gap-3 text-sm hover:bg-[#FAF8F5] transition-colors"
+              className={`py-3.5 px-4 flex items-start justify-between gap-3 text-sm transition-colors ${
+                isPrecedentLogged ? 'bg-amber-50/30 hover:bg-amber-50/50' : 'hover:bg-[#FAF8F5]'
+              }`}
             >
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 flex-shrink-0">
-                  {isPass ? (
+                  {isPrecedentLogged ? (
+                    <ShieldCheck className="w-4 h-4 text-amber-600" />
+                  ) : isPass ? (
                     <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
                   ) : isWarn ? (
                     <AlertTriangle className="w-4 h-4 text-[#B45309]" />
@@ -93,7 +113,12 @@ export const ComplianceAuditCard: React.FC<ComplianceAuditCardProps> = ({ audit 
               </div>
 
               {/* Status Pill Badge */}
-              {isPass ? (
+              {isPrecedentLogged ? (
+                <span className="bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 flex-shrink-0 shadow-2xs">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+                  <span>Precedent Logged</span>
+                </span>
+              ) : isPass ? (
                 <span className="bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 flex-shrink-0">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Pass</span>

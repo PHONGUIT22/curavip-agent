@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Compass, MessageSquareQuote, Layers, Share2, Sparkles } from 'lucide-react';
 import { soundService } from '../../services/soundService';
 import { VisualTasteGraph } from '../VisualTasteGraph';
+import { InteractiveTasteNetworkGraph } from '../InteractiveTasteNetworkGraph';
 import type { CulturalTasteGraph, VIPProfile } from '../../types';
 
 interface TasteDossierCardProps {
@@ -28,41 +29,61 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
   vipProfile,
   iceBreakerScripts,
 }) => {
-  const [viewMode, setViewMode] = useState<'graph' | 'list'>('graph');
+  const [viewMode, setViewMode] = useState<'network' | 'graph' | 'list'>('network');
   const isGrounded = tasteGraph.source !== 'none';
   const entities = tasteGraph.expandedEntities || [];
 
-  // Determine the 3 structured ledger points for the persona / taste profile
+  // Determine the 3 structured ledger points dynamically from taste graph and VIP profile
   const getLedgerPoints = () => {
-    const id = vipProfile.id.toLowerCase();
-    if (id.includes('marcus')) {
-      return [
-        { label: 'Primary Aesthetic', value: 'Brutalist Architecture & Monolithic Scale' },
-        { label: 'Sonic Palette', value: 'Minimalist Soundscapes & Ambient Brass' },
-        { label: 'Tactile Resonance', value: 'Untreated Concrete, Raw Cast Iron & Stoneware' },
-      ];
-    }
-    if (id.includes('tariq')) {
-      return [
-        { label: 'Primary Aesthetic', value: 'Bauhaus Functionalism & Dieter Rams Industrial Design' },
-        { label: 'Sonic Palette', value: 'Micro-Mechanical Frequency & Precision Horology' },
-        { label: 'Tactile Resonance', value: 'Sandblasted Titanium, Cold-Drip Glass & Matte Ceramic' },
-      ];
-    }
-    if (id.includes('elena')) {
-      return [
-        { label: 'Primary Aesthetic', value: 'Avant-Garde Deconstruction & Archival Haute Couture' },
-        { label: 'Sonic Palette', value: 'Modal Jazz Improvisation & Analog Vinyl Resonance' },
-        { label: 'Tactile Resonance', value: 'Raw Silk Organza, Biodynamic Terracotta & Washed Linen' },
-      ];
-    }
-
-    // Default dynamic extraction from crossDomainThemes
     const themes = tasteGraph.crossDomainThemes || [];
+    const entityList = tasteGraph.expandedEntities || [];
+
+    // Find specific category entities
+    const archEntity = entityList.find((e) =>
+      ['architecture', 'design', 'art'].some((c) => e.category?.toLowerCase().includes(c))
+    );
+    const musicEntity = entityList.find((e) =>
+      ['music', 'artist', 'audio', 'sonic'].some((c) => e.category?.toLowerCase().includes(c))
+    );
+    const tactileEntity = entityList.find((e) =>
+      ['fashion', 'brand', 'craft', 'culinary', 'dining', 'place'].some((c) =>
+        e.category?.toLowerCase().includes(c)
+      )
+    );
+
+    const interests = vipProfile.explicitInterests || tasteGraph.seedInterests || [];
+
+    // Primary Aesthetic
+    const primaryAesthetic =
+      themes[0] ||
+      (archEntity
+        ? `${archEntity.name} & Spatial Proportion`
+        : interests[0]
+        ? `${interests[0]} & Architectural Form`
+        : 'Curatorial Precision & Monolithic Scale');
+
+    // Sonic Palette
+    const sonicPalette =
+      themes[1] ||
+      (musicEntity
+        ? `${musicEntity.name} Resonance & Acoustic Cadence`
+        : interests.find((p) => /jazz|sound|music|opera|ambient/i.test(p))
+        ? `${interests.find((p) => /jazz|sound|music|opera|ambient/i.test(p))} & Analog Resonance`
+        : 'Micro-Mechanical Frequencies & Modal Cadence');
+
+    // Tactile Resonance
+    const tactileResonance =
+      themes[2] ||
+      (tactileEntity
+        ? `${tactileEntity.name} Materiality & Hand-Finished Textures`
+        : interests[1]
+        ? `Raw ${interests[1]} Finishes & Artisanal Fiber`
+        : 'Artisanal Stoneware, Raw Fiber & Engineered Metals');
+
     return [
-      { label: 'Primary Aesthetic', value: themes[0] || 'Monolithic Precision & Architectural Tension' },
-      { label: 'Sonic Palette', value: themes[1] || 'Ambient Acoustic Frequencies & Modal Cadence' },
-      { label: 'Tactile Resonance', value: themes[2] || 'Artisanal Stoneware, Raw Fiber & Engineered Metals' },
+      { label: 'Primary Aesthetic', value: primaryAesthetic },
+      { label: 'Sonic Palette', value: sonicPalette },
+      { label: 'Tactile Resonance', value: tactileResonance },
     ];
   };
 
@@ -96,8 +117,25 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5">
-          {/* View Mode Toggle: [ Interactive Taste Graph ] ⇄ [ Ledger Cards (List View) ] */}
+          {/* View Mode Toggle: [ Interactive Network ] ⇄ [ Visual Graph ] ⇄ [ Ledger Matrix ] */}
           <div className="flex items-center p-1 rounded-xl border border-[#E5E0D6] bg-[#FAF8F5]">
+            <button
+              type="button"
+              onClick={() => {
+                soundService.playToggleClick();
+                setViewMode('network');
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-all ${
+                viewMode === 'network'
+                  ? 'bg-[#183D33] text-white shadow-2xs'
+                  : 'text-[#6B736D] hover:text-[#161A18]'
+              }`}
+              title="Interactive Taste Network Graph"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Interactive Network</span>
+            </button>
+
             <button
               type="button"
               onClick={() => {
@@ -109,10 +147,10 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
                   ? 'bg-[#183D33] text-white shadow-2xs'
                   : 'text-[#6B736D] hover:text-[#161A18]'
               }`}
-              title="Interactive Taste Graph"
+              title="Visual Taste Graph"
             >
-              <Share2 className="w-3.5 h-3.5" />
-              <span>Taste Graph</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Visual Graph</span>
             </button>
 
             <button
@@ -129,7 +167,7 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
               title="Ledger Cards (List View)"
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>List View</span>
+              <span>Ledger Matrix</span>
             </button>
           </div>
 
@@ -139,8 +177,12 @@ export const TasteDossierCard: React.FC<TasteDossierCardProps> = ({
         </div>
       </div>
 
-      {/* Dynamic View Body: Visual Taste Graph vs Matrix/List */}
-      {viewMode === 'graph' ? (
+      {/* Dynamic View Body: Interactive Network vs Visual Taste Graph vs Matrix/List */}
+      {viewMode === 'network' ? (
+        <div className="mb-6">
+          <InteractiveTasteNetworkGraph tasteGraph={tasteGraph} vipProfile={vipProfile} />
+        </div>
+      ) : viewMode === 'graph' ? (
         <div className="mb-6">
           <VisualTasteGraph tasteGraph={tasteGraph} vipProfile={vipProfile} />
         </div>

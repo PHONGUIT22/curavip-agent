@@ -420,7 +420,13 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
 
   const filteredNodes = useMemo(() => {
     if (activeDomainFilter === 'all') return nodes;
-    return nodes.filter((n) => n.isCenter || n.domain === activeDomainFilter);
+    return nodes.filter(
+      (n) =>
+        n.isCenter ||
+        n.domain === activeDomainFilter ||
+        (activeDomainFilter === 'fashion' &&
+          (n.domain === 'craft' || n.domainLabel?.toLowerCase().includes('fashion')))
+    );
   }, [nodes, activeDomainFilter]);
 
   return (
@@ -444,7 +450,7 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
 
         {/* Domain Filter Pills */}
         <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          {['all', 'architecture', 'cinema', 'music', 'dining', 'craft'].map((filter) => (
+          {['all', 'architecture', 'cinema', 'music', 'dining', 'fashion'].map((filter) => (
             <button
               key={filter}
               type="button"

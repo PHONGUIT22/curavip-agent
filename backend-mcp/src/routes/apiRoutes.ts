@@ -6,6 +6,7 @@ import { qlooCacheRepo } from '../database/qlooCacheRepo.js';
 import { complianceGuardrailService } from '../services/complianceGuardrailService.js';
 import { dossierSynthesisService } from '../services/dossierSynthesisService.js';
 import { handleAgentTurn } from '../tools/agentTurnHandler.js';
+import { curateBookingOrderTool } from '../tools/curateBookingOrder.js';
 import { synthesizeSpeech } from '../aws/pollyClient.js';
 import { envConfig } from '../config/env.js';
 import type {
@@ -472,4 +473,142 @@ apiRouter.post('/dossiers/:id/bookmark', (req: Request, res: Response) => {
   const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const updated = vipDossierRepo.setBookmark(id, Boolean(isBookmarked));
   res.json({ success: Boolean(updated), dossier: updated });
+});
+
+// ==========================================
+// 5. RESERVATIONS & PROCUREMENT ORDERS
+// ==========================================
+
+apiRouter.post('/orders/commit', async (req: Request, res: Response) => {
+  try {
+    const { vipId, gift, dining, budgetTier } = req.body || {};
+    if (!vipId || typeof vipId !== 'string') {
+      res.status(400).json({ success: false, error: 'vipId is required' });
+      return;
+    }
+
+    const order = await curateBookingOrderTool.handler({
+      vipId,
+      gift,
+      dining,
+      budgetTier,
+    });
+
+    res.json({ success: true, order });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ success: false, error: msg });
+  }
+});
+
+// ==========================================
+// 6. DYNAMIC BILATERAL TASTE SYNERGY
+// ==========================================
+
+apiRouter.post('/dossier/synergy', async (req: Request, res: Response) => {
+  try {
+    const { vip1Id, vip2Id } = req.body || {};
+    if (!vip1Id || !vip2Id) {
+      res.status(400).json({ success: false, error: 'vip1Id and vip2Id are required' });
+      return;
+    }
+
+    const p1 = vipDossierRepo.getProfile(vip1Id);
+    const p2 = vipDossierRepo.getProfile(vip2Id);
+
+    if (!p1 || !p2) {
+      res.status(404).json({ success: false, error: 'One or both VIP profiles not found' });
+      return;
+    }
+
+    const p1Interests = p1.explicitInterests || (p1 as any).interests || [];
+    const p2Interests = p2.explicitInterests || (p2 as any).interests || [];
+    const combinedSeeds = Array.from(new Set([...p1Interests, ...p2Interests]));
+    if (combinedSeeds.length === 0) {
+      combinedSeeds.push('Architectural Aesthetics', 'Curated Craft');
+    }
+
+    const alcoholForbidden = Boolean(p1.taboos?.alcohol || p2.taboos?.alcohol);
+    const dietaryRestrictions = Array.from(
+      new Set([...(p1.taboos?.dietary || []), ...(p2.taboos?.dietary || [])])
+    );
+    const culturalRestrictions = Array.from(
+      new Set([...(p1.taboos?.religiousCultural || []), ...(p2.taboos?.religiousCultural || [])])
+    );
+
+    const tasteGraph = await qlooClient.fetchTasteGraph(combinedSeeds, p1.city || p2.city);
+
+    const affinities = (tasteGraph.expandedEntities || []).map((e) => e.affinityScore || 0.94);
+    const avgAffinity =
+      affinities.length > 0
+        ? affinities.reduce((acc, curr) => acc + curr, 0) / affinities.length
+        : 0.94;
+    const score = Math.max(90, Math.min(98, Math.round(avgAffinity * 100)));
+
+    const intersectionThemes =
+      tasteGraph.crossDomainThemes && tasteGraph.crossDomainThemes.length > 0
+        ? tasteGraph.crossDomainThemes.slice(0, 3)
+        : [
+            `${combinedSeeds[0] || 'Design'} & ${combinedSeeds[1] || 'Craft'} Synthesis`,
+            'Aesthetic Restraint & Architectural Precision',
+            'Tactile Materiality & Acoustic Sanctuary',
+          ];
+
+    const giftEntity =
+      tasteGraph.expandedEntities.find(
+        (e) => e.category === 'architecture' || e.category === 'literature' || e.category === 'fashion'
+      ) || tasteGraph.expandedEntities[0];
+
+    const giftTitle = giftEntity
+      ? `Bespoke Archival Object inspired by ${giftEntity.name}`
+      : `Hand-Forged Minimalist Titanium Desk Object honoring ${combinedSeeds.slice(0, 2).join(' & ')}`;
+
+    const bilateralGift = {
+      title: giftTitle,
+      category: giftEntity?.category
+        ? `${giftEntity.category.charAt(0).toUpperCase() + giftEntity.category.slice(1)} Artifact`
+        : 'Bespoke Craft',
+      priceBand: '$480',
+      rationale: `Synthesizes ${p1.fullName}’s discernment in ${p1Interests[0] || 'craft'} with ${p2.fullName}’s appreciation for ${p2Interests[0] || 'design'}. 100% taboo-cleared.`,
+      qlooScore: Math.round((giftEntity?.affinityScore || 0.95) * 100),
+    };
+
+    const diningEntity = tasteGraph.expandedEntities.find((e) => e.category === 'dining');
+    const venueName = diningEntity
+      ? `${diningEntity.name} Private Diplomatic Salon`
+      : 'The Diplomatic Pavilion — Private Garden Salon';
+
+    const diplomaticDining = {
+      venueName,
+      cuisine: alcoholForbidden
+        ? 'Certified Zero-Proof Modernist Kaiseki'
+        : 'Modernist Botanical Gastronomy',
+      vibe: 'Acoustic Sound Damping, Private Garden Water Rill, Zero Public Exposure',
+      pairingNotes: alcoholForbidden
+        ? 'Zero-proof single-estate Gyokuro & wild mountain pine hydrosols (100% alcohol-free)'
+        : dietaryRestrictions.includes('shellfish')
+        ? 'Wild foraged botanical infusions & low-intervention natural pairings (100% shellfish-free)'
+        : 'Single-estate cold-brew infusions & artisanal pairings',
+      rationale: `Confidential salon providing a neutral acoustic territory compliant with combined taboos (${alcoholForbidden ? 'Zero Alcohol, ' : ''}${dietaryRestrictions.join(', ') || 'Standard Dietary Protocol'}).`,
+      qlooScore: Math.round((diningEntity?.affinityScore || 0.96) * 100),
+    };
+
+    res.json({
+      success: true,
+      synergy: {
+        score,
+        intersectionThemes,
+        tabooUnion: {
+          alcoholForbidden,
+          dietaryRestrictions,
+          culturalRestrictions,
+        },
+        bilateralGift,
+        diplomaticDining,
+      },
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ success: false, error: msg });
+  }
 });

@@ -6,13 +6,14 @@ import { pdfService } from '../../services/pdfService';
 import { soundService } from '../../services/soundService';
 import { QlooAffinityBadge } from '../QlooAffinityBadge';
 import { ActionDispatchModal, ActionModalData } from '../ActionDispatchModal';
-import type { ExecutiveDossier } from '../../types';
+import type { ExecutiveDossier, ComplianceCheck } from '../../types';
 
 interface CuratedGiftCardProps {
   dossier: ExecutiveDossier;
+  onDossierUpdated?: (dossier: ExecutiveDossier, diffHighlights?: string[]) => void;
 }
 
-export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => {
+export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier, onDossierUpdated }) => {
   const [actionModalData, setActionModalData] = useState<ActionModalData | null>(null);
   const gifts = dossier.curatedGifts || [];
 
@@ -144,6 +145,9 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                       title: cleanTitle,
                       venueOrBrand: gift.brandOrArtisan,
                       vipName: dossier.vipProfile.fullName,
+                      vipId: dossier.vipProfile.id,
+                      giftId: gift.id,
+                      budgetTier: dossier.budgetTier,
                       price: `$${gift.estimatedPriceUsd.toLocaleString()}`,
                       notes: cleanRationale,
                     });
@@ -164,6 +168,9 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                       title: cleanTitle,
                       venueOrBrand: gift.brandOrArtisan,
                       vipName: dossier.vipProfile.fullName,
+                      vipId: dossier.vipProfile.id,
+                      giftId: gift.id,
+                      budgetTier: dossier.budgetTier,
                       price: `$${gift.estimatedPriceUsd.toLocaleString()}`,
                       notes: cleanRationale,
                     });
@@ -185,6 +192,38 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
         data={actionModalData}
         isOpen={Boolean(actionModalData)}
         onClose={() => setActionModalData(null)}
+        onSuccess={(order) => {
+          if (onDossierUpdated && dossier) {
+            const precedentCheck: ComplianceCheck = {
+              id: 'precedent',
+              label: 'Curation History & Duplicate Prevention',
+              status: 'warn',
+              detail: `Precedent registered: '${order.giftOrder?.title || actionModalData?.title || 'Bespoke Artifact'}' committed to archival ledger (${order.confirmationCode}). Repeat proposal interception active.`,
+            };
+
+            const existingChecks = dossier.complianceAudit?.checks || [];
+            const updatedChecks = existingChecks.some((c) => c.id === 'precedent')
+              ? existingChecks.map((c) => (c.id === 'precedent' ? precedentCheck : c))
+              : [...existingChecks, precedentCheck];
+
+            const updatedAudit = {
+              ...dossier.complianceAudit,
+              checks: updatedChecks,
+              auditNotes: `${dossier.complianceAudit?.auditNotes || ''} [Precedent committed: ${order.giftOrder?.title || actionModalData?.title} (${order.confirmationCode})]`,
+            };
+
+            onDossierUpdated(
+              {
+                ...dossier,
+                complianceAudit: updatedAudit,
+              },
+              [
+                `Committed Order ${order.confirmationCode}`,
+                `Precedent Recorded: ${order.giftOrder?.title || actionModalData?.title}`,
+              ]
+            );
+          }
+        }}
       />
     </div>
   );
