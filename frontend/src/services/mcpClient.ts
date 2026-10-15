@@ -20,8 +20,8 @@ const RAW_BASE_URL =
   'http://localhost:3001';
 const API_BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
-/** 5-second graceful timeout threshold to defeat backend cold-starts */
-const DEFAULT_TIMEOUT_MS = 5000;
+/** 35-second graceful timeout threshold to accommodate live Bedrock/Gemini synthesis and dual benchmarks */
+const DEFAULT_TIMEOUT_MS = 35000;
 
 let isClientFallbackActive = false;
 
@@ -132,10 +132,14 @@ export const mcpClient = {
 
   async generateDossier(request: DossierRequest): Promise<DossierResponse> {
     try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/api/dossier/generate`, {
-        method: 'POST',
-        body: JSON.stringify(request),
-      });
+      const res = await fetchWithTimeout(
+        `${API_BASE_URL}/api/dossier/generate`,
+        {
+          method: 'POST',
+          body: JSON.stringify(request),
+        },
+        35000
+      );
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `Dossier generation failed: ${res.status}`);
@@ -240,10 +244,14 @@ export const mcpClient = {
     meetingBrief?: string
   ): Promise<DossierComparisonResponse> {
     try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/api/dossier/compare`, {
-        method: 'POST',
-        body: JSON.stringify({ vipId, budgetTier, meetingBrief }),
-      });
+      const res = await fetchWithTimeout(
+        `${API_BASE_URL}/api/dossier/compare`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ vipId, budgetTier, meetingBrief }),
+        },
+        35000
+      );
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.error || `Comparison failed: ${res.status}`);
@@ -273,10 +281,14 @@ export const mcpClient = {
     diffHighlights?: string[];
   }> {
     try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/api/agent/turn`, {
-        method: 'POST',
-        body: JSON.stringify({ query, vipId, budgetTier, mode, vipProfile }),
-      });
+      const res = await fetchWithTimeout(
+        `${API_BASE_URL}/api/agent/turn`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ query, vipId, budgetTier, mode, vipProfile }),
+        },
+        35000
+      );
       if (!res.ok) throw new Error(`Agent turn failed: ${res.status}`);
       return await res.json();
     } catch (err) {
