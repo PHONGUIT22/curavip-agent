@@ -49,7 +49,7 @@ export const envConfig = {
     return process.env.BEDROCK_MODEL_ID?.trim() || 'us.anthropic.claude-3-5-sonnet-20241022-v2:0';
   },
   get BEDROCK_TIMEOUT_MS(): number {
-    return readNumber(process.env.BEDROCK_TIMEOUT_MS, 25000);
+    return readNumber(process.env.BEDROCK_TIMEOUT_MS, 45000);
   },
   get QLOO_API_URL(): string {
     return (process.env.QLOO_API_URL?.trim() || 'https://hackathon.api.qloo.com').replace(/\/+$/, '');

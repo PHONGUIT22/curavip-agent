@@ -343,7 +343,13 @@ export class QlooClient {
             console.warn(`[QlooClient] Insights ${filterType} failed with status ${response.status}`);
           } else {
             const data = (await response.json()) as any;
-            const rawList: any[] = data.results || data.data || data.entities || (Array.isArray(data) ? data : []);
+            const rawList: any[] =
+              data.results?.entities ||
+              data.data?.entities ||
+              data.results ||
+              data.data ||
+              data.entities ||
+              (Array.isArray(data) ? data : []);
             if (Array.isArray(rawList) && rawList.length > 0) {
               const mapped = rawList.map((item: any): CulturalEntity => ({
                 id: item.entity_id || item.urn || item.id || `urn:entity:${filterType.split(':').pop()}:${slugify(item.name || 'entity')}`,
