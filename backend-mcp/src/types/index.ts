@@ -174,6 +174,7 @@ export interface ExecutiveDossier {
   budgetTier: BudgetTier;
   agentEngine: AgentEngine;
   strategicSummary: string;
+  targetBudgetUsd?: number;
 }
 
 export type AgentPhase = 'deconstruct' | 'query_graph' | 'curate' | 'audit' | 'negotiate' | 'commit';

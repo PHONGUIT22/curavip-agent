@@ -3,7 +3,7 @@ import { qlooTasteExplorerTool } from './qlooTasteExplorer.js';
 import { curateBookingOrderTool } from './curateBookingOrder.js';
 import { tasteNegotiatorTool } from './tasteNegotiator.js';
 import { vipDossierRepo } from '../database/vipDossierRepo.js';
-import type { AgentTraceStep, BudgetTier, ExecutionMode } from '../types/index.js';
+import type { AgentTraceStep, BudgetTier, ExecutionMode, GiftProposal } from '../types/index.js';
 
 export interface AgentTurnRequest {
   query: string;
@@ -361,9 +361,143 @@ export async function handleAgentTurn(request: AgentTurnRequest): Promise<AgentT
       tabooInfractions: 0,
     };
     offlineSpeech = `Identified bespoke Japanese tea ceremony commission grounded in ${vipName}'s cultural aesthetic. Verified within the $${budget} budget cap with zero taboo infractions.`;
+
+    const latest = vipDossierRepo.getLatestDossier(vipId);
+    const updatedDossier = latest ? JSON.parse(JSON.stringify(latest)) : {
+      id: `dossier_${vipId}_${Date.now()}`,
+      vipId,
+      executionMode: 'qloo_grounded',
+      budgetTier: tier,
+      targetBudgetUsd: budget,
+      curatedGifts: [],
+      diningOptions: [],
+      iceBreakerScripts: [],
+      strategicSummary: `Bespoke tea commission for ${vipName}.`,
+      complianceAudit: { isCompliant: true, tabooViolations: [] },
+      generatedAt: new Date().toISOString(),
+    };
+
+    const teaPrice = Math.min(budget, Math.round(budget * 0.85));
+    const teaGift: GiftProposal = {
+      id: `gift_tea_commission_${Date.now()}`,
+      title: 'Hand-Turned Tokoname Clay Kyusu & Rare Gyokuro Set [DIFF REFINED: Artisanal Tea Commission]',
+      brandOrArtisan: 'Tokoname Master Potter Junzo & Uji Tea Collective',
+      category: 'curated_artifact',
+      estimatedPriceUsd: teaPrice,
+      affinityScore: 0.98,
+      culturalRationale: '[DIFF REFINED: Artisanal Tea Commission] Direct artisan commission honoring Japanese tea ceremony traditions with zero taboo infractions.',
+      tier: 'signature',
+      qlooCorrelationAnchor: 'Japanese Tea Ceremony & Wabi-Sabi Aesthetics',
+    };
+
+    if (updatedDossier && Array.isArray(updatedDossier.curatedGifts)) {
+      if (updatedDossier.curatedGifts.length > 0) {
+        updatedDossier.curatedGifts = [teaGift, ...updatedDossier.curatedGifts.slice(1)];
+      } else {
+        updatedDossier.curatedGifts = [teaGift];
+      }
+      vipDossierRepo.saveDossier(vipId, updatedDossier);
+    }
+
+    const duration = Date.now() - startTime;
+    return {
+      success: true,
+      toolName: offlineIntent.toolName,
+      toolArgs: offlineIntent.toolArgs,
+      toolResult: offlineResult,
+      speechResponse: offlineSpeech,
+      offlineFallbackUsed: true,
+      updatedDossier,
+      diffHighlights: [
+        'Artisanal Japanese Tea Commission Selected',
+        `Allocated $${teaPrice} within $${budget} budget`,
+      ],
+      traceStep: {
+        id: `step_${Date.now()}`,
+        phase: 'commit',
+        tool: offlineIntent.toolName,
+        title: 'Curate Bespoke Tea Commission',
+        detail: offlineSpeech,
+        durationMs: duration,
+        status: 'ok',
+        source: 'local',
+      },
+    };
   } else if (offlineIntent.toolName === 'negotiate_taste_conflict') {
     offlineResult = await tasteNegotiatorTool.handler(offlineIntent.toolArgs as any);
+    const targetBudgetUsd = budget;
     offlineSpeech = `Adjusted financial allocation for ${vipName} to $${budget}. Re-curating cultural ledger accordingly.`;
+
+    const latest = vipDossierRepo.getLatestDossier(vipId);
+    const updatedDossier = latest ? JSON.parse(JSON.stringify(latest)) : {
+      id: `dossier_${vipId}_${Date.now()}`,
+      vipId,
+      executionMode: 'qloo_grounded',
+      budgetTier: targetBudgetUsd <= 200 ? 'standard_200' : targetBudgetUsd <= 500 ? 'executive_500' : 'unlimited_vip',
+      targetBudgetUsd,
+      curatedGifts: [
+        {
+          id: `gift_${vipId}_1`,
+          title: `Artisanal Design Artifact — ${vipName}`,
+          brandOrArtisan: 'Independent Craft Studio',
+          category: 'curated_artifact',
+          estimatedPriceUsd: Math.round(targetBudgetUsd * 0.85),
+          affinityScore: 0.95,
+          culturalRationale: 'Recalculated per negotiation.',
+          tier: 'signature',
+          qlooCorrelationAnchor: 'Bespoke Design Allocation',
+        },
+      ],
+      diningOptions: [],
+      iceBreakerScripts: [],
+      strategicSummary: `Financial allocation adjusted to $${targetBudgetUsd}.`,
+      complianceAudit: { isCompliant: true, tabooViolations: [] },
+      generatedAt: new Date().toISOString(),
+    };
+
+    if (updatedDossier && Array.isArray(updatedDossier.curatedGifts)) {
+      updatedDossier.targetBudgetUsd = targetBudgetUsd;
+      if (updatedDossier.budgetTier) {
+        updatedDossier.budgetTier = targetBudgetUsd <= 200 ? 'standard_200' : targetBudgetUsd <= 500 ? 'executive_500' : 'unlimited_vip';
+      }
+      updatedDossier.curatedGifts = updatedDossier.curatedGifts.map((gift: any, idx: number) => {
+        const scaledPrice = Math.min(targetBudgetUsd, Math.round(targetBudgetUsd * (idx === 0 ? 0.9 : idx === 1 ? 0.75 : 0.6)));
+        const cleanTitle = gift.title.replace(/\s*\[DIFF REFINED[^\]]*\]/g, '');
+        const cleanRationale = gift.culturalRationale.replace(/^\[DIFF REFINED[^\]]*\]\s*/g, '');
+        return {
+          ...gift,
+          estimatedPriceUsd: scaledPrice,
+          title: `${cleanTitle} [DIFF REFINED: Budget Scaled to $${targetBudgetUsd}]`,
+          culturalRationale: `[DIFF REFINED: Budget Scaled to $${targetBudgetUsd}] ${cleanRationale}`,
+        };
+      });
+      vipDossierRepo.saveDossier(vipId, updatedDossier);
+    }
+
+    const duration = Date.now() - startTime;
+    return {
+      success: true,
+      toolName: offlineIntent.toolName,
+      toolArgs: offlineIntent.toolArgs,
+      toolResult: offlineResult,
+      speechResponse: offlineSpeech,
+      offlineFallbackUsed: true,
+      updatedDossier,
+      diffHighlights: [
+        'Budget ceiling adjusted to $' + targetBudgetUsd,
+        'Re-scaled gift proposals',
+      ],
+      traceStep: {
+        id: `step_${Date.now()}`,
+        phase: 'negotiate',
+        tool: offlineIntent.toolName,
+        title: 'Taste & Budget Re-allocation',
+        detail: offlineSpeech,
+        durationMs: duration,
+        status: 'ok',
+        source: 'local',
+      },
+    };
   } else if (offlineIntent.toolName === 'commit_curated_reservation') {
     offlineResult = await curateBookingOrderTool.handler(offlineIntent.toolArgs as any);
     offlineSpeech = `Procurement spec drafted: ${offlineResult.confirmationCode}. Compliant with $${budget} ceiling.`;

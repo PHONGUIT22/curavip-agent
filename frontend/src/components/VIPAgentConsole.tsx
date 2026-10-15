@@ -21,7 +21,7 @@ import {
 import { speechService } from '../services/speechService';
 import { mcpClient } from '../services/mcpClient';
 import { soundService } from '../services/soundService';
-import type { AgentTraceStep, BudgetTier, ExecutionMode, ExecutiveDossier, VIPProfile } from '../types';
+import type { AgentTraceStep, BudgetTier, ExecutionMode, ExecutiveDossier, GiftProposal, VIPProfile } from '../types';
 
 interface ConsoleMessage {
   id: string;
@@ -290,7 +290,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         onDossierUpdated(response.updatedDossier, response.diffHighlights);
       } else {
         const lower = text.toLowerCase();
-        if ((lower.includes('truffle') || lower.includes('nấm') || lower.includes('dị ứng')) && activeDossier && onDossierUpdated) {
+        if ((lower.includes('truffle') || lower.includes('nấm') || lower.includes('dị ứng') || response.toolName === 'refine_dossier_taboo') && activeDossier && onDossierUpdated) {
           const refinedDossier: ExecutiveDossier = {
             ...activeDossier,
             diningOptions: activeDossier.diningOptions.map((opt, idx) => {
@@ -308,6 +308,47 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
             }),
           };
           onDossierUpdated(refinedDossier, ['Added dietary taboo: No Truffle', 'Substituted Dining Reservation: The Artisan Botanist']);
+        } else if ((response.toolName === 'curate_tea_commission' || lower.includes('tea') || lower.includes('trà') || lower.includes('matcha')) && activeDossier && onDossierUpdated) {
+          const budgetMatch = text.match(/\$?(\d{2,5})\b/);
+          const parsedBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : undefined;
+          const targetBudget = parsedBudget || activeDossier.targetBudgetUsd || (budgetTier === 'standard_200' ? 200 : budgetTier === 'unlimited_vip' ? 1500 : 500);
+          const teaPrice = Math.min(targetBudget, Math.round(targetBudget * 0.85));
+          const teaGift: GiftProposal = {
+            id: `gift_tea_commission_${Date.now()}`,
+            title: 'Hand-Turned Tokoname Clay Kyusu & Rare Gyokuro Set [DIFF REFINED: Artisanal Tea Commission]',
+            brandOrArtisan: 'Tokoname Master Potter Junzo & Uji Tea Collective',
+            category: 'curated_artifact',
+            estimatedPriceUsd: teaPrice,
+            affinityScore: 0.98,
+            culturalRationale: '[DIFF REFINED: Artisanal Tea Commission] Direct artisan commission honoring Japanese tea ceremony traditions with zero taboo infractions.',
+            tier: 'signature',
+            qlooCorrelationAnchor: 'Japanese Tea Ceremony & Wabi-Sabi Aesthetics',
+          };
+          const refinedDossier: ExecutiveDossier = {
+            ...activeDossier,
+            curatedGifts: [teaGift, ...(activeDossier.curatedGifts ? activeDossier.curatedGifts.slice(1) : [])],
+          };
+          onDossierUpdated(refinedDossier, ['Artisanal Japanese Tea Commission Selected', `Allocated $${teaPrice} within $${targetBudget} budget`]);
+        } else if ((response.toolName === 'negotiate_taste_conflict' || lower.includes('down to') || lower.includes('negotiate') || (lower.includes('budget') && (lower.includes('over') || lower.includes('adjust') || lower.includes('cut') || lower.includes('reduce')))) && activeDossier && onDossierUpdated) {
+          const budgetMatch = text.match(/\$?(\d{2,5})\b/);
+          const targetBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : 300;
+          const refinedDossier: ExecutiveDossier = {
+            ...activeDossier,
+            targetBudgetUsd: targetBudget,
+            budgetTier: targetBudget <= 200 ? 'standard_200' : targetBudget <= 500 ? 'executive_500' : 'unlimited_vip',
+            curatedGifts: (activeDossier.curatedGifts || []).map((gift, idx) => {
+              const scaledPrice = Math.min(targetBudget, Math.round(targetBudget * (idx === 0 ? 0.9 : idx === 1 ? 0.75 : 0.6)));
+              const cleanTitle = gift.title.replace(/\s*\[DIFF REFINED[^\]]*\]/g, '');
+              const cleanRationale = gift.culturalRationale.replace(/^\[DIFF REFINED[^\]]*\]\s*/g, '');
+              return {
+                ...gift,
+                estimatedPriceUsd: scaledPrice,
+                title: `${cleanTitle} [DIFF REFINED: Budget Scaled to $${targetBudget}]`,
+                culturalRationale: `[DIFF REFINED: Budget Scaled to $${targetBudget}] ${cleanRationale}`,
+              };
+            }),
+          };
+          onDossierUpdated(refinedDossier, [`Budget ceiling adjusted to $${targetBudget}`, 'Re-scaled gift proposals']);
         }
       }
 
@@ -346,6 +387,67 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
           sender: 'agent',
           text: `Emergency update logged: Recorded truffle allergy for ${selectedVip.fullName}. Dining reservation and pairing protocols have been substituted with a certified truffle-free private salon (The Artisan Botanist).`,
           toolName: 'refine_dossier_taboo',
+          source: 'local_refinement',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages((prev) => [...prev, agentMsg]);
+        handleReadout(agentMsg.text);
+      } else if ((lower.includes('tea') || lower.includes('trà') || lower.includes('matcha')) && activeDossier && onDossierUpdated) {
+        const budgetMatch = text.match(/\$?(\d{2,5})\b/);
+        const parsedBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : undefined;
+        const targetBudget = parsedBudget || activeDossier.targetBudgetUsd || (budgetTier === 'standard_200' ? 200 : budgetTier === 'unlimited_vip' ? 1500 : 500);
+        const teaPrice = Math.min(targetBudget, Math.round(targetBudget * 0.85));
+        const teaGift: GiftProposal = {
+          id: `gift_tea_commission_${Date.now()}`,
+          title: 'Hand-Turned Tokoname Clay Kyusu & Rare Gyokuro Set [DIFF REFINED: Artisanal Tea Commission]',
+          brandOrArtisan: 'Tokoname Master Potter Junzo & Uji Tea Collective',
+          category: 'curated_artifact',
+          estimatedPriceUsd: teaPrice,
+          affinityScore: 0.98,
+          culturalRationale: '[DIFF REFINED: Artisanal Tea Commission] Direct artisan commission honoring Japanese tea ceremony traditions with zero taboo infractions.',
+          tier: 'signature',
+          qlooCorrelationAnchor: 'Japanese Tea Ceremony & Wabi-Sabi Aesthetics',
+        };
+        const refinedDossier: ExecutiveDossier = {
+          ...activeDossier,
+          curatedGifts: [teaGift, ...(activeDossier.curatedGifts ? activeDossier.curatedGifts.slice(1) : [])],
+        };
+        onDossierUpdated(refinedDossier, ['Artisanal Japanese Tea Commission Selected', `Allocated $${teaPrice} within $${targetBudget} budget`]);
+        const agentMsg: ConsoleMessage = {
+          id: `msg_agent_${Date.now()}`,
+          sender: 'agent',
+          text: `Identified bespoke Japanese tea ceremony commission grounded in ${selectedVip.fullName}'s cultural aesthetic. Verified within the $${targetBudget} budget cap with zero taboo infractions.`,
+          toolName: 'curate_tea_commission',
+          source: 'local_refinement',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages((prev) => [...prev, agentMsg]);
+        handleReadout(agentMsg.text);
+      } else if ((lower.includes('down to') || lower.includes('negotiate') || (lower.includes('budget') && (lower.includes('over') || lower.includes('adjust') || lower.includes('cut') || lower.includes('reduce')))) && activeDossier && onDossierUpdated) {
+        const budgetMatch = text.match(/\$?(\d{2,5})\b/);
+        const targetBudget = budgetMatch ? parseInt(budgetMatch[1], 10) : 300;
+        const refinedDossier: ExecutiveDossier = {
+          ...activeDossier,
+          targetBudgetUsd: targetBudget,
+          budgetTier: targetBudget <= 200 ? 'standard_200' : targetBudget <= 500 ? 'executive_500' : 'unlimited_vip',
+          curatedGifts: (activeDossier.curatedGifts || []).map((gift, idx) => {
+            const scaledPrice = Math.min(targetBudget, Math.round(targetBudget * (idx === 0 ? 0.9 : idx === 1 ? 0.75 : 0.6)));
+            const cleanTitle = gift.title.replace(/\s*\[DIFF REFINED[^\]]*\]/g, '');
+            const cleanRationale = gift.culturalRationale.replace(/^\[DIFF REFINED[^\]]*\]\s*/g, '');
+            return {
+              ...gift,
+              estimatedPriceUsd: scaledPrice,
+              title: `${cleanTitle} [DIFF REFINED: Budget Scaled to $${targetBudget}]`,
+              culturalRationale: `[DIFF REFINED: Budget Scaled to $${targetBudget}] ${cleanRationale}`,
+            };
+          }),
+        };
+        onDossierUpdated(refinedDossier, [`Budget ceiling adjusted to $${targetBudget}`, 'Re-scaled gift proposals']);
+        const agentMsg: ConsoleMessage = {
+          id: `msg_agent_${Date.now()}`,
+          sender: 'agent',
+          text: `Adjusted financial allocation for ${selectedVip.fullName} to $${targetBudget}. Re-curating cultural ledger accordingly.`,
+          toolName: 'negotiate_taste_conflict',
           source: 'local_refinement',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         };

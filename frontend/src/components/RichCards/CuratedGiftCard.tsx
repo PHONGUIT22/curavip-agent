@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Download, Shield, Tag, PackageCheck, Share2 } from 'lucide-react';
+import { Download, Shield, Tag, PackageCheck, Share2, Sparkles } from 'lucide-react';
 import { pdfService } from '../../services/pdfService';
 import { soundService } from '../../services/soundService';
 import { QlooAffinityBadge } from '../QlooAffinityBadge';
@@ -58,23 +58,49 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
               ? 'Alternative Aesthetic'
               : 'Discreet Proposal';
 
+          const isDiffRefined =
+            gift.title?.includes('[DIFF REFINED]') ||
+            gift.culturalRationale?.includes('[DIFF REFINED]');
+          const cleanTitle = gift.title?.replace(/\s*\[DIFF REFINED[^\]]*\]/g, '') || gift.title;
+          const cleanRationale =
+            gift.culturalRationale?.replace(/^\[DIFF REFINED[^\]]*\]\s*/g, '') ||
+            gift.culturalRationale;
+
           return (
             <div
               key={gift.id}
-              className="bg-[#FAF8F5]/60 border border-[#EBE6DD] rounded-xl p-5 sm:p-6 mb-4 last:mb-0 space-y-3 transition-colors hover:bg-white hover:border-[#183D33]/30 shadow-2xs"
+              className={`rounded-xl p-5 sm:p-6 mb-4 last:mb-0 space-y-3 transition-colors hover:bg-white hover:border-[#183D33]/30 shadow-2xs ${
+                isDiffRefined
+                  ? 'border-amber-300 bg-amber-50/40 shadow-sm ring-1 ring-amber-300/60'
+                  : 'bg-[#FAF8F5]/60 border border-[#EBE6DD]'
+              }`}
             >
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#183D33]">
-                  {tierLabel}
-                </span>
-                <span className="text-xs text-[#6B736D] font-medium">
-                  / {gift.brandOrArtisan}
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-[#183D33]">
+                    {tierLabel}
+                  </span>
+                  <span className="text-xs text-[#6B736D] font-medium">
+                    / {gift.brandOrArtisan}
+                  </span>
+                </div>
+                {isDiffRefined && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-semibold animate-pulse shadow-xs">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                    <span>
+                      {gift.title.includes('Tea Commission')
+                        ? 'REAL-TIME DIFF: Artisanal Tea Commission'
+                        : gift.title.includes('Budget Scaled')
+                        ? 'REAL-TIME DIFF: Budget Scaled'
+                        : 'REAL-TIME DIFF: Refined Spec'}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-start justify-between gap-3 mb-2">
                 <h4 className="font-sans font-semibold text-lg text-[#161A18] leading-snug flex-1 min-w-0 pr-2">
-                  {gift.title}
+                  {cleanTitle}
                 </h4>
                 <span className="font-sans font-semibold text-sm sm:text-base text-[#183D33] tabular-nums shrink-0 whitespace-nowrap bg-[#183D33]/5 px-2.5 py-1 rounded-md">
                   ${gift.estimatedPriceUsd.toLocaleString()}
@@ -90,13 +116,13 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                 <QlooAffinityBadge
                   affinityScore={gift.affinityScore || 0.94}
                   anchor={gift.qlooCorrelationAnchor}
-                  itemTitle={gift.title}
+                  itemTitle={cleanTitle}
                 />
               </div>
 
               {/* Cultural Rationale */}
               <p className="font-sans text-sm sm:text-base text-[#323835] leading-relaxed font-normal">
-                {gift.culturalRationale}
+                {cleanRationale}
               </p>
 
               {/* Materials / Guardrail notes */}
@@ -115,11 +141,11 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                     soundService.playMechanicalClick();
                     setActionModalData({
                       type: 'commission_gift',
-                      title: gift.title,
+                      title: cleanTitle,
                       venueOrBrand: gift.brandOrArtisan,
                       vipName: dossier.vipProfile.fullName,
                       price: `$${gift.estimatedPriceUsd.toLocaleString()}`,
-                      notes: gift.culturalRationale,
+                      notes: cleanRationale,
                     });
                   }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#183D33] hover:bg-[#224F43] text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-2xs"
@@ -135,11 +161,11 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier }) => 
                     soundService.playMechanicalClick();
                     setActionModalData({
                       type: 'share_briefing',
-                      title: gift.title,
+                      title: cleanTitle,
                       venueOrBrand: gift.brandOrArtisan,
                       vipName: dossier.vipProfile.fullName,
                       price: `$${gift.estimatedPriceUsd.toLocaleString()}`,
-                      notes: gift.culturalRationale,
+                      notes: cleanRationale,
                     });
                   }}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#6B736D] hover:text-[#183D33] hover:bg-[#FAF8F5] rounded-lg transition-colors border border-transparent hover:border-[#E5E0D6]"

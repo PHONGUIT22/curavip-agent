@@ -724,6 +724,24 @@ export const clientFallbackVault = {
       lower.includes('gyokuro')
     ) {
       const speech = `Identified bespoke Japanese tea ceremony commission grounded in ${vipName}'s cultural aesthetic. Verified within the $${budget} budget cap with zero taboo infractions.`;
+      const baseDossier = this.buildDossier(profileId, budgetTier, mode).dossier;
+      const teaPrice = Math.min(budget, Math.round(budget * 0.85));
+      const teaGift: GiftProposal = {
+        id: `gift_tea_commission_${Date.now()}`,
+        title: 'Hand-Turned Tokoname Clay Kyusu & Rare Gyokuro Set [DIFF REFINED: Artisanal Tea Commission]',
+        brandOrArtisan: 'Tokoname Master Potter Junzo & Uji Tea Collective',
+        category: 'curated_artifact',
+        estimatedPriceUsd: teaPrice,
+        affinityScore: 0.98,
+        culturalRationale: '[DIFF REFINED: Artisanal Tea Commission] Direct artisan commission honoring Japanese tea ceremony traditions with zero taboo infractions.',
+        tier: 'signature',
+        qlooCorrelationAnchor: 'Japanese Tea Ceremony & Wabi-Sabi Aesthetics',
+      };
+      const updatedDossier: ExecutiveDossier = {
+        ...baseDossier,
+        curatedGifts: [teaGift, ...baseDossier.curatedGifts.slice(1)],
+      };
+
       return {
         success: true,
         toolName: 'curate_tea_commission',
@@ -735,6 +753,11 @@ export const clientFallbackVault = {
         },
         speechResponse: speech,
         offlineFallbackUsed: true,
+        updatedDossier,
+        diffHighlights: [
+          'Artisanal Japanese Tea Commission Selected',
+          `Allocated $${teaPrice} within $${budget} budget`,
+        ],
         traceStep: {
           id: `trace_turn_${Date.now()}`,
           phase: 'commit',
@@ -760,6 +783,24 @@ export const clientFallbackVault = {
       lower.includes('allocation')
     ) {
       const speech = `Adjusted financial allocation for ${vipName} to $${budget}. Re-curating cultural ledger accordingly.`;
+      const baseDossier = this.buildDossier(profileId, budgetTier, mode).dossier;
+      const updatedDossier: ExecutiveDossier = {
+        ...baseDossier,
+        targetBudgetUsd: budget,
+        budgetTier: budget <= 200 ? 'standard_200' : budget <= 500 ? 'executive_500' : 'unlimited_vip',
+        curatedGifts: baseDossier.curatedGifts.map((gift, idx) => {
+          const scaledPrice = Math.min(budget, Math.round(budget * (idx === 0 ? 0.9 : idx === 1 ? 0.75 : 0.6)));
+          const cleanTitle = gift.title.replace(/\s*\[DIFF REFINED[^\]]*\]/g, '');
+          const cleanRationale = gift.culturalRationale.replace(/^\[DIFF REFINED[^\]]*\]\s*/g, '');
+          return {
+            ...gift,
+            estimatedPriceUsd: scaledPrice,
+            title: `${cleanTitle} [DIFF REFINED: Budget Scaled to $${budget}]`,
+            culturalRationale: `[DIFF REFINED: Budget Scaled to $${budget}] ${cleanRationale}`,
+          };
+        }),
+      };
+
       return {
         success: true,
         toolName: 'negotiate_taste_conflict',
@@ -770,6 +811,11 @@ export const clientFallbackVault = {
         },
         speechResponse: speech,
         offlineFallbackUsed: true,
+        updatedDossier,
+        diffHighlights: [
+          `Budget ceiling adjusted to $${budget}`,
+          'Re-scaled gift proposals',
+        ],
         traceStep: {
           id: `trace_turn_${Date.now()}`,
           phase: 'negotiate',
