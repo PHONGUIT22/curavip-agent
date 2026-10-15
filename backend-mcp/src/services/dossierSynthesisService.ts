@@ -1,5 +1,6 @@
 import dns from 'node:dns';
 dns.setDefaultResultOrder('ipv4first');
+import { GoogleGenAI } from '@google/genai';
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import { envConfig, isRealSecret } from '../config/env.js';
 import {
@@ -86,48 +87,33 @@ async function callBedrockSynthesis(prompt: string): Promise<string | null> {
 }
 
 /**
- * Call Gemini API with Gemini 3.8 Flash as Primary LLM Engine.
- * Supports both standard Google AI Studio keys and Vertex Express Auth keys (AQ. prefix).
+ * Call Google AI Studio using the official @google/genai SDK.
+ * Supports Gemini 3.8 Flash with full AQ. auth key compatibility.
  */
 async function callGeminiSynthesis(prompt: string): Promise<string | null> {
   const geminiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)?.trim();
   if (!isRealSecret(geminiKey)) return null;
-  // Enforce gemini-3.8-flash as the primary default model
   const model = process.env.GEMINI_MODEL_ID?.trim() || 'gemini-3.8-flash';
   const startMs = Date.now();
   try {
-    const isVertexExpressKey = geminiKey.startsWith('AQ.');
-    const baseUrl = isVertexExpressKey
-      ? `https://aiplatform.googleapis.com/v1/publishers/google/models/${model}:generateContent`
-      : `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-    const url = `${baseUrl}?key=${encodeURIComponent(geminiKey)}`;
-    console.log(`[GeminiSynthesis] Invoking '${model}' (${isVertexExpressKey ? 'Vertex AQ Key' : 'AI Studio Key'})...`);
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(isVertexExpressKey ? {} : { 'x-goog-api-key': geminiKey }),
+    console.log(`[GeminiSynthesis] Calling Google AI Studio model '${model}' via @google/genai...`);
+    const ai = new GoogleGenAI({ apiKey: geminiKey });
+    const response = await ai.models.generateContent({
+      model,
+      contents: prompt,
+      config: {
+        systemInstruction: CHIEF_OF_STAFF_SYSTEM_PROMPT,
+        responseMimeType: 'application/json',
+        temperature: 0.2,
       },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: CHIEF_OF_STAFF_SYSTEM_PROMPT }],
-        },
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.2,
-        },
-      }),
-      signal: AbortSignal.timeout(35000),
     });
-    if (!res.ok) {
-      const errBody = await res.text().catch(() => '');
-      console.warn(`[GeminiSynthesis] HTTP ${res.status} (${Date.now() - startMs}ms): ${errBody.slice(0, 300)}`);
+    const outputText = response.text || '';
+    if (!outputText) {
+      console.warn(`[GeminiSynthesis] Received empty text from ${model}`);
       return null;
     }
-    const data = (await res.json()) as any;
-    console.log(`[GeminiSynthesis] ✓ Gemini 3.8 Flash success in ${Date.now() - startMs}ms`);
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    console.log(`[GeminiSynthesis] ✓ Gemini 3.8 Flash succeeded in ${Date.now() - startMs}ms`);
+    return outputText;
   } catch (err) {
     console.warn(`[GeminiSynthesis] Error after ${Date.now() - startMs}ms:`, err);
     return null;
