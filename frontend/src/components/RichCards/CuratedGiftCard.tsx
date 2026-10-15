@@ -206,10 +206,15 @@ export const CuratedGiftCard: React.FC<CuratedGiftCardProps> = ({ dossier, onDos
               ? existingChecks.map((c) => (c.id === 'precedent' ? precedentCheck : c))
               : [...existingChecks, precedentCheck];
 
+            const existingNotes = dossier.complianceAudit?.auditNotes || '';
+            const code = order.confirmationCode;
+            const newAuditNotes = existingNotes.includes(code)
+              ? existingNotes
+              : `${existingNotes} [Precedent committed: ${order.giftOrder?.title || actionModalData?.title} (${code})]`.trim();
             const updatedAudit = {
               ...dossier.complianceAudit,
               checks: updatedChecks,
-              auditNotes: `${dossier.complianceAudit?.auditNotes || ''} [Precedent committed: ${order.giftOrder?.title || actionModalData?.title} (${order.confirmationCode})]`,
+              auditNotes: newAuditNotes,
             };
 
             onDossierUpdated(

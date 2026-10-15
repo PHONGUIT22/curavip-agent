@@ -218,7 +218,9 @@ export const DiningProposalCard: React.FC<DiningProposalCardProps> = ({
                 complianceAudit: {
                   ...activeDossier.complianceAudit,
                   checks: updatedChecks,
-                  auditNotes: `${activeDossier.complianceAudit?.auditNotes || ''} [Reservation confirmed: ${order.diningReservation?.venueName || actionModalData?.title} (${order.confirmationCode})]`,
+                  auditNotes: (activeDossier.complianceAudit?.auditNotes || '').includes(order.confirmationCode)
+                    ? activeDossier.complianceAudit?.auditNotes
+                    : `${activeDossier.complianceAudit?.auditNotes || ''} [Reservation confirmed: ${order.diningReservation?.venueName || actionModalData?.title} (${order.confirmationCode})]`.trim(),
                 },
               },
               [`Confirmed Reservation ${order.confirmationCode}`]

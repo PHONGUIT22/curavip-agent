@@ -53,16 +53,27 @@ export const ActionDispatchModal: React.FC<ActionDispatchModalProps> = ({
   const [isCommitting, setIsCommitting] = useState(false);
   const [confirmedCode, setConfirmedCode] = useState<string | null>(null);
   const [committedOrder, setCommittedOrder] = useState<any>(null);
+  const committedKeyRef = React.useRef<string | null>(null);
+  const onSuccessRef = React.useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
 
   React.useEffect(() => {
     if (!isOpen || !data) {
+      committedKeyRef.current = null;
       setConfirmedCode(null);
       setCommittedOrder(null);
       setIsCommitting(false);
       return;
     }
 
+    const currentKey = `${data.type}_${data.title}_${data.vipId || ''}`;
+    // Guard against infinite re-render loop: only run once per distinct order item
+    if (committedKeyRef.current === currentKey) {
+      return;
+    }
+
     if (data.type === 'commission_gift' || data.type === 'book_table') {
+      committedKeyRef.current = currentKey;
       let isMounted = true;
       setIsCommitting(true);
 
@@ -98,7 +109,7 @@ export const ActionDispatchModal: React.FC<ActionDispatchModalProps> = ({
           if (res && res.order) {
             setConfirmedCode(res.order.confirmationCode);
             setCommittedOrder(res.order);
-            onSuccess?.(res.order);
+            onSuccessRef.current?.(res.order);
           }
         })
         .catch(() => {
@@ -110,7 +121,7 @@ export const ActionDispatchModal: React.FC<ActionDispatchModalProps> = ({
         isMounted = false;
       };
     }
-  }, [isOpen, data, onSuccess]);
+  }, [isOpen, data?.type, data?.title, data?.vipId]);
 
   if (!isOpen || !data) return null;
 
