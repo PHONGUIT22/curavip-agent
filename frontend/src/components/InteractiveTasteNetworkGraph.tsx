@@ -504,30 +504,36 @@ export const InteractiveTasteNetworkGraph: React.FC<InteractiveTasteNetworkGraph
           <circle cx="430" cy="245" r="285" fill="none" stroke="#E5E0D6" strokeWidth="1" strokeDasharray="6 6" />
 
           {/* Latent Factor Vector Pill in orbit */}
-          <g transform="translate(430, 45)">
-            <rect
-              x="-140"
-              y="-14"
-              width="280"
-              height="28"
-              rx="14"
-              fill="#FFFFFF"
-              stroke="#2D7360"
-              strokeWidth="1.5"
-              filter="url(#shadow)"
-            />
-            <text
-              textAnchor="middle"
-              y="4"
-              fill="#183D33"
-              fontSize="10"
-              fontFamily="sans-serif"
-              fontWeight="600"
-              letterSpacing="0.8"
-            >
-              LATENT VECTOR: {latentFactorTitle.toUpperCase()}
-            </text>
-          </g>
+          {(() => {
+            const badgeText = `LATENT VECTOR: ${latentFactorTitle.toUpperCase()}`;
+            const pillWidth = Math.max(280, badgeText.length * 7.5 + 40);
+            return (
+              <g transform="translate(430, 45)">
+                <rect
+                  x={-pillWidth / 2}
+                  y="-14"
+                  width={pillWidth}
+                  height="28"
+                  rx="14"
+                  fill="#FFFFFF"
+                  stroke="#2D7360"
+                  strokeWidth="1.5"
+                  filter="url(#shadow)"
+                />
+                <text
+                  textAnchor="middle"
+                  y="4"
+                  fill="#183D33"
+                  fontSize="10"
+                  fontFamily="sans-serif"
+                  fontWeight="600"
+                  letterSpacing="0.8"
+                >
+                  {badgeText}
+                </text>
+              </g>
+            );
+          })()}
 
           {/* Connecting Edge Curves */}
           {edges.map((edge) => {
