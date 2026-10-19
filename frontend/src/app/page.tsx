@@ -96,7 +96,7 @@ export default function Home() {
     [budgetTier, executionMode]
   );
 
-  // Load VIP roster on mount
+  // Load VIP roster on mount (WITHOUT auto-synthesizing dossier)
   useEffect(() => {
     async function loadInitialData() {
       try {
@@ -107,26 +107,26 @@ export default function Home() {
         if (vips.length > 0) {
           setProfiles(vips);
           setSelectedVip(vips[0]);
-          // Automatically compose initial dossier for the lead principal (Marcus Vance)
-          fetchDossier(vips[0].id, 'executive_500', 'qloo_grounded');
+          // DO NOT auto-fetch on mount! Wait for explicit user click on "SYNTHESIZE DOSSIER"
         }
       } catch (err) {
         console.warn('Initialization error:', err);
       }
     }
     loadInitialData();
-  }, [fetchDossier]);
+  }, []);
 
   const handleSelectVip = (vip: VIPProfile) => {
     soundService.playMechanicalClick();
     setSelectedVip(vip);
-    fetchDossier(vip.id, budgetTier, executionMode);
+    setActiveDossier(null);
+    setActiveTrace([]);
   };
 
   const handleToggleMode = (newMode: ExecutionMode) => {
     soundService.playToggleClick();
     setExecutionMode(newMode);
-    if (selectedVip) {
+    if (selectedVip && activeDossier) {
       fetchDossier(selectedVip.id, budgetTier, newMode);
     }
   };
@@ -134,9 +134,6 @@ export default function Home() {
   const handleSelectTier = (tier: BudgetTier) => {
     soundService.playMechanicalClick();
     setBudgetTier(tier);
-    if (selectedVip) {
-      fetchDossier(selectedVip.id, tier, executionMode);
-    }
   };
 
   const scrollToSection = (id: string, section?: 'console' | 'roster' | 'dossier' | 'benchmark') => {

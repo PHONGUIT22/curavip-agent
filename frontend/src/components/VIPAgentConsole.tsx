@@ -178,8 +178,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
         onSelectVip(target);
       }
     }
-
-    await onGenerateDossier(preset.brief, preset.vipId, preset.tier);
+    // Only populate scenario parameters; user will click "SYNTHESIZE DOSSIER" to execute
   };
 
   // Default suggested brief when selecting a principal
@@ -609,7 +608,7 @@ export const VIPAgentConsole: React.FC<VIPAgentConsoleProps> = ({
                   <span>Judge Quick Scenarios (1-Click Evaluation)</span>
                 </div>
                 <span className="text-[11px] text-[#6B736D] hidden sm:inline">
-                  Auto-select VIP, populate brief & run synthesis
+                  Auto-select VIP, populate brief & click Synthesize
                 </span>
               </div>
 
